@@ -432,6 +432,7 @@ input,select{ min-height:48px }
           <div class="map-wrap">
             <div id="map"></div>
           </div>
+          <button type="button" id="exitTripBtn" class="btn btn-gold btn-large" style="display:none;margin-top:12px">✕ Exit trip — reset map</button>
           <div class="search-row">
             <input id="searchInput" type="search" placeholder="Search name, phone, street, city…">
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
@@ -1894,9 +1895,23 @@ function drawTripLine(pts){
   if(!map||typeof L==='undefined') return;
   if(tripLine) map.removeLayer(tripLine);
   tripLine=L.polyline(pts.map(p=>[p.lat,p.lng]),{color:'#c19a4b',weight:4,opacity:0.9}).addTo(map);
+  updateTripExitBtn();
   try{ map.flyToBounds(tripLine.getBounds().pad(0.15),{duration:0.7}); }catch(e){}
   const mel=document.getElementById('map'); const _to=$('tripOverlay'); if(mel && !(_to&&_to.classList.contains('open'))) mel.scrollIntoView({behavior:'smooth',block:'center'});
 }
+/* EXIT TRIP — the trip line stays on the main map until the user clears it.
+   The "Exit trip — reset map" button sits right under the map on the main screen
+   and appears whenever a trip is showing; the same reset is offered inside the
+   trip planner itself. Clearing removes the route line and flies the map back
+   to its normal view of the contacts. */
+function updateTripExitBtn(){ const b=$('exitTripBtn'); if(b) b.style.display=tripLine?'inline-flex':'none'; }
+function clearTripFromMap(){
+  if(tripLine&&map){ try{ map.removeLayer(tripLine); }catch(e){} }
+  tripLine=null;
+  updateTripExitBtn();
+  if(map) zoomToArea(currentFilter);
+}
+const _etb=$('exitTripBtn'); if(_etb) _etb.addEventListener('click', ()=>{ clearTripFromMap(); toast('Trip cleared — your map is back to normal'); });
 const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   const resEl=$('tripResult'); if(!resEl) return;
   if(!tripStart){ resEl.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above — where you are now, or an address like home.</p>'; toast('Set your start first'); return; }
@@ -1942,9 +1957,11 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   if(waypoints.length) gUrl+='&waypoints='+encodeURIComponent(waypoints.join('|'));
   html+=`<a class="btn btn-gold btn-large" style="margin-top:12px" target="_blank" rel="noopener" href="${gUrl}">🧭 Open this route in Google Maps</a>`;
   html+=`<button type="button" id="tripSeeMapBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ See this trip on my map</button>`;
-  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
+  html+=`<button type="button" id="tripResetBtn" class="btn btn-gold btn-large" style="margin-top:10px">✕ Exit trip — reset map</button>`;
+  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. When you are done with it, tap “Exit trip — reset map” — here, or under the map on the main screen — and the line comes off and your map goes back to normal. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
   resEl.innerHTML=html;
   const _smb=$('tripSeeMapBtn'); if(_smb) _smb.addEventListener('click', ()=>{ closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); });
+  const _trb=$('tripResetBtn'); if(_trb) _trb.addEventListener('click', ()=>{ clearTripFromMap(); closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); toast('Trip cleared — your map is back to normal'); });
   drawTripLine(pts);
 });
 
