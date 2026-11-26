@@ -1,15 +1,27 @@
 {
-  "name": "Contacts Map for Rabbi Goldstein",
-  "short_name": "Contacts Map",
-  "description": "Contacts map for Mivtzoim rounds — tefillin and Divrei Torah.",
+  "name": "The Rebbe's WAZE",
+  "short_name": "Rebbe's WAZE",
+  "description": "Contacts map for Mivtzoim rounds \u2014 tefillin and Divrei Torah.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "background_color": "#fdf8ec",
   "theme_color": "#0e3b2c",
   "icons": [
-    { "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
-    { "src": "icon-512.svg", "sizes": "512x512", "type": "image/svg+xml" },
-    { "src": "icon-512.svg", "sizes": "any", "type": "image/svg+xml" }
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
   ]
 }
