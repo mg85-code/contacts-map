@@ -393,7 +393,6 @@ input,select{ min-height:48px }
         <button id="createBtn" class="btn btn-gold">Create account</button>
         <button id="forgotBtn" class="btn btn-outline">Forgot password?</button>
       </div>
-      <p class="privacy-line">🔒 <strong>Your contacts are saved under your own login. Nobody else can see them.</strong></p>
       <p id="authStatus" class="muted" style="margin-top:8px"></p>
     </div>
   </div>
@@ -491,7 +490,6 @@ input,select{ min-height:48px }
               <button type="button" id="nearSortDistBtn" class="dist-btn active">📍 Distance</button>
               <button type="button" id="nearSortNameBtn" class="dist-btn">Name A–Z</button>
             </div>
-            <div id="nearStatus" class="muted" style="margin-top:10px"></div>
             <div id="nearList"></div>
             <button type="button" id="closeNearBtn" class="btn btn-outline btn-large" style="margin-top:12px">✕ Close</button>
           </div>
@@ -513,10 +511,9 @@ input,select{ min-height:48px }
               <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
                 <label for="customDist" style="font-weight:600;font-size:14px">Custom distance:</label>
                 <input id="customDist" type="number" min="0.5" max="50" step="0.5" placeholder="e.g. 3" style="width:110px;padding:10px;border-radius:10px;border:1.5px solid var(--line)">
-                <span class="muted">miles (up to 50)</span>
+                <span class="muted">miles</span>
                 <button id="applyCustomDist" class="btn btn-gold btn-small">Use this distance</button>
               </div>
-              <p id="distLabel" class="muted" style="margin-top:6px"></p>
               </div>
             </div>
             <div class="sub-item" data-sub="mapview">
@@ -531,10 +528,9 @@ input,select{ min-height:48px }
               <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
                 <label for="customView" style="font-weight:600;font-size:14px">Or type your own:</label>
                 <input id="customView" type="number" min="0.25" max="50" step="0.25" placeholder="e.g. 0.5 or 3" style="width:130px;padding:10px;border-radius:10px;border:1.5px solid var(--line)">
-                <span class="muted">miles (up to 50)</span>
+                <span class="muted">miles</span>
                 <button id="applyCustomView" class="btn btn-gold btn-small">Use this</button>
               </div>
-              <p id="viewLabel" class="muted" style="margin-top:6px"></p>
               </div>
             </div>
             <div class="sub-item" data-sub="sound">
@@ -565,7 +561,6 @@ input,select{ min-height:48px }
 
                 <div class="custom-sound-box" id="customSoundBox" style="display:none">
                   <strong style="font-size:15px">Your own sound or music</strong>
-                  <p class="muted" style="margin:6px 0 0">Pick a file from this phone — only the start plays with each alert.</p>
                   <label class="btn btn-gold btn-small" style="cursor:pointer;margin-top:10px">📁 Choose sound from my phone <input id="customSoundInput" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" style="display:none"></label>
                   <div id="customSoundInfo" style="display:none;margin-top:10px">
                     <p style="margin:0;font-size:14px;line-height:1.45">🎵 <strong id="customSoundName"></strong></p>
@@ -590,7 +585,6 @@ input,select{ min-height:48px }
             <div>
               <p id="notifState" class="muted" style="margin:6px 0"></p>
               <button id="notifBtn" class="btn btn-outline">Turn on notifications</button>
-              <p class="muted" style="margin-top:8px">Honest note: alerts work <strong>while the app is open</strong> — especially in Driving mode. Keep this page open while you drive.</p>
             </div>
             <p id="wakeStatusMain" class="muted" style="text-align:center"></p>
               </div>
@@ -607,15 +601,13 @@ input,select{ min-height:48px }
           <!-- A Phone contacts -->
           <div id="phonePickWrap" style="margin-top:14px">
             <button id="pickPhoneBtn" class="btn btn-gold btn-large">👤 Pick from my phone contacts</button>
-            <p class="muted" style="margin-top:6px;text-align:center">Best on Chrome on Android.</p>
             <div id="pickerReview"></div>
           </div>
-          <div id="phonePickUnsupported" class="muted" style="display:none;margin-top:10px;padding:12px;background:var(--cream);border-radius:10px">Phone contact picking isn’t available in this browser. Use the file import below (best on a laptop) or add one by hand.</div>
+          <div id="phonePickUnsupported" class="muted" style="display:none;margin-top:10px;padding:12px;background:var(--cream);border-radius:10px">Phone contact picking isn’t available in this browser.</div>
 
           <!-- B VCF -->
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
             <h3>Import contacts file (.vcf)</h3>
-            <p class="muted">Export contacts as a .vcf file, then import here.</p>
             <label class="btn btn-outline btn-large" style="cursor:pointer;margin-top:8px">📁 Choose .vcf file <input id="vcfInput" type="file" accept=".vcf,text/vcard" style="display:none"></label>
             <div id="vcfReview"></div>
           </div>
@@ -631,13 +623,13 @@ input,select{ min-height:48px }
               <div class="form-grid">
                 <div class="field" style="grid-column:1/-1"><label for="fName">Full name *</label><input id="fName" required placeholder="e.g. David Cohen"></div>
                 <div class="field" style="grid-column:1/-1"><label for="fPhone">Phone</label><input id="fPhone" type="tel" placeholder="(718) 555-0123"></div>
-                <div class="field autocomplete" style="grid-column:1/-1"><label for="fStreet">Street address — start typing for suggestions</label><input id="fStreet" autocomplete="off" placeholder="123 Main St"><div id="suggestBox" class="suggest"></div></div>
+                <div class="field autocomplete" style="grid-column:1/-1"><label for="fStreet">Street address</label><input id="fStreet" autocomplete="off" placeholder="123 Main St"><div id="suggestBox" class="suggest"></div></div>
                 <div class="field"><label for="fCity">City / Town</label><input id="fCity" placeholder="Brooklyn"></div>
                 <div class="field"><label for="fState">State</label><input id="fState" placeholder="NY"></div>
                 <div class="field"><label for="fZip">ZIP</label><input id="fZip" placeholder="11213"></div>
               </div>
               <div class="field" style="margin-top:12px">
-                <label>Photo of this person</label>
+                <label>Pin picture</label>
                 <div class="photo-field">
                   <div id="photoPreview" class="photo-preview" aria-hidden="true"></div>
                   <div style="flex:1;min-width:0">
@@ -649,7 +641,25 @@ input,select{ min-height:48px }
                 </div>
                 <input type="hidden" id="photoData">
               </div>
-              <p id="geoHint" class="muted" style="margin-top:8px">Pick a suggestion for an exact pin. If the exact address can’t be found, a clearly labeled approximate pin for the town is used — an address is never made up.</p>
+              <div class="field" style="margin-top:12px">
+                <label>Profile photo</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap" role="radiogroup" aria-label="Profile photo">
+                  <button type="button" class="dist-btn profile-mode-btn" data-mode="same">Same as pin picture</button>
+                  <button type="button" class="dist-btn profile-mode-btn" data-mode="different">Different picture</button>
+                  <button type="button" class="dist-btn profile-mode-btn" data-mode="none">None</button>
+                </div>
+                <div id="profilePhotoPicker" class="photo-field" style="display:none;margin-top:10px">
+                  <div id="profilePhotoPreview" class="photo-preview" aria-hidden="true"></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <label class="btn btn-gold btn-small" style="cursor:pointer">📷 Add / change profile photo <input id="fProfilePhoto" type="file" accept="image/*" style="display:none"></label>
+                      <button type="button" id="removeProfilePhotoBtn" class="btn btn-outline btn-small" style="display:none">Remove profile photo</button>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" id="profilePhotoData">
+                <input type="hidden" id="profilePhotoMode" value="same">
+              </div>
               <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
                 <button type="submit" class="btn btn-green" style="flex:1">Save contact</button>
                 <button type="button" id="cancelEdit" class="btn btn-outline" style="display:none">Cancel edit</button>
@@ -669,21 +679,19 @@ input,select{ min-height:48px }
           <div style="font-weight:700;margin-bottom:8px">1 · Where are you starting from?</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Use where I am now</button>
-            <span class="muted">or type an address, like your home:</span>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
             <input id="tripStartAddr" type="text" placeholder="Start address — e.g. your home" style="flex:1;min-width:200px;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
             <button type="button" id="tripSetStartBtn" class="btn btn-gold">Set start</button>
           </div>
-          <p id="tripStartLabel" class="muted" style="margin-top:8px">No start set yet — tap “Use where I am now” or type your home address.</p>
+          <p id="tripStartLabel" class="muted" style="margin-top:8px"></p>
         </div>
         <div>
           <label for="tripDestSelect" style="font-weight:700;display:block;margin-bottom:8px">2 · Where are you going? (your main destination)</label>
           <select id="tripDestSelect" class="sound-select" style="width:100%"></select>
           <p class="muted" style="margin:12px 0 0;text-align:center;font-weight:700">— or go to any address —</p>
-          <p class="muted" style="margin:4px 0 0">Your destination does not have to be a contact — any address works.</p>
           <div class="trip-dest-addr-wrap autocomplete">
-            <label for="tripDestAddr" style="font-weight:700;display:block;margin-bottom:6px">Destination address — start typing for suggestions</label>
+            <label for="tripDestAddr" style="font-weight:700;display:block;margin-bottom:6px">Destination address</label>
             <input id="tripDestAddr" type="text" autocomplete="off" placeholder="e.g. 770 Eastern Pkwy, Brooklyn" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
             <div id="tripDestSuggest" class="suggest"></div>
           </div>
@@ -692,11 +700,9 @@ input,select{ min-height:48px }
             <button type="button" id="tripDestClearBtn" class="btn btn-outline" style="display:none">Clear address destination</button>
           </div>
           <p id="tripDestAddrLabel" class="muted" style="margin-top:8px"></p>
-          <p id="tripRouteInfo" class="muted" style="margin-top:8px"></p>
         </div>
         <div>
           <div style="font-weight:700;margin-bottom:8px">3 · Who do you want to visit? Tick them</div>
-          <p class="muted" style="margin:0">People on your way are ticked for you — untick anyone you want to skip.</p>
           <div id="tripStops" class="checklist" style="max-height:300px"></div>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
@@ -705,21 +711,17 @@ input,select{ min-height:48px }
         </div>
         <button type="button" id="planTripBtn" class="btn btn-green btn-large">🧭 Plan my trip — best order</button>
         <button type="button" id="tripPreviewShowBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>
-        <p class="muted" style="margin:6px 2px 0;text-align:center">See how the trip looks on a map right here on this page — no need to go back to the home page.</p>
         <div id="tripResult"></div>
         <div id="tripPreviewWrap" style="display:none;margin-top:16px;border:1px solid var(--gold);border-radius:14px;padding:14px;background:var(--paper)">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <h3 style="margin:0">🗺️ Your trip — map preview</h3>
-            <span class="muted" style="font-size:13px">You are still in the Trip Planner</span>
           </div>
           <div id="tripPreviewMap" style="margin-top:12px"></div>
-          <p id="tripPreviewCaption" class="muted" style="margin:10px 0 0"></p>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
             <button type="button" id="tripPreviewEditBtn" class="btn btn-green" style="flex:1;min-width:140px">✏️ Edit trip</button>
             <button type="button" id="tripPreviewHideBtn" class="btn btn-gold" style="flex:1;min-width:140px">Hide map</button>
             <button type="button" id="tripPreviewMainBtn" class="btn btn-outline" style="flex:1;min-width:140px">See on main map</button>
           </div>
-          <p class="muted" style="margin:8px 0 0">“Edit trip” and “Hide map” both take you back to the plan above — your start, destination and ticked people stay exactly as you left them. Nothing is erased unless you tap “Exit trip — reset map”.</p>
         </div>
       </div>
     </div>
@@ -727,7 +729,6 @@ input,select{ min-height:48px }
     <div class="footer">
       <strong style="color:var(--green)">Contacts Map for Rabbi Goldstein</strong><br>
       For Mivtzoim rounds — tefillin and Divrei Torah.<br>
-      <span>Your contacts are private to your login and backed up online.</span>
       <div style="margin-top:14px"><button type="button" id="downloadBtnMain" class="btn btn-download">⬇️ Download the app</button></div>
     </div>
   </div>
@@ -735,12 +736,12 @@ input,select{ min-height:48px }
   <button type="button" id="chatFab" class="chat-fab" aria-label="Open feedback chat">💬 Feedback</button>
   <div id="chatWindow" class="chat-window" role="dialog" aria-label="Feedback chat">
     <div class="chat-head">
-      <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1">💬 Feedback</div><div style="font-size:12px;opacity:.9;margin-top:2px">Say it like a chat — we read every message</div></div>
+      <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1">💬 Feedback</div></div>
       <button type="button" id="chatCloseBtn" class="btn" style="background:#fff;color:var(--green);padding:9px 14px;min-height:44px" aria-label="Close feedback chat">✕</button>
     </div>
     <div id="chatThread" class="chat-thread" aria-live="polite"></div>
     <div id="chatRecordBar" class="chat-record-bar"><span class="chat-rec-dot" aria-hidden="true"></span><span id="chatRecordLabel">Recording… 0:00</span><span style="flex:1"></span><button type="button" id="chatPauseRecBtn" class="btn btn-outline btn-small" style="display:none">⏸ Pause</button><button type="button" id="chatCancelRecBtn" class="btn btn-outline btn-small">✕ Cancel</button></div>
-    <p id="chatVoiceUnsupported" class="muted" style="display:none;margin:0;padding:8px 14px 0">Voice notes are not available in this browser — please type your message instead.</p>
+    <p id="chatVoiceUnsupported" class="muted" style="display:none;margin:0;padding:8px 14px 0">Voice notes are not available in this browser.</p>
     <div class="chat-input-row">
       <label for="chatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Type your feedback</label>
       <div class="chat-input-wrap">
@@ -749,7 +750,6 @@ input,select{ min-height:48px }
       </div>
       <button type="button" id="chatSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
-    <p class="muted" style="margin:0;padding:0 14px 10px;background:var(--paper);font-size:13px">Type and tap ➤ — or tap 🎙️ once and talk. While recording you can tap ⏸ Pause and ▶ Continue, then tap ➤ to send it as a voice note, just like WhatsApp.</p>
   </div>
 </section>
 
@@ -769,12 +769,10 @@ input,select{ min-height:48px }
       <span style="font-weight:700">Sort by:</span>
       <button type="button" id="sortNameBtn" class="dist-btn active">Name A–Z</button>
       <button type="button" id="sortDistBtn" class="dist-btn">📍 Distance from me now</button>
-      <span id="sortStatus" class="muted" style="flex-basis:100%">Showing in name order — the usual way.</span>
     </div>
     <div id="emptyState" class="empty" style="display:none;margin-top:12px">
       <div style="font-size:32px">📍</div>
       <strong style="font-size:17px">No contacts yet</strong>
-      <p class="muted">Open the ☰ menu and add your first person — pick from your phone, import a file, or add one by hand.</p>
     </div>
     <div id="contactList" class="contact-list"></div>
   </div>
@@ -783,19 +781,18 @@ input,select{ min-height:48px }
 <!-- EDIT CONTACT SHEET — opens over the Contacts page; the edit form lives here while editing -->
 <div id="editOverlay" role="dialog" aria-label="Edit contact">
   <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">✏️ Edit contact</div><div style="font-size:13px;opacity:.9;margin-top:2px">You stay in Contacts — saving brings you right back here</div></div>
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">✏️ Edit contact</div></div>
     <button id="closeEditSheetBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back to contacts</button>
   </div>
   <div style="max-width:760px;margin:0 auto;padding:14px">
     <div id="editSheetBody"></div>
-    <p class="muted" style="margin-top:12px">Tap “Save contact” in the form to save your changes, or “Cancel edit” / “← Back to contacts” to go back without saving.</p>
   </div>
 </div>
 
 <!-- FEEDBACK DASHBOARD — only ever opened by the admin login; nobody else sees the entry -->
 <div id="inboxOverlay" role="dialog" aria-label="Feedback dashboard">
   <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📊 Feedback Dashboard</div><div style="font-size:13px;opacity:.9;margin-top:2px">Feedback, messages &amp; accounts — only in your account</div></div>
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📊 Feedback Dashboard</div></div>
     <button id="closeInboxBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back</button>
   </div>
   <div style="max-width:760px;margin:0 auto;padding:14px">
@@ -819,7 +816,7 @@ input,select{ min-height:48px }
 <!-- TRIP PLANNER PAGE -->
 <div id="tripOverlay" role="dialog" aria-label="Trip planner">
   <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🧭 Trip Planner</div><div style="font-size:13px;opacity:.9;margin-top:2px">Who’s on the way • Best order • Route</div></div>
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🧭 Trip Planner</div></div>
     <button id="closeTripBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back to map</button>
   </div>
   <div id="tripOverlayBody" style="max-width:820px;margin:0 auto;padding:14px"></div>
@@ -828,7 +825,7 @@ input,select{ min-height:48px }
 <!-- DRIVING OVERLAY -->
 <div id="drivingOverlay" role="dialog" aria-label="Driving mode">
   <div class="drive-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div><div style="font-size:13px;opacity:.9;margin-top:2px">Follow map • Alerts on • Screen stays awake</div></div>
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
   <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
@@ -843,7 +840,6 @@ input,select{ min-height:48px }
         <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
         <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
       </div>
-      <p class="muted" style="margin:8px 0 0">This only decides when you get alerted — it does not change the map.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
         <label for="customDistDrive" style="font-weight:600;font-size:14px">Custom:</label>
         <input id="customDistDrive" type="number" min="0.5" max="50" step="0.5" placeholder="e.g. 3" style="width:110px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
@@ -1035,7 +1031,8 @@ function pinIcon(n){ return L.divIcon({className:'', html:`<div class="pin-num">
 const SILHOUETTE_SVG='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" fill="#f3e6c8"/><path d="M4.5 20.2c.8-3.6 3.8-5.4 7.5-5.4s6.7 1.8 7.5 5.4" fill="#f3e6c8"/></svg>';
 function hasPhoto(c){ return !!(c && c.photo && typeof c.photo==='string' && c.photo.indexOf('data:image/')===0); }
 function photoIcon(c){ const inner=hasPhoto(c)?`<img src="${c.photo}" alt="">` : SILHOUETTE_SVG; return L.divIcon({className:'photo-marker-wrap', html:`<div class="photo-marker">${inner}</div>`, iconSize:[48,48], iconAnchor:[24,24], popupAnchor:[0,-24]}); }
-function avatarHtml(c,small){ return `<div class="avatar${small?' avatar-sm':''}">${hasPhoto(c)?`<img src="${c.photo}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:SILHOUETTE_SVG}</div>`; }
+function profilePhotoSrc(c){ if(!c) return ''; const mode=c.profilePhotoMode||'same'; if(mode==='none') return ''; if(mode==='different') return (typeof c.profilePhoto==='string'&&c.profilePhoto.indexOf('data:image/')===0)?c.profilePhoto:''; return hasPhoto(c)?c.photo:''; }
+function avatarHtml(c,small){ const src=profilePhotoSrc(c); return `<div class="avatar${small?' avatar-sm':''}">${src?`<img src="${src}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:SILHOUETTE_SVG}</div>`; }
 function whatsappUrl(c){ const d=String((c&&c.phone)||'').replace(/\D/g,''); if(!d) return ''; const full=d.length===10?'1'+d:d; return 'https://wa.me/'+full; }
 function popupHtml(c){ const photo=hasPhoto(c)?`<img class="popup-photo" src="${c.photo}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:''; const wa=c.phone?` • <a target="_blank" rel="noopener" href="${whatsappUrl(c)}">WhatsApp</a>`:''; return `${photo}<div style="text-align:center"><b>${escapeHtml(c.name||'')}</b><br>${escapeHtml(fullAddress(c))}<br><a href="tel:${escapeHtml(c.phone||'')}">Call</a>${wa} • <a target="_blank" href="${directionsUrl(c)}">Directions</a><br><button type="button" class="btn btn-green btn-small" style="margin-top:9px;min-height:40px" onclick="openContactFromMap('${escapeHtml(c.id||'')}')">👤 Open contact</button></div>`; }
 function openContactFromMap(id){
@@ -1052,6 +1049,16 @@ function openContactFromMap(id){
 }
 function processPhotoFile(file){ return new Promise((resolve,reject)=>{ if(!file) return reject(new Error('No file')); const url=URL.createObjectURL(file); const img=new Image(); img.onload=()=>{ try{ const size=256; const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=size; const ctx=canvas.getContext('2d'); const side=Math.min(img.width,img.height); const sx=(img.width-side)/2, sy=(img.height-side)/2; ctx.drawImage(img,sx,sy,side,side,0,0,size,size); URL.revokeObjectURL(url); resolve(canvas.toDataURL('image/jpeg',0.82)); }catch(e){ URL.revokeObjectURL(url); reject(e); } }; img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error('Could not read that image')); }; img.src=url; }); }
 function renderPhotoPreview(){ const data=$('photoData').value; const box=$('photoPreview'); if(!box) return; box.innerHTML=data?`<img src="${data}" alt="Selected photo preview">`:SILHOUETTE_SVG; const rm=$('removePhotoBtn'); if(rm) rm.style.display=data?'inline-flex':'none'; }
+/* PROFILE PHOTO — 'same': the pin picture is also the profile photo shown for this
+   person in lists and cards. 'different': a separate picture is the profile photo
+   while the map pin keeps the pin picture. 'none': the gold figure icon. */
+let profileMode='same';
+function renderProfilePhotoPreview(){ const inp=$('profilePhotoData'); const data=inp?inp.value:''; const box=$('profilePhotoPreview'); if(!box) return; box.innerHTML=data?`<img src="${data}" alt="Selected profile photo preview">`:SILHOUETTE_SVG; const rm=$('removeProfilePhotoBtn'); if(rm) rm.style.display=data?'inline-flex':'none'; }
+function setProfileMode(mode){ profileMode=(mode==='different'||mode==='none')?mode:'same'; const h=$('profilePhotoMode'); if(h) h.value=profileMode; document.querySelectorAll('.profile-mode-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-mode')===profileMode)); const pk=$('profilePhotoPicker'); if(pk) pk.style.display=profileMode==='different'?'flex':'none'; renderProfilePhotoPreview(); }
+document.querySelectorAll('.profile-mode-btn').forEach(b=>b.addEventListener('click',()=>setProfileMode(b.getAttribute('data-mode'))));
+const _fpp=$('fProfilePhoto'); if(_fpp) _fpp.addEventListener('change', async e=>{ const file=e.target.files[0]; e.target.value=''; if(!file) return; try{ toast('Adding photo…'); $('profilePhotoData').value=await processPhotoFile(file); renderProfilePhotoPreview(); toast('Profile photo added — save the contact to keep it'); }catch(err){ toast('Could not use that photo — try another picture'); } });
+const _rpp=$('removeProfilePhotoBtn'); if(_rpp) _rpp.addEventListener('click', ()=>{ $('profilePhotoData').value=''; renderProfilePhotoPreview(); });
+setProfileMode('same');
 function filteredContacts(){
   return contacts.filter(c=>{
     if(searchTerm){ const hay=((c.name||'')+' '+(c.phone||'')+' '+(c.street||'')+' '+(c.city||'')+' '+(c.state||'')+' '+(c.zip||'')).toLowerCase(); if(!hay.includes(searchTerm.toLowerCase())) return false; }
@@ -1134,10 +1141,10 @@ function renderSearchResults(){
   const list=searchMatches(q);
   box.className='search-results show';
   if(!list.length){
-    box.innerHTML='<div class="search-results-head">No contacts match “'+escapeHtml(q)+'”.</div><p class="muted" style="margin:4px 0 0">Check the spelling — or try part of the name, a street, or a city instead.</p>';
+    box.innerHTML='<div class="search-results-head">No contacts match “'+escapeHtml(q)+'”.</div>';
     return;
   }
-  box.innerHTML='<div class="search-results-head">'+list.length+(list.length===1?' contact found':' contacts found')+' for “'+escapeHtml(q)+'” — tap a person to open them:</div>';
+  box.innerHTML='<div class="search-results-head">'+list.length+(list.length===1?' contact found':' contacts found')+' for “'+escapeHtml(q)+'”</div>';
   list.forEach(c=>{
     const row=document.createElement('button'); row.type='button'; row.className='search-result';
     const addr=fullAddress(c);
@@ -1163,10 +1170,9 @@ function renderList(){
   } else {
     list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   }
-  const snb=$('sortNameBtn'), sdb=$('sortDistBtn'), sst=$('sortStatus');
+  const snb=$('sortNameBtn'), sdb=$('sortDistBtn');
   if(snb) snb.classList.toggle('active',contactsSortMode==='name');
   if(sdb) sdb.classList.toggle('active',contactsSortMode==='distance');
-  if(sst) sst.textContent=contactsSortMode==='distance'?(refLoc?'Closest first — distances are from where you are right now. Tap “Distance from me now” again to update them.':'Getting your location for distances… if it does not appear, allow location for this site and tap the button again.'):'Showing in name order — the usual way.';
   const lc=$('listCount'); if(lc) lc.textContent=contacts.length+(contacts.length===1?' person':' people');
   const pc=$('contactsPageCount'); if(pc) pc.textContent=contacts.length+(contacts.length===1?' person':' people');
   const fsn=$('statNum'), fsl=$('statLabel');
@@ -1202,7 +1208,7 @@ function renderList(){
     dc.querySelector('button').addEventListener('click', async()=>{ await deleteContact(c.id); toast('Contact deleted'); });
     el.appendChild(card);
   });
-  if(list.length===0 && contacts.length>0) el.innerHTML='<p class="muted" style="text-align:center;padding:16px">No contacts match your search. Clear the search above to see everyone.</p>';
+  if(list.length===0 && contacts.length>0) el.innerHTML='<p class="muted" style="text-align:center;padding:16px">No contacts match your search.</p>';
 }
 
 /* FILTERS */
@@ -1244,7 +1250,6 @@ $('fStreet').addEventListener('input', ()=>{
           $('fState').value=ad.state? stateAbbr(ad.state):'';
           $('fZip').value=ad.postcode||'';
           $('exactLat').value=item.lat; $('exactLng').value=item.lon; $('exactStatus').value='exact';
-          $('geoHint').textContent='✓ Exact location selected — this pin will be precise.';
           box.style.display='none';
         }); box.appendChild(btn);
       }); box.style.display='block';
@@ -1318,8 +1323,7 @@ function closeNearPage(){ const s=$('nearSheet'); if(s) s.style.display='none'; 
 async function setContactsSort(mode){
   contactsSortMode=mode;
   if(mode==='distance'&&!myLoc){
-    const st=$('sortStatus'); if(st) st.textContent='Getting your location…';
-    try{ myLoc=await getLocationOnce(); }catch(e){ const st2=$('sortStatus'); if(st2) st2.textContent='Could not get your location — allow location for this site, then tap “Distance from me now” again. The list stays in name order until then.'; }
+    try{ myLoc=await getLocationOnce(); }catch(e){ toast('Could not get your location — allow location for this site, then tap “Distance from me now” again.'); }
   }
   renderList();
   if(mode==='distance'&&myLoc) toast('Contacts sorted — closest to you first');
@@ -1353,7 +1357,7 @@ function startEdit(c){
   setManualOpen(true);
   $('editId').value=c.id; $('formTitle').textContent='Edit contact';
   $('fName').value=c.name||''; $('fPhone').value=c.phone||''; $('fStreet').value=c.street||''; $('fCity').value=c.city||''; $('fState').value=c.state||''; $('fZip').value=c.zip||'';
-  $('photoData').value=hasPhoto(c)?c.photo:''; renderPhotoPreview();
+  $('photoData').value=hasPhoto(c)?c.photo:''; renderPhotoPreview(); $('profilePhotoData').value=(typeof c.profilePhoto==='string'&&c.profilePhoto.indexOf('data:image/')===0)?c.profilePhoto:''; setProfileMode(c.profilePhotoMode||'same');
   $('exactLat').value=c.lat!=null?c.lat:''; $('exactLng').value=c.lng!=null?c.lng:''; $('exactStatus').value=c.geocodeStatus||'';
   $('cancelEdit').style.display='inline-flex';
   const eo=$('editOverlay'); if(eo) eo.scrollTop=0;
@@ -1379,7 +1383,7 @@ function renderNotesModal(){
   const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
   $('notesTitle').textContent='📝 Notes — '+(c.name||'Contact');
   const list=contactNotes(c); const el=$('notesList'); if(!el) return; el.innerHTML='';
-  if(!list.length){ el.innerHTML='<p class="muted" style="margin-top:10px">No notes yet for this person. Tap “＋ Add a note” below to write the first one.</p>'; return; }
+  if(!list.length){ el.innerHTML='<p class="muted" style="margin-top:10px">No notes yet for this person.</p>'; return; }
   list.forEach(n=>{
     const d=document.createElement('div'); d.className='note-entry';
     const when=n.ts?new Date(n.ts).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'';
@@ -1465,10 +1469,10 @@ function renderInbox(items){
     $('dashNew').textContent=fresh;
     stats.style.display=items.length?'':'none';
   }
-  const st=$('inboxStatus'); if(st) st.textContent=items.length ? 'All feedback & messages — newest first.' : '';
+  const st=$('inboxStatus'); if(st) st.textContent='';
   const el=$('inboxList'); if(!el) return; el.innerHTML='';
   if(!items.length){
-    el.innerHTML='<div class="empty" style="margin-top:12px"><div style="font-size:32px">📥</div><strong style="font-size:17px">No feedback yet</strong><p class="muted">When someone sends feedback from the app, it shows up here.</p></div>';
+    el.innerHTML='<div class="empty" style="margin-top:12px"><div style="font-size:32px">📥</div><strong style="font-size:17px">No feedback yet</strong></div>';
     return;
   }
   items.forEach(d=>{
@@ -1513,10 +1517,10 @@ function renderAccounts(list){
   const dc=$('dashAccounts'); if(dc) dc.textContent=list.length;
   const cnt=$('accountsCount'); if(cnt) cnt.textContent=list.length;
   const cw=$('accountsCountWord'); if(cw) cw.textContent=(list.length===1?'person has an account':'people have an account');
-  const st=$('accountsStatus'); if(st) st.textContent=list.length?'Everyone who made an account in the app, in the order they joined. “Last seen” is their most recent login.':'';
+  const st=$('accountsStatus'); if(st) st.textContent='';
   const el=$('accountsList'); if(!el) return; el.innerHTML='';
   if(!list.length){
-    el.innerHTML='<p class="muted">No accounts recorded yet. An account is noted the next time each person signs up or logs in.</p>';
+    el.innerHTML='<p class="muted">No accounts recorded yet.</p>';
     return;
   }
   list.forEach(a=>{
@@ -1534,7 +1538,7 @@ function renderAccounts(list){
   const cb=$('closeInboxBtn'); if(cb) cb.addEventListener('click', closeInboxPage);
 })();
 $('cancelEdit').addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
-function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If the exact address can’t be found, a clearly labeled approximate pin for the town is used — an address is never made up.'; setManualOpen(false); }
+function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('profilePhotoData').value=''; setProfileMode('same'); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; setManualOpen(false); }
 
 $('contactForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -1543,7 +1547,7 @@ $('contactForm').addEventListener('submit', async e=>{
   let lat=null,lng=null,geocodeStatus='not_found';
   if($('exactLat').value){ lat=parseFloat($('exactLat').value); lng=parseFloat($('exactLng').value); geocodeStatus='exact'; }
   else { toast('Finding address on the map…'); const g=await geocodeForSave(obj); lat=g.lat; lng=g.lng; geocodeStatus=g.geocodeStatus; }
-  const payload={...obj,lat,lng,geocodeStatus,photo:$('photoData').value||''};
+  const payload={...obj,lat,lng,geocodeStatus,photo:$('photoData').value||'',profilePhotoMode:profileMode,profilePhoto:$('profilePhotoData').value||''};
   try{
     const editId=$('editId').value;
     if(editId){ await updateContact(editId,payload); toast('Contact updated'); } else { await addContactToFirestore(payload); toast(geocodeStatus==='approximate'?'Saved — approximate town pin (exact address not found)':'Contact saved'); }
@@ -1623,8 +1627,7 @@ $('vcfInput').addEventListener('change', async e=>{
 /* NEAR ME */
 function getLocationOnce(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) rej(new Error('No GPS')); else navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000}); }); }
 async function showNear(){
-  $('nearStatus').textContent='Getting your location…';
-  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles'+(nearSortMode==='name'?', in name order':', closest first')+'. Map is showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
+  try{ const loc=await getLocationOnce(); myLoc=loc; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ toast('Could not get your location. Allow location for this site and try again.'); }
 }
 function sortedByDistance(){ if(!myLoc) return []; return contacts.filter(c=>c.onMap!==false&&c.lat!=null).map(c=>({...c,_dist:haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng)})).sort((a,b)=>a._dist-b._dist); }
 function renderNearList(){
@@ -1635,8 +1638,8 @@ function renderNearList(){
   let sorted=sortedByDistance().filter(c=>c._dist<=alertMiles);
   if(nearSortMode==='name') sorted=sorted.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(!myLoc){ el.innerHTML=''; return; }
-  if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody on your map is within '+alertMiles+' miles right now. Try a larger alert distance in settings.</p>'; return; }
-  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(fullAddress(c))}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+  if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody within '+alertMiles+' miles.</p>'; return; }
+  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.style.flexDirection='column'; div.style.alignItems='stretch'; const addr=fullAddress(c); div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div class="near-open" style="display:flex;gap:12px;align-items:center;min-width:0;cursor:pointer" title="Open contact">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(addr)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline btn-small show-addr-btn" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`; const openEl=div.querySelector('.near-open'); if(openEl) openEl.addEventListener('click',()=>openContactFromMap(c.id)); const showBtn=div.querySelector('.show-addr-btn'); const panel=div.querySelector('.drive-addr-panel'); if(showBtn&&panel) showBtn.addEventListener('click',()=>{ const open=panel.classList.toggle('open'); showBtn.textContent=open?'📍 Hide address':'📍 Show address'; showBtn.setAttribute('aria-expanded', open?'true':'false'); }); const copyBtn=div.querySelector('.copy-addr-btn'); if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn)); el.appendChild(div); });
 }
 (function(){ const db=$('nearSortDistBtn'); if(db) db.addEventListener('click',()=>{ nearSortMode='distance'; renderNearList(); }); const nb=$('nearSortNameBtn'); if(nb) nb.addEventListener('click',()=>{ nearSortMode='name'; renderNearList(); }); })();
 
@@ -1648,7 +1651,6 @@ function applyMainViewRadius(){
   try{ map.flyToBounds(mainRadiusCircle.getBounds(),{padding:[14,14],duration:0.6}); }catch(e){ map.setView([myLoc.lat,myLoc.lng], viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
 }
 function updateViewUI(){
-  const lbl=$('viewLabel'); if(lbl) lbl.textContent='Current view: '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you — the map fits exactly this area around your location.';
   const dl=$('driveViewLabel'); if(dl) dl.textContent=viewMiles+' miles';
   document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===viewMiles));
   document.querySelectorAll('.drive-view').forEach(b=>{ const on=parseFloat(b.dataset.miles)===viewMiles; b.style.background=on?'var(--gold)':''; b.style.color=on?'#1a1405':''; b.style.borderColor=on?'var(--gold)':''; });
@@ -1678,7 +1680,6 @@ function applyAlertDistance(v,opts){
 
 /* SETTINGS */
 function updateDistUI(){
-  $('distLabel').textContent='Current alert distance: '+alertMiles+' mile'+(alertMiles===1?'':'s')+'. This only sets when you get alerted — it does not change the map.';
   $('driveDistLabel').textContent=alertMiles+' miles';
   const isPreset=[1,2,5,10].includes(alertMiles);
   document.querySelectorAll('#distBtns .dist-btn').forEach(b=>{ if(b.dataset.miles==='custom'){ b.classList.toggle('active', !isPreset); } else { b.classList.toggle('active', parseFloat(b.dataset.miles)===alertMiles); } });
@@ -1699,7 +1700,7 @@ $('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('custom
 const _acvDrive=$('applyCustomViewDrive'); if(_acvDrive) _acvDrive.addEventListener('click',()=>{ const v=parseFloat($('customViewDrive').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cv=$('customView'); if(cv) cv.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
 $('soundToggle').checked=soundOn;
 $('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} updateSoundUI(); if(!soundOn) stopCustomAudio(); });
-function updateNotifUI(){ const el=$('notifState'); const btn=$('notifBtn'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; btn.style.display='none'; return; } const p=Notification.permission; if(p==='denied'){ el.textContent='Notifications are blocked in your browser settings. The in-app banner and sound will still alert you.'; btn.textContent='Turn notifications on'; return; } if(p==='granted'&&notifOn){ el.textContent='✓ Notifications are ON.'; btn.textContent='Turn notifications off'; } else { el.textContent='Notifications are OFF.'; btn.textContent='Turn notifications on'; } }
+function updateNotifUI(){ const el=$('notifState'); const btn=$('notifBtn'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser.'; btn.style.display='none'; return; } const p=Notification.permission; if(p==='denied'){ el.textContent='Notifications are blocked in your browser settings.'; btn.textContent='Turn notifications on'; return; } if(p==='granted'&&notifOn){ el.textContent='✓ Notifications are ON.'; btn.textContent='Turn notifications off'; } else { el.textContent='Notifications are OFF.'; btn.textContent='Turn notifications on'; } }
 $('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; if(Notification.permission==='granted'){ notifOn=!notifOn; try{ localStorage.setItem('rg_notif', notifOn?'1':'0'); }catch(e){} updateNotifUI(); toast(notifOn?'Notifications on':'Notifications off'); return; } try{ const r=await Notification.requestPermission(); if(r==='granted'){ notifOn=true; try{ localStorage.setItem('rg_notif','1'); }catch(e){} } }catch(e){} updateNotifUI(); });
 updateDistUI(); updateNotifUI(); updateViewUI();
 
@@ -1747,7 +1748,7 @@ const _csi=$('customSoundInput'); if(_csi) _csi.addEventListener('change', e=>{
     customSoundData=reader.result; customSoundName=file.name;
     let saved=true;
     try{ localStorage.setItem('rg_custom_sound_data',customSoundData); localStorage.setItem('rg_custom_sound_name',customSoundName); }catch(err){ saved=false; }
-    const note=$('customSoundNote'); if(note) note.textContent=saved?'Saved on this device — it will still be here next time you open the app.':'Kept for this visit only — this file was too big to save on the device, so pick it again next time if needed.';
+    const note=$('customSoundNote'); if(note) note.textContent=saved?'Saved on this device.':'Kept for this visit only — this file was too big to save on the device.';
     selectSound('custom');
   };
   reader.onerror=()=>toast('Could not read that file — try another sound');
@@ -1778,7 +1779,7 @@ async function copyTextToClipboard(text,btn){
 }
 function renderDriveList(){
   const el=$('driveList'); if(!el) return;
-  if(!myLoc){ el.innerHTML='<p class="muted">Waiting for your location… once GPS is found, everyone nearby appears here closest first.</p>'; return; }
+  if(!myLoc){ el.innerHTML='<p class="muted">Waiting for your location…</p>'; return; }
   const sorted=sortedByDistance();
   if(!sorted.length){ el.innerHTML='<p class="muted">No contacts on your map yet.</p>'; return; }
   el.innerHTML=''; sorted.forEach(c=>{
@@ -1937,10 +1938,10 @@ function setTripDestCustom(lat,lng,label){
   tripDestId='';
   const sel=$('tripDestSelect'); if(sel) sel.value='';
   const inp=$('tripDestAddr'); if(inp) inp.value=label;
-  const lbl=$('tripDestAddrLabel'); if(lbl) lbl.textContent='✓ Destination: '+label+' — people on your way there are ticked below.';
+  const lbl=$('tripDestAddrLabel'); if(lbl) lbl.textContent='✓ Destination: '+label;
   const clr=$('tripDestClearBtn'); if(clr) clr.style.display='inline-flex';
   autoTickOnWay(); renderTripPlanner();
-  toast('Destination set — people on your way are ticked below');
+  toast('Destination set');
 }
 function clearTripDestCustom(silent){
   tripDestCustom=null;
@@ -1957,15 +1958,9 @@ function renderTripPlanner(){
   if(withPin.some(c=>c.id===prev)) sel.value=prev; else { sel.value=''; tripDestId=''; }
   const dest=tripDestContact();
   const destPt=tripDestPoint();
-  const info=$('tripRouteInfo');
-  if(info){
-    if(tripStart&&destPt){ const direct=haversineMiles(tripStart.lat,tripStart.lng,destPt.lat,destPt.lng); info.textContent=`From ${tripStart.label} to ${destPt.label}: about ${direct.toFixed(1)} miles in a straight line. Anyone within 3 miles of that line is marked “On your way” below.`; }
-    else if(tripStart){ info.textContent='Start is set. Pick a contact above — or type any address — to see who is on your way there.'; }
-    else info.textContent='';
-  }
   const box=$('tripStops'); if(!box) return;
   box.innerHTML='';
-  if(!withPin.length){ box.innerHTML='<p class="muted" style="padding:12px">No contacts on the map yet — add people first, then plan a trip.</p>'; return; }
+  if(!withPin.length){ box.innerHTML='<p class="muted" style="padding:12px">No contacts on the map yet.</p>'; return; }
   const rows=withPin.map(c=>({c, w:onTheWayInfo(c), fromStart:tripStart?haversineMiles(tripStart.lat,tripStart.lng,c.lat,c.lng):null}));
   rows.sort((a,b)=>{
     const ao=a.w&&a.w.dist<=3?0:1, bo=b.w&&b.w.dist<=3?0:1;
@@ -1982,13 +1977,13 @@ function renderTripPlanner(){
     else if(w) note=onWay?('🟢 On your way — '+(w.dist<0.1?'right on the road':w.dist.toFixed(1)+' miles off the road')):(w.dist.toFixed(1)+' miles off the direct line');
     if(fromStart!=null) note+=(note?' • ':'')+fromStart.toFixed(1)+' miles from your start';
     const label=document.createElement('label'); label.className='trip-stop';
-    label.innerHTML=`<input type="checkbox" ${tripStopIds.has(c.id)||isDest?'checked':''} ${isDest?'disabled':''}><span><strong>${escapeHtml(c.name||'No name')}</strong><br><span class="muted">${escapeHtml(fullAddress(c))}${note?'<br>'+escapeHtml(note):''}</span></span>`;
+    label.innerHTML=`<input type="checkbox" ${tripStopIds.has(c.id)||isDest?'checked':''} ${isDest?'disabled':''}>${avatarHtml(c,true)}<span><strong>${escapeHtml(c.name||'No name')}</strong><br><span class="muted">${escapeHtml(fullAddress(c))}${note?'<br>'+escapeHtml(note):''}</span></span>`;
     const chk=label.querySelector('input');
     chk.addEventListener('change',()=>{ if(chk.checked) tripStopIds.add(c.id); else tripStopIds.delete(c.id); });
     box.appendChild(label);
   });
 }
-const _tds=$('tripDestSelect'); if(_tds) _tds.addEventListener('change', e=>{ tripDestId=e.target.value; if(tripDestId) clearTripDestCustom(true); autoTickOnWay(); renderTripPlanner(); if(tripDestId) toast('Destination set — people on your way are ticked below'); });
+const _tds=$('tripDestSelect'); if(_tds) _tds.addEventListener('change', e=>{ tripDestId=e.target.value; if(tripDestId) clearTripDestCustom(true); autoTickOnWay(); renderTripPlanner(); if(tripDestId) toast('Destination set'); });
 /* Destination address autocomplete — same live suggestions as the add-contact form */
 let tripAcTimer=null;
 const _tda=$('tripDestAddr'); if(_tda) _tda.addEventListener('input', ()=>{
@@ -2098,14 +2093,14 @@ function drawTripPreview(pts){
 }
 function showTripPreview(){
   const wrap=$('tripPreviewWrap'); if(!wrap) return;
-  if(!tripStart){ toast('Set your start first — step 1 in the planner'); const r=$('tripResult'); if(r) r.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above, tick who to visit, then tap “Show trip on map”.</p>'; return; }
+  if(!tripStart){ toast('Set your start first'); return; }
   const pts=buildTripPts();
-  if(!pts){ toast('Tick at least one person — or pick a destination — first'); const r=$('tripResult'); if(r) r.innerHTML='<p class="muted" style="margin-top:10px">Tick at least one person to visit in step 3 — or pick a destination in step 2 — then tap “Show trip on map”.</p>'; return; }
+  if(!pts){ toast('Tick at least one person — or pick a destination — first'); return; }
   /* Also draw on the main map so “See on main map” / Edit / Exit there stay in sync */
   try{ drawTripLine(pts); }catch(e){}
   wrap.style.display='block';
   initTripPreviewMap();
-  setTimeout(()=>{ try{ if(tripPreviewMap) tripPreviewMap.invalidateSize(); }catch(e){} drawTripPreview(pts); const cap=$('tripPreviewCaption'); if(cap) cap.textContent=pts.length+' points on this trip — starting at '+tripStart.label+', visiting in the order shown by the numbered pins.'; },90);
+  setTimeout(()=>{ try{ if(tripPreviewMap) tripPreviewMap.invalidateSize(); }catch(e){} drawTripPreview(pts); },90);
   setTimeout(()=>{ wrap.scrollIntoView({behavior:'smooth',block:'start'}); },120);
 }
 function hideTripPreview(){ const wrap=$('tripPreviewWrap'); if(wrap) wrap.style.display='none'; }
@@ -2116,11 +2111,11 @@ const _tpeb=$('tripPreviewEditBtn'); if(_tpeb) _tpeb.addEventListener('click', e
 const _tpmb=$('tripPreviewMainBtn'); if(_tpmb) _tpmb.addEventListener('click', ()=>{ if(lastTripPts) { try{ drawTripLine(lastTripPts); }catch(e){} } closeTripPage(); const mel=document.getElementById('map'); if(mel) mel.scrollIntoView({behavior:'smooth',block:'center'}); });
 const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   const resEl=$('tripResult'); if(!resEl) return;
-  if(!tripStart){ resEl.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above — where you are now, or an address like home.</p>'; toast('Set your start first'); return; }
+  if(!tripStart){ toast('Set your start first'); return; }
   const dest=tripDestContact();
   const destPt=tripDestPoint();
   const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
-  if(!stops.length&&!destPt){ resEl.innerHTML='<p class="muted" style="margin-top:10px">Tick at least one person to visit in step 3 — or pick a destination in step 2 (a contact, or any address).</p>'; toast('Tick who to visit first'); return; }
+  if(!stops.length&&!destPt){ toast('Tick who to visit first'); return; }
   /* Best order: always drive to the nearest next stop; the destination goes last */
   const remaining=stops.slice(); const ordered=[]; let cur={lat:tripStart.lat,lng:tripStart.lng};
   while(remaining.length){
@@ -2141,13 +2136,12 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   const driveMins=total/25*60;
   const totalMins=driveMins+visitMins*numVisits;
   let html='<h3 style="margin-top:16px">Your trip — best order</h3>';
-  html+=`<p class="muted">Starting at ${escapeHtml(tripStart.label)}, visit in this order:</p>`;
   pts.forEach((p,i)=>{
     if(i===0){ html+=`<div class="trip-result-item"><div class="trip-num">▶</div><div><strong>${escapeHtml(p.name)}</strong><div class="muted">Your starting point</div></div></div>`; return; }
     const c=p.contact;
     html+=`<div class="trip-result-item"><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}</div>`;
   });
-  html+=`<div style="margin-top:14px;padding:14px;border:1px solid var(--gold);border-radius:12px;background:var(--cream)"><strong style="font-size:17px">Total: ${total.toFixed(1)} miles</strong><div class="muted" style="margin-top:4px">Driving about ${fmtTime(driveMins)} (a rough estimate at town speeds)${numVisits&&visitMins?` • plus ${numVisits} visit${numVisits===1?'':'s'} × ${visitMins} min = ${fmtTime(visitMins*numVisits)} of visiting`:''}<br><strong>Whole trip: about ${fmtTime(totalMins)}</strong>${returnHome?' • includes the drive back to your start':' • one-way — ends at your last stop'}</div></div>`;
+  html+=`<div style="margin-top:14px;padding:14px;border:1px solid var(--gold);border-radius:12px;background:var(--cream)"><strong style="font-size:17px">Total: ${total.toFixed(1)} miles</strong><div class="muted" style="margin-top:4px">Driving about ${fmtTime(driveMins)}${numVisits&&visitMins?` • plus ${numVisits} visit${numVisits===1?'':'s'} × ${visitMins} min = ${fmtTime(visitMins*numVisits)} of visiting`:''}<br><strong>Whole trip: about ${fmtTime(totalMins)}</strong>${returnHome?' • includes the drive back to your start':' • one-way — ends at your last stop'}</div></div>`;
   const origin=tripStart.lat+','+tripStart.lng;
   const stopPts=pts.slice(1).filter(pt=>!(returnHome&&false)).map(pt=>pt.lat+','+pt.lng);
   if(returnHome){ /* stopPts already includes every stop incl. destination */ }
@@ -2162,7 +2156,6 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   html+=`<button type="button" id="tripPreviewBtn2" class="btn btn-green btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>`;
   html+=`<button type="button" id="tripEditBtn2" class="btn btn-outline btn-large" style="margin-top:10px">✏️ Edit trip — change the plan above</button>`;
   html+=`<button type="button" id="tripResetBtn" class="btn btn-gold btn-large" style="margin-top:10px">✕ Exit trip — reset map</button>`;
-  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. “Show trip on map — preview here” shows it on a map right here in the planner (tap “Hide map” or “Edit trip” there to get back to the plan). “See this trip on my map” takes you to the main map, where “Edit trip” brings you back here with everything still ticked. When you are done, tap “Exit trip — reset map” and the line comes off. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
   resEl.innerHTML=html;
   lastTripPts=pts;
   const _smb=$('tripSeeMapBtn'); if(_smb) _smb.addEventListener('click', ()=>{ closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); });
@@ -2196,7 +2189,7 @@ function renderChatThread(){
   const thread=loadChatThread();
   el.innerHTML='';
   const greet=document.createElement('div'); greet.className='chat-msg chat-app';
-  greet.innerHTML='Hi there! 👋 This is the feedback chat. Tell us an idea, a correction, or news from a visit — type it below, or tap 🎙️ and just talk. It goes straight to Mendel.';
+  greet.innerHTML='Hi there! 👋';
   el.appendChild(greet);
   thread.forEach(m=>{
     const div=document.createElement('div'); div.className='chat-msg '+(m.from==='me'?'chat-me':'chat-app');
@@ -2260,8 +2253,8 @@ const _cin=$('chatInput'); if(_cin){
 function recordIsActive(){ return !!(mediaRecorder&&(mediaRecorder.state==='recording'||mediaRecorder.state==='paused')); }
 function recordLabelText(){
   const m=Math.floor(recordSecs/60), s=recordSecs%60, t=m+':'+(s<10?'0':'')+s;
-  if(mediaRecorder&&mediaRecorder.state==='paused') return 'Paused — '+t+' — tap ▶ Continue to keep recording, or ➤ to send';
-  return 'Recording… '+t+' — tap ➤ to send your voice note';
+  if(mediaRecorder&&mediaRecorder.state==='paused') return 'Paused — '+t;
+  return 'Recording… '+t;
 }
 function startRecordTimer(){
   clearInterval(recordTimerInt);
