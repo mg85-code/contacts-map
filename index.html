@@ -286,18 +286,20 @@ input,select{ min-height:48px }
           <p class="muted">Tap <strong>Start driving</strong> and the app picks up your location automatically and alerts you near someone on your map. No extra taps while you drive.</p>
           <div class="settings-grid">
             <div>
-              <div style="font-weight:700;margin-bottom:8px">Alert distance</div>
+              <div style="font-weight:700;margin-bottom:8px">Alert distance — tap one and the map zooms to that distance around you</div>
+              <p class="muted" style="margin:0 0 8px">Pick 1, 2, 5 or 10 miles, or type your own custom distance below. The map on this page and in Driving Mode immediately re-frames to show exactly that radius around your location.</p>
               <div class="dist-btns" id="distBtns">
                 <button class="dist-btn" data-miles="1">1 mile</button>
                 <button class="dist-btn" data-miles="2">2 miles</button>
                 <button class="dist-btn" data-miles="5">5 miles</button>
                 <button class="dist-btn" data-miles="10">10 miles</button>
+                <button class="dist-btn" data-miles="custom" id="customDistBtn">Custom…</button>
               </div>
               <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
-                <label for="customDist" style="font-weight:600;font-size:14px">Or type your own:</label>
+                <label for="customDist" style="font-weight:600;font-size:14px">Custom distance:</label>
                 <input id="customDist" type="number" min="0.5" max="50" step="0.5" placeholder="e.g. 3" style="width:110px;padding:10px;border-radius:10px;border:1.5px solid var(--line)">
                 <span class="muted">miles (up to 50)</span>
-                <button id="applyCustomDist" class="btn btn-gold btn-small">Use this</button>
+                <button id="applyCustomDist" class="btn btn-gold btn-small">Use this — update map</button>
               </div>
               <p id="distLabel" class="muted" style="margin-top:6px"></p>
             </div>
@@ -424,22 +426,39 @@ input,select{ min-height:48px }
   <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
-      <strong>Alert within:</strong>
-      <span id="driveDistLabel" style="font-weight:700"></span>
-      <button class="btn btn-outline btn-small drive-dist" data-miles="1">1 mi</button>
-      <button class="btn btn-outline btn-small drive-dist" data-miles="2">2 mi</button>
-      <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
-      <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <strong>Alert within:</strong>
+        <span id="driveDistLabel" style="font-weight:700"></span>
+        <button class="btn btn-outline btn-small drive-dist" data-miles="1">1 mi</button>
+        <button class="btn btn-outline btn-small drive-dist" data-miles="2">2 mi</button>
+        <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
+        <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0">Tap a distance and the driving map above immediately zooms to show exactly that far around you.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        <label for="customDistDrive" style="font-weight:600;font-size:14px">Custom:</label>
+        <input id="customDistDrive" type="number" min="0.5" max="50" step="0.5" placeholder="e.g. 3" style="width:110px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+        <span class="muted">miles</span>
+        <button id="applyCustomDistDrive" class="btn btn-gold btn-small">Use this — update map</button>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px">
-      <strong>Show around me:</strong>
-      <span id="driveViewLabel" style="font-weight:700"></span>
-      <button class="btn btn-outline btn-small drive-view" data-miles="1">1 mi</button>
-      <button class="btn btn-outline btn-small drive-view" data-miles="2">2 mi</button>
-      <button class="btn btn-outline btn-small drive-view" data-miles="5">5 mi</button>
-      <button class="btn btn-outline btn-small drive-view" data-miles="10">10 mi</button>
-      <span class="muted">Map fits this radius around you — zoomed in close.</span>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <strong>Show around me:</strong>
+        <span id="driveViewLabel" style="font-weight:700"></span>
+        <button class="btn btn-outline btn-small drive-view" data-miles="1">1 mi</button>
+        <button class="btn btn-outline btn-small drive-view" data-miles="2">2 mi</button>
+        <button class="btn btn-outline btn-small drive-view" data-miles="5">5 mi</button>
+        <button class="btn btn-outline btn-small drive-view" data-miles="10">10 mi</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        <label for="customViewDrive" style="font-weight:600;font-size:14px">Custom:</label>
+        <input id="customViewDrive" type="number" min="0.25" max="50" step="0.25" placeholder="e.g. 0.5 or 3" style="width:130px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+        <span class="muted">miles</span>
+        <button id="applyCustomViewDrive" class="btn btn-gold btn-small">Use this — update map</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0">Map fits this radius around you — zoomed in close.</p>
     </div>
     <p id="wakeStatus" class="muted" style="margin-top:8px"></p>
     <p id="driveStatus" class="muted"></p>
@@ -796,29 +815,57 @@ function applyMainViewRadius(){
   try{ map.flyToBounds(mainRadiusCircle.getBounds(),{padding:[14,14],duration:0.6}); }catch(e){ map.setView([myLoc.lat,myLoc.lng], viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
 }
 function updateViewUI(){
-  const lbl=$('viewLabel'); if(lbl) lbl.textContent='Current view: '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you — the driving map fits exactly this area around your location.';
+  const lbl=$('viewLabel'); if(lbl) lbl.textContent='Current view: '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you — the map fits exactly this area around your location.';
   const dl=$('driveViewLabel'); if(dl) dl.textContent=viewMiles+' miles';
   document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===viewMiles));
   document.querySelectorAll('.drive-view').forEach(b=>{ const on=parseFloat(b.dataset.miles)===viewMiles; b.style.background=on?'var(--gold)':''; b.style.color=on?'#1a1405':''; b.style.borderColor=on?'var(--gold)':''; });
+  const isPreset=[1,2,5,10].includes(viewMiles);
+  const cv=$('customView'); if(cv && !isPreset) cv.value=viewMiles; const cvd=$('customViewDrive'); if(cvd && !isPreset) cvd.value=viewMiles;
   try{ localStorage.setItem('rg_view_miles', String(viewMiles)); }catch(e){}
   if(myLoc){ applyMainViewRadius(); if($('drivingOverlay').classList.contains('open')) updateDriveMap(); }
+}
+function zoomMapsToRadius(miles){
+  if(!myLoc) return false;
+  /* Main map: draw / update the radius circle and fit exactly to it */
+  if(map && typeof L!=='undefined'){ applyMainViewRadius(); }
+  /* Driving map: same radius */
+  if($('drivingOverlay') && $('drivingOverlay').classList.contains('open')){ updateDriveMap(); const dm=document.getElementById('driveMap'); if(dm) dm.scrollIntoView({behavior:'smooth',block:'start'}); }
+  else if(map){ const mel=document.getElementById('map'); /* keep main map in view on phones when changing from settings */ }
+  return true;
+}
+function applyAlertDistance(v,opts){
+  opts=opts||{};
+  alertMiles=v; viewMiles=v;
+  updateDistUI(); updateViewUI();
+  const zoomed=zoomMapsToRadius(v);
+  if(!zoomed && navigator.geolocation){
+    /* No location yet — fetch it once so the map can zoom right away */
+    getLocationOnce().then(loc=>{ myLoc=loc; if(map && typeof L!=='undefined'){ if(userMarker) map.removeLayer(userMarker); try{ userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); }catch(e){} } updateViewUI(); zoomMapsToRadius(v); renderNearList(); renderDriveList(); }).catch(()=>{ toast('Alert set to '+v+' mile'+(v===1?'':'s')+' — allow location so the map can zoom to you'); });
+  }
+  if(!opts.silent) toast('Alert: '+v+' mile'+(v===1?'':'s')+' — map now showing '+v+' mile'+(v===1?'':'s')+' around you');
 }
 
 /* SETTINGS */
 function updateDistUI(){
-  $('distLabel').textContent='Current alert distance: '+alertMiles+' mile'+(alertMiles===1?'':'s');
+  $('distLabel').textContent='Current alert distance: '+alertMiles+' mile'+(alertMiles===1?'':'s')+' — map is showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you.';
   $('driveDistLabel').textContent=alertMiles+' miles';
-  document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===alertMiles));
+  const isPreset=[1,2,5,10].includes(alertMiles);
+  document.querySelectorAll('#distBtns .dist-btn').forEach(b=>{ if(b.dataset.miles==='custom'){ b.classList.toggle('active', !isPreset); } else { b.classList.toggle('active', parseFloat(b.dataset.miles)===alertMiles); } });
   document.querySelectorAll('.drive-dist').forEach(b=>{ const on=parseFloat(b.dataset.miles)===alertMiles; b.style.background=on?'var(--gold)':''; b.style.color=on?'#1a1405':''; b.style.borderColor=on?'var(--gold)':''; });
+  if(!isPreset){ const cd=$('customDist'); if(cd) cd.value=alertMiles; const cdd=$('customDistDrive'); if(cdd) cdd.value=alertMiles; }
   try{ localStorage.setItem('rg_alert_miles', String(alertMiles)); }catch(e){}
   if(myLoc) renderNearList(); renderDriveList();
 }
-document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); $('customDist').value=''; updateDistUI(); toast('Alert distance: '+alertMiles+' miles'); }));
-document.querySelectorAll('.drive-dist').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); updateDistUI(); }));
-$('applyCustomDist').addEventListener('click',()=>{ const v=parseFloat($('customDist').value); if(isNaN(v)||v<=0||v>50){ toast('Type a distance between 0.5 and 50 miles'); return; } alertMiles=v; updateDistUI(); toast('Alert distance: '+v+' miles'); });
-document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); const cv=$('customView'); if(cv) cv.value=''; updateViewUI(); toast('Map view: '+viewMiles+' miles around you'); }));
-document.querySelectorAll('.drive-view').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); updateViewUI(); toast('Map view: '+viewMiles+' miles around you'); }));
-$('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('customView').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; updateViewUI(); toast('Map view: '+v+' miles around you'); });
+document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.miles==='custom'){ const inp=$('customDist'); if(inp){ inp.focus(); inp.scrollIntoView({behavior:'smooth',block:'center'}); } toast('Type your own distance below, then tap “Use this — update map”'); return; } const v=parseFloat(b.dataset.miles); $('customDist').value=''; const cdd=$('customDistDrive'); if(cdd) cdd.value=''; applyAlertDistance(v); }));
+document.querySelectorAll('.drive-dist').forEach(b=>b.addEventListener('click',()=>{ const v=parseFloat(b.dataset.miles); const cdd=$('customDistDrive'); if(cdd) cdd.value=''; applyAlertDistance(v); }));
+$('applyCustomDist').addEventListener('click',()=>{ const v=parseFloat($('customDist').value); if(isNaN(v)||v<0.5||v>50){ toast('Type a distance between 0.5 and 50 miles'); return; } const cdd=$('customDistDrive'); if(cdd) cdd.value=v; applyAlertDistance(v); });
+const _acdDrive=$('applyCustomDistDrive'); if(_acdDrive) _acdDrive.addEventListener('click',()=>{ const v=parseFloat($('customDistDrive').value); if(isNaN(v)||v<0.5||v>50){ toast('Type a distance between 0.5 and 50 miles'); return; } const cd=$('customDist'); if(cd) cd.value=v; applyAlertDistance(v); });
+/* Enter key in custom fields applies immediately */
+[['customDist','applyCustomDist'],['customDistDrive','applyCustomDistDrive'],['customView','applyCustomView'],['customViewDrive','applyCustomViewDrive']].forEach(([inp,btn])=>{ const el=$(inp); if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$(btn); if(b) b.click(); } }); });
+document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); const cv=$('customView'); if(cv) cv.value=''; const cvd=$('customViewDrive'); if(cvd) cvd.value=''; updateViewUI(); zoomMapsToRadius(viewMiles); toast('Map view: '+viewMiles+' miles around you'); }));
+document.querySelectorAll('.drive-view').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); const cvd=$('customViewDrive'); if(cvd) cvd.value=''; updateViewUI(); zoomMapsToRadius(viewMiles); toast('Map view: '+viewMiles+' miles around you'); }));
+$('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('customView').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cvd=$('customViewDrive'); if(cvd) cvd.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
+const _acvDrive=$('applyCustomViewDrive'); if(_acvDrive) _acvDrive.addEventListener('click',()=>{ const v=parseFloat($('customViewDrive').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cv=$('customView'); if(cv) cv.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
 $('soundToggle').checked=soundOn;
 $('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} });
 function updateNotifUI(){ const el=$('notifState'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; $('notifBtn').style.display='none'; return; } const p=Notification.permission; el.textContent=p==='granted'?'✓ Notifications are ON for this device.':p==='denied'?'Notifications are blocked in browser settings. In-app banner + sound will still alert you.':'Notifications are not on yet.'; $('notifBtn').textContent=p==='granted'?'Notifications on ✓':'Turn on notifications'; }
