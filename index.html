@@ -591,7 +591,28 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
         </div>
       </div>
       <button type="button" id="drawerFeedbackBtn" class="menu-row"><span>💬 Feedback</span></button>
+      <button type="button" id="drawerHelpBtn" class="menu-row"><span>🤖 Ask for help</span></button>
       <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📊 Feedback dashboard</span></button>
+      <div class="menu-item" id="adminKeysItem" data-menu="keys" style="display:none">
+        <button type="button" class="menu-row" data-menu="keys" aria-expanded="false"><span>🔑 App keys — admin</span><span class="chev" aria-hidden="true">▾</span></button>
+        <div class="menu-body">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px">
+            <p class="muted" style="margin:0">These two keys switch on the 🤖 help assistant and the Google address suggestions for everyone using the app. Paste each key once — it is saved inside the app and never shown again.</p>
+            <div class="field" style="margin-top:14px">
+              <label for="aiKeyInput">AI key</label>
+              <input id="aiKeyInput" type="password" autocomplete="off" placeholder="Paste the AI key">
+              <p id="aiKeyStatus" class="muted" style="margin:6px 0 0;font-weight:600"></p>
+              <button type="button" id="saveAiKeyBtn" class="btn btn-green btn-small" style="margin-top:8px">Save AI key</button>
+            </div>
+            <div class="field" style="margin-top:18px">
+              <label for="mapsKeyInput">Maps key</label>
+              <input id="mapsKeyInput" type="password" autocomplete="off" placeholder="Paste the Maps key">
+              <p id="mapsKeyStatus" class="muted" style="margin:6px 0 0;font-weight:600"></p>
+              <button type="button" id="saveMapsKeyBtn" class="btn btn-gold btn-small" style="margin-top:8px">Save Maps key</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <button type="button" id="drawerBonusesBtn" class="menu-row"><span>🎁 Bonuses — coming soon</span></button>
     </nav>
     </div>
@@ -599,7 +620,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.0</div>
+      <div class="side-version">Version 3.1</div>
     </div>
   </aside>
 
@@ -830,7 +851,10 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
             <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Current location</button>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-            <input id="tripStartAddr" type="text" placeholder="Start address — e.g. your home" style="flex:1;min-width:200px;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+            <div class="autocomplete" style="flex:1;min-width:200px">
+              <input id="tripStartAddr" type="text" autocomplete="off" placeholder="Start address — e.g. your home" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+              <div id="tripStartSuggest" class="suggest"></div>
+            </div>
             <button type="button" id="tripSetStartBtn" class="btn btn-gold">Set start</button>
           </div>
           <p id="tripStartLabel" class="muted" style="margin-top:8px"></p>
@@ -914,6 +938,20 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
         <button type="button" id="chatMicBtn" class="chat-mic-in" aria-label="Record a voice note — tap once to start, then tap Send" title="Voice note: tap once to record">🎙️</button>
       </div>
       <button type="button" id="chatSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
+    </div>
+  </div>
+  <div id="helpWindow" class="chat-window" role="dialog" aria-label="Ask for help">
+    <div class="chat-head">
+      <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1">🤖 Ask for help</div><div style="font-size:12px;opacity:.85;margin-top:3px">How to use The Rebbe's Waze</div></div>
+      <button type="button" id="helpCloseBtn" class="btn" style="background:#fff;color:var(--green);padding:9px 14px;min-height:44px" aria-label="Close help chat">✕</button>
+    </div>
+    <div id="helpThread" class="chat-thread" aria-live="polite"></div>
+    <div class="chat-input-row">
+      <label for="helpInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Ask a question about the app</label>
+      <div class="chat-input-wrap">
+        <textarea id="helpInput" class="chat-input" rows="1" placeholder="Ask how to do something…"></textarea>
+      </div>
+      <button type="button" id="helpSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
   </div>
   <nav id="tabBar" class="tab-bar" aria-label="Main pages">
@@ -1200,8 +1238,8 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); }
-    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactView(); closeAddSheet(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); closeBonusesPage(); updateInboxVisibility(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); loadAppKeys(); }
+    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; appKeys={gemini:'',maps:''}; stopDriving(); closeContactView(); closeAddSheet(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); closeBonusesPage(); updateInboxVisibility(); }
   });
 } else { $('firebaseError').classList.add('show'); }
 
@@ -1543,7 +1581,18 @@ async function geocodeForSave(obj){
   try{ const town=[obj.city,obj.state,obj.zip].filter(Boolean).join(', '); if(town){ const res2=await nominatimSearch(town,1); if(res2&&res2[0]) return {lat:parseFloat(res2[0].lat),lng:parseFloat(res2[0].lon),geocodeStatus:'approximate'}; } }catch(e){}
   return {lat:null,lng:null,geocodeStatus:'not_found'};
 }
-/* Autocomplete */
+/* Autocomplete — Google Places first when a Maps key is saved (real local US
+   suggestions; picking one fills the address AND its coordinates from Google).
+   If there is no Maps key, or Google errors or finds nothing, the Nominatim
+   suggestions below take over silently — exactly as before. */
+function applyNominatimToForm(item, fallbackStreet){
+  const ad=item.address||{};
+  $('fStreet').value=[ad.house_number,ad.road].filter(Boolean).join(' ')||fallbackStreet;
+  $('fCity').value=ad.city||ad.town||ad.village||ad.borough||'';
+  $('fState').value=ad.state? stateAbbr(ad.state):'';
+  $('fZip').value=ad.postcode||'';
+  $('exactLat').value=item.lat; $('exactLng').value=item.lon; $('exactStatus').value='exact';
+}
 let acTimer=null;
 $('fStreet').addEventListener('input', ()=>{
   const q=$('fStreet').value.trim(); const city=$('fCity').value.trim(); const box=$('suggestBox');
@@ -1551,23 +1600,35 @@ $('fStreet').addEventListener('input', ()=>{
   if(q.length<4){ box.style.display='none'; return; }
   clearTimeout(acTimer);
   acTimer=setTimeout(async()=>{
+    const gList=await googlePlaceSuggestions(city?`${q}, ${city}`:q);
+    if(gList){
+      box.innerHTML=''; gList.forEach(sug=>{
+        const btn=document.createElement('button'); btn.type='button'; btn.textContent=sug.text;
+        btn.addEventListener('click', async()=>{
+          box.style.display='none';
+          const d=await googlePlaceDetails(sug.placeId);
+          if(d){
+            if(d.street) $('fStreet').value=d.street;
+            if(d.city) $('fCity').value=d.city;
+            if(d.state) $('fState').value=d.state;
+            if(d.zip) $('fZip').value=d.zip;
+            $('exactLat').value=d.lat; $('exactLng').value=d.lng; $('exactStatus').value='exact';
+            return;
+          }
+          try{ const res=await nominatimSearch(sug.text,1); if(res&&res[0]) applyNominatimToForm(res[0],q); }catch(e){}
+        }); box.appendChild(btn);
+      }); box.style.display='block';
+      return;
+    }
     try{ const query=city?`${q}, ${city}`:q; const res=await nominatimSearch(query,5); if(!res.length){ box.style.display='none'; return; }
       box.innerHTML=''; res.forEach(item=>{
         const btn=document.createElement('button'); btn.type='button'; btn.textContent=item.display_name;
-        btn.addEventListener('click', ()=>{
-          const ad=item.address||{};
-          $('fStreet').value=[ad.house_number,ad.road].filter(Boolean).join(' ')||q;
-          $('fCity').value=ad.city||ad.town||ad.village||ad.borough||'';
-          $('fState').value=ad.state? stateAbbr(ad.state):'';
-          $('fZip').value=ad.postcode||'';
-          $('exactLat').value=item.lat; $('exactLng').value=item.lon; $('exactStatus').value='exact';
-          box.style.display='none';
-        }); box.appendChild(btn);
+        btn.addEventListener('click', ()=>{ applyNominatimToForm(item,q); box.style.display='none'; }); box.appendChild(btn);
       }); box.style.display='block';
     }catch(e){ box.style.display='none'; }
   },350);
 });
-document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')){ const sbx=$('suggestBox'); if(sbx) sbx.style.display='none'; const tdx=$('tripDestSuggest'); if(tdx) tdx.style.display='none'; } });
+document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')){ const sbx=$('suggestBox'); if(sbx) sbx.style.display='none'; const tdx=$('tripDestSuggest'); if(tdx) tdx.style.display='none'; const tsx=$('tripStartSuggest'); if(tsx) tsx.style.display='none'; } });
 function stateAbbr(name){ const map={'New York':'NY','New Jersey':'NJ','Pennsylvania':'PA','Connecticut':'CT','Florida':'FL'}; return map[name]||name; }
 
 /* SIDE PANEL — settings, alert sound and Add a contact live here, off the main page */
@@ -1851,7 +1912,7 @@ async function saveNewNote(){
    the last visit carry a NEW badge. Other users never see the menu entry or the page. */
 const ADMIN_EMAIL='mendelgoldstein85@gmail.com';
 function isAdmin(){ return !!(currentUser && (currentUser.email||'').toLowerCase()===ADMIN_EMAIL); }
-function updateInboxVisibility(){ const b=$('drawerInboxBtn'); if(b) b.style.display=isAdmin()?'':'none'; }
+function updateInboxVisibility(){ const b=$('drawerInboxBtn'); if(b) b.style.display=isAdmin()?'':'none'; const k=$('adminKeysItem'); if(k) k.style.display=isAdmin()?'':'none'; if(isAdmin()) refreshKeyStatusUI(); }
 function inboxTime(d){ if(d && typeof d.ts==='number') return d.ts; if(d && d.createdAt && typeof d.createdAt.toMillis==='function') return d.createdAt.toMillis(); return 0; }
 function isVoiceItem(d){ return !!(d && d.audio && typeof d.audio==='string' && d.audio.indexOf('data:audio')===0); }
 const INBOX_VISIT_KEY='rg_fb_dash_last_visit';
@@ -2530,6 +2591,19 @@ const _tda=$('tripDestAddr'); if(_tda) _tda.addEventListener('input', ()=>{
   if(q.length<4){ box.style.display='none'; return; }
   clearTimeout(tripAcTimer);
   tripAcTimer=setTimeout(async()=>{
+    const gList=await googlePlaceSuggestions(q);
+    if(gList){
+      box.innerHTML=''; gList.forEach(sug=>{
+        const btn=document.createElement('button'); btn.type='button'; btn.textContent=sug.text;
+        btn.addEventListener('click', async()=>{
+          box.style.display='none';
+          const d=await googlePlaceDetails(sug.placeId);
+          if(d){ setTripDestCustom(d.lat,d.lng,d.formatted||sug.text); return; }
+          try{ const res=await nominatimSearch(sug.text,1); if(res&&res[0]) setTripDestCustom(parseFloat(res[0].lat),parseFloat(res[0].lon),res[0].display_name); }catch(e){}
+        }); box.appendChild(btn);
+      }); box.style.display='block';
+      return;
+    }
     try{ const res=await nominatimSearch(q,5); if(!res.length){ box.style.display='none'; return; }
       box.innerHTML=''; res.forEach(item=>{
         const btn=document.createElement('button'); btn.type='button'; btn.textContent=item.display_name;
@@ -2865,6 +2939,226 @@ let chatCaptionBeforeRecord='';
 const _crc=$('chatCancelRecBtn'); if(_crc) _crc.addEventListener('click',()=>{ stopVoiceRecord('discard'); toast('Voice note cancelled — nothing was sent'); });
 const _cpr=$('chatPauseRecBtn'); if(_cpr) _cpr.addEventListener('click', toggleRecordPause);
 renderChatThread();
+
+/* APP KEYS — two keys live in Firestore at /config/keys ({geminiKey, mapsKey}).
+   The rules let any signed-in user READ them and only the admin login WRITE
+   them, so the admin pastes each key once in the Menu and every signed-in
+   phone picks them up at login. They switch on the 🤖 help assistant (Gemini)
+   and the Google address suggestions (Maps / Places). A key is never shown
+   back — the admin section only ever says "Saved ✔" with the last 4 hidden
+   characters masked. If the read fails (rules not published yet, offline),
+   both features simply stay off and the app works exactly as before. */
+let appKeys={gemini:'',maps:''};
+async function loadAppKeys(){
+  if(!db||!currentUser) return;
+  try{
+    const snap=await db.collection('config').doc('keys').get();
+    if(snap.exists){ const d=snap.data()||{}; appKeys={gemini:String(d.geminiKey||'').trim(), maps:String(d.mapsKey||'').trim()}; }
+    else appKeys={gemini:'',maps:''};
+  }catch(e){ /* stay off — fail silently */ }
+  refreshKeyStatusUI();
+}
+function keyStatusText(k){ return k ? ('Saved ✔ — on file (••••'+k.slice(-4)+')') : 'Not saved yet'; }
+function refreshKeyStatusUI(){
+  const a=$('aiKeyStatus'); if(a) a.textContent=keyStatusText(appKeys.gemini);
+  const m=$('mapsKeyStatus'); if(m) m.textContent=keyStatusText(appKeys.maps);
+}
+async function saveAppKey(field, slot, inputId){
+  if(!isAdmin()||!db){ toast('Only the admin login can save keys'); return; }
+  const inp=$(inputId); const v=inp?inp.value.trim():'';
+  if(!v){ toast('Paste the key first, then tap Save'); return; }
+  try{
+    const patch={}; patch[field]=v; patch.updatedAt=Date.now(); patch.updatedBy=(currentUser&&currentUser.email)||'';
+    await db.collection('config').doc('keys').set(patch,{merge:true});
+    appKeys[slot]=v;
+    if(inp) inp.value='';
+    refreshKeyStatusUI();
+    toast('Saved ✔');
+  }catch(e){ toast('Could not save — check your connection and try again'); }
+}
+(function initAppKeys(){
+  const a=$('saveAiKeyBtn'); if(a) a.addEventListener('click', ()=>saveAppKey('geminiKey','gemini','aiKeyInput'));
+  const m=$('saveMapsKeyBtn'); if(m) m.addEventListener('click', ()=>saveAppKey('mapsKey','maps','mapsKeyInput'));
+})();
+
+/* GOOGLE PLACES — address suggestions via the Places API (New) REST endpoints,
+   using the Maps key from /config/keys. US only, biased to the same NY /
+   tri-state box the Nominatim search used, so suggestions lead with local
+   addresses. Every failure returns null and the caller falls back to the
+   existing Nominatim suggestions silently. A session token groups one
+   typing-and-picking flow; it is renewed after each pick. */
+let placesSessionToken=null;
+function newPlacesSession(){
+  placesSessionToken=(window.crypto&&typeof crypto.randomUUID==='function') ? crypto.randomUUID() : ('s'+Date.now()+'-'+Math.random().toString(36).slice(2));
+  return placesSessionToken;
+}
+async function googlePlaceSuggestions(q){
+  if(!appKeys.maps||!q) return null;
+  try{
+    const r=await fetch('https://places.googleapis.com/v1/places:autocomplete',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Goog-Api-Key':appKeys.maps,'X-Goog-FieldMask':'suggestions.placePrediction.placeId,suggestions.placePrediction.text.text'},
+      body:JSON.stringify({input:q, includedRegionCodes:['us'], languageCode:'en', sessionToken:placesSessionToken||newPlacesSession(), locationBias:{rectangle:{low:{latitude:38.4,longitude:-75.6},high:{latitude:42.1,longitude:-71.7}}}})
+    });
+    if(!r.ok) return null;
+    const data=await r.json();
+    const out=[];
+    (data.suggestions||[]).forEach(s=>{ const p=s&&s.placePrediction; if(p&&p.placeId) out.push({placeId:p.placeId, text:(p.text&&p.text.text)||''}); });
+    return out.length?out:null;
+  }catch(e){ return null; }
+}
+async function googlePlaceDetails(placeId){
+  if(!appKeys.maps||!placeId) return null;
+  try{
+    const r=await fetch('https://places.googleapis.com/v1/places/'+encodeURIComponent(placeId),{
+      headers:{'X-Goog-Api-Key':appKeys.maps,'X-Goog-FieldMask':'formattedAddress,location,addressComponents'}
+    });
+    if(!r.ok) return null;
+    const d=await r.json();
+    if(!d||!d.location||typeof d.location.latitude!=='number') return null;
+    const comp={};
+    (d.addressComponents||[]).forEach(c=>{ (c.types||[]).forEach(t=>{ if(!comp[t]) comp[t]=c; }); });
+    const street=[comp.street_number?comp.street_number.longText:'', comp.route?comp.route.longText:''].filter(Boolean).join(' ');
+    const city=comp.locality?comp.locality.longText:(comp.sublocality_level_1?comp.sublocality_level_1.longText:(comp.postal_town?comp.postal_town.longText:(comp.administrative_area_level_2?comp.administrative_area_level_2.longText:'')));
+    const state=comp.administrative_area_level_1?comp.administrative_area_level_1.shortText:'';
+    const zip=comp.postal_code?comp.postal_code.longText:'';
+    newPlacesSession();
+    return {street:street, city:city, state:state, zip:zip, lat:d.location.latitude, lng:d.location.longitude, formatted:d.formattedAddress||''};
+  }catch(e){ return null; }
+}
+/* Trip planner START address — live suggestions, same Google-first pattern as
+   the destination field (the start field only had the Set start button before) */
+let tripStartAcTimer=null;
+const _tsInp=$('tripStartAddr'); if(_tsInp) _tsInp.addEventListener('input', ()=>{
+  const q=_tsInp.value.trim(); const box=$('tripStartSuggest');
+  if(!box) return;
+  if(q.length<4){ box.style.display='none'; return; }
+  clearTimeout(tripStartAcTimer);
+  tripStartAcTimer=setTimeout(async()=>{
+    const applyStart=(lat,lng,label)=>{ tripStart={lat:lat,lng:lng,label:label}; $('tripStartLabel').textContent='✓ Starting from: '+label; autoTickOnWay(); renderTripPlanner(); };
+    const gList=await googlePlaceSuggestions(q);
+    if(gList){
+      box.innerHTML=''; gList.forEach(sug=>{
+        const btn=document.createElement('button'); btn.type='button'; btn.textContent=sug.text;
+        btn.addEventListener('click', async()=>{
+          box.style.display='none';
+          const d=await googlePlaceDetails(sug.placeId);
+          if(d){ applyStart(d.lat,d.lng,d.formatted||sug.text); return; }
+          try{ const res=await nominatimSearch(sug.text,1); if(res&&res[0]) applyStart(parseFloat(res[0].lat),parseFloat(res[0].lon),res[0].display_name); }catch(e){}
+        }); box.appendChild(btn);
+      }); box.style.display='block';
+      return;
+    }
+    try{ const res=await nominatimSearch(q,5); if(!res.length){ box.style.display='none'; return; }
+      box.innerHTML=''; res.forEach(item=>{
+        const btn=document.createElement('button'); btn.type='button'; btn.textContent=item.display_name;
+        btn.addEventListener('click', ()=>{ box.style.display='none'; applyStart(parseFloat(item.lat),parseFloat(item.lon),item.display_name); });
+        box.appendChild(btn);
+      }); box.style.display='block';
+    }catch(e){ box.style.display='none'; }
+  },350);
+});
+
+/* AI HELP COMPANION — "🤖 Ask for help" in the Menu opens a chat in the same
+   style as the feedback chat. It answers questions about THIS app only, using
+   the Gemini key from /config/keys. It cannot press buttons or change
+   anything — it explains exactly where to tap. With no AI key saved, the chat
+   says the key still needs to be added by the admin. The conversation is kept
+   in memory for this visit only. */
+const HELP_SYSTEM_PROMPT=[
+'You are the friendly help assistant inside "The Rebbe\'s Waze" (Hebrew name: נלכה באורחותיו), a phone web app used on Mivtzoim rounds — visiting contacts to put on tefillin and share Divrei Torah.',
+'You answer ONLY questions about how to use this app. Keep every answer short, warm and clear: plain text, one idea at a time, numbered steps when you guide someone. No headings, no tables, no long essays.',
+'You cannot tap buttons, add contacts, or change anything in the app yourself. If someone asks you to DO something, kindly explain exactly where to tap, step by step, using the real button and section names below.',
+'If a question is not about this app, gently say you can only help with the app, and offer an example question.',
+'',
+'HOW THE APP WORKS:',
+'- Signing in: the welcome page takes an email and password (Log in, Create account, Forgot password). Everything is saved under that login.',
+'- The main page is the Map. Contacts appear as pins: a person with a photo shows as their picture in a round gold frame; without a photo, a gold figure. Tapping a pin opens a small card with Call, WhatsApp, Directions, Copy address and Open contact. Above the map area are a search box (name, phone, street, city) and area buttons (Brooklyn, Manhattan, Queens and more) that filter and zoom.',
+'- Adding a contact — three ways, all under Menu → "Add a contact", and also on the My Contacts page: (1) "Add from phone contacts" picks people from the phone (not available in every browser); (2) "Choose file" imports a contacts file (.vcf); (3) "Add by hand" — the form starts CLOSED and opens only when that button is tapped. In the form, typing a street address brings up live address suggestions; tapping one fills the street, city, state and ZIP and sets the exact pin. Then tap "Save contact".',
+'- My Contacts: the Contacts tab at the bottom, or Menu → "Open my contacts". Search at the top; sort by Name A–Z or by Distance from me now. Each card shows the photo, name, address with a small copy button, and Call / Directions / Notes buttons, plus an "On my map" switch. Tapping a person opens their full contact page, where Edit, the photos and Delete live.',
+'- Who\'s near me now?: the big button under the map on the main page. It uses the phone\'s location and lists the closest contacts first; it can be sorted by distance or by name.',
+'- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
+'- Settings live in the Menu (the gold Menu button at the top) → "Alerts, sounds & notifications": Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
+'- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now, or type a start address (suggestions appear; or "Set start"). Step 2: the main destination — pick one of your contacts from the list, or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, your own number, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. "Show trip on map — preview here" draws the trip on a map; "Edit trip" changes it and "Exit trip — reset map" clears it.',
+'- Notes: every contact has a Notes button (on their card and on their page). Write a note and save it. Tapping an older note opens it, with Edit and Delete inside.',
+'- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
+'- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
+'- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.1.',
+'- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
+].join('\n');
+const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
+let helpMsgs=[], helpSending=false;
+function renderHelpThread(){
+  const el=$('helpThread'); if(!el) return;
+  el.innerHTML='';
+  const greet=document.createElement('div'); greet.className='chat-msg chat-app';
+  greet.textContent=appKeys.gemini ? 'Hello! 👋 Ask me anything about using this app — for example: "How do I add a contact?" or "How does the trip planner work?"' : HELP_NO_KEY_TEXT;
+  el.appendChild(greet);
+  helpMsgs.forEach(m=>{
+    const div=document.createElement('div'); div.className='chat-msg '+(m.from==='me'?'chat-me':'chat-app');
+    div.innerHTML=escapeHtml(m.text).replace(/\n/g,'<br>');
+    el.appendChild(div);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+function appendHelpMsg(from,text){ helpMsgs.push({from:from,text:text}); if(helpMsgs.length>40) helpMsgs=helpMsgs.slice(-40); renderHelpThread(); }
+function setHelpOpen(open){
+  const w=$('helpWindow'); if(!w) return;
+  w.classList.toggle('open',open);
+  if(open){ if(typeof setChatOpen==='function') setChatOpen(false); renderHelpThread(); const inp=$('helpInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
+}
+async function askGemini(userText){
+  const contents=[];
+  /* helpMsgs already ends with this user message (appended before the call) —
+     take the earlier turns only, then add the question once. */
+  helpMsgs.slice(-13,-1).forEach(m=>{ contents.push({role:m.from==='me'?'user':'model', parts:[{text:m.text}]}); });
+  contents.push({role:'user', parts:[{text:userText}]});
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-goog-api-key':appKeys.gemini},
+    body:JSON.stringify({system_instruction:{parts:[{text:HELP_SYSTEM_PROMPT}]}, contents:contents, generationConfig:{temperature:0.4, maxOutputTokens:900, thinkingConfig:{thinkingBudget:0}}})
+  });
+  if(!r.ok) throw new Error('gemini '+r.status);
+  const data=await r.json();
+  const cand=data&&data.candidates&&data.candidates[0];
+  const parts=(cand&&cand.content&&cand.content.parts)||[];
+  const text=parts.map(p=>p.text||'').join('').trim();
+  if(!text) throw new Error('empty reply');
+  return text;
+}
+async function sendHelpText(){
+  if(helpSending) return;
+  const inp=$('helpInput'); const text=inp?inp.value.trim():'';
+  if(!text){ toast('Type your question first'); return; }
+  if(!appKeys.gemini){ appendHelpMsg('me',text); if(inp){ inp.value=''; inp.style.height='auto'; } appendHelpMsg('app',HELP_NO_KEY_TEXT); return; }
+  appendHelpMsg('me',text);
+  if(inp){ inp.value=''; inp.style.height='auto'; }
+  helpSending=true;
+  const sendBtn=$('helpSendBtn'); if(sendBtn) sendBtn.disabled=true;
+  const thinking=document.createElement('div'); thinking.className='chat-msg chat-app'; thinking.textContent='Thinking…';
+  const threadEl=$('helpThread'); if(threadEl){ threadEl.appendChild(thinking); threadEl.scrollTop=threadEl.scrollHeight; }
+  try{
+    const reply=await askGemini(text);
+    if(thinking.parentNode) thinking.parentNode.removeChild(thinking);
+    appendHelpMsg('app',reply);
+  }catch(e){
+    if(thinking.parentNode) thinking.parentNode.removeChild(thinking);
+    appendHelpMsg('app','Sorry — I could not answer just now. Please check the connection and try again.');
+  }
+  helpSending=false;
+  if(sendBtn) sendBtn.disabled=false;
+}
+(function initHelp(){
+  const hb=$('drawerHelpBtn'); if(hb) hb.addEventListener('click', ()=>{ closeSidePanel(); setHelpOpen(true); });
+  const cb=$('helpCloseBtn'); if(cb) cb.addEventListener('click', ()=>setHelpOpen(false));
+  const sb=$('helpSendBtn'); if(sb) sb.addEventListener('click', sendHelpText);
+  const inp=$('helpInput'); if(inp){
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendHelpText(); } });
+    inp.addEventListener('input', ()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,96)+'px'; });
+  }
+  renderHelpThread();
+})();
 
 /* BOTTOM TAB BAR — Map (the main page) / Contacts (My Contacts) / Trip (Trip
    Planner) / More (the Menu panel). Pure navigation: it opens and closes the
