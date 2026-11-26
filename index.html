@@ -6,6 +6,12 @@
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:,">
 <title>Contacts Map for Rabbi Goldstein</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0e3b2c">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Contacts Map">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -120,6 +126,21 @@ input,select{ min-height:48px }
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:999;background:var(--green);color:#fff;padding:13px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;max-width:92vw;text-align:center}
 .toast.show{display:block}
 .pin-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* PHOTO MARKERS & AVATARS */
+.photo-marker{width:48px;height:48px;border-radius:50%;border:3px solid var(--gold);background:var(--green);overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
+.photo-marker img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-marker svg{width:28px;height:28px}
+.photo-marker-wrap{background:transparent;border:0}
+.avatar{width:56px;height:56px;border-radius:50%;border:2.5px solid var(--gold);background:var(--green);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar svg{width:32px;height:32px}
+.avatar-sm{width:44px;height:44px}
+.avatar-sm svg{width:25px;height:25px}
+.photo-field{border:1.5px dashed var(--line);border-radius:12px;padding:14px;background:var(--cream);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.photo-preview{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:var(--green);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-preview svg{width:40px;height:40px}
+.leaflet-popup-content .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
 #drivingOverlay.open{display:block}
@@ -171,7 +192,7 @@ input,select{ min-height:48px }
     </div>
 
     <div class="welcome-feats">
-      <div class="feat"><b>📍 On the map</b><span>Every contact as a clear numbered pin</span></div>
+      <div class="feat"><b>📍 On the map</b><span>Every contact shown by their photo — no photo yet? A silhouette figure holds their place</span></div>
       <div class="feat"><b>🚗 While driving</b><span>Big screen, stays awake, alerts nearby</span></div>
       <div class="feat"><b>☎️ One tap</b><span>Call or get directions instantly</span></div>
     </div>
@@ -196,7 +217,7 @@ input,select{ min-height:48px }
     <div class="hero-strip">
       <div>
         <h1>Who’s around to visit?</h1>
-        <p>Your contacts on the map. Tap a pin or a card to call or drive there.</p>
+        <p>Your contacts on the map — shown by their faces. Tap a face or a card to call or drive there.</p>
       </div>
       <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
     </div>
@@ -215,7 +236,7 @@ input,select{ min-height:48px }
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
           </div>
           <div id="areaChips" class="chips" role="group" aria-label="Filter by area"></div>
-          <p class="muted" style="margin-top:10px">Tap an area — Brooklyn, Queens, Manhattan and the rest — and the map zooms straight to that area. Pins are numbered to match the list.</p>
+          <p class="muted" style="margin-top:10px">Tap an area — Brooklyn, Queens, Manhattan and the rest — and the map zooms straight to that area. Each person appears as their photo in a round gold frame; anyone without a photo yet shows as a silhouette figure — add their picture from their card below.</p>
         </div>
 
         <div class="panel">
@@ -318,6 +339,20 @@ input,select{ min-height:48px }
                 <div class="field"><label for="fState">State</label><input id="fState" placeholder="NY"></div>
                 <div class="field"><label for="fZip">ZIP</label><input id="fZip" placeholder="11213"></div>
               </div>
+              <div class="field" style="margin-top:12px">
+                <label>Photo of this person — shown on the map instead of a pin</label>
+                <div class="photo-field">
+                  <div id="photoPreview" class="photo-preview" aria-hidden="true"></div>
+                  <div style="flex:1;min-width:180px">
+                    <p class="muted" style="margin:0 0 8px">Add a picture of him — for example a photo you take when you visit. It appears in a round frame on the map, in the list, and in driving alerts. No photo? A silhouette figure shows in his place.</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <label class="btn btn-gold btn-small" style="cursor:pointer">📷 Add / change photo <input id="fPhoto" type="file" accept="image/*" style="display:none"></label>
+                      <button type="button" id="removePhotoBtn" class="btn btn-outline btn-small" style="display:none">Remove photo</button>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" id="photoData">
+              </div>
               <p id="geoHint" class="muted" style="margin-top:8px">Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.</p>
               <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
                 <button type="submit" class="btn btn-green" style="flex:1">Save contact</button>
@@ -355,7 +390,7 @@ input,select{ min-height:48px }
     <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div><div style="font-size:13px;opacity:.9;margin-top:2px">Follow map • Alerts on • Screen stays awake</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
-  <div id="alertBanner" class="alert-banner"><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
+  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -383,6 +418,7 @@ input,select{ min-height:48px }
   </div>
 </div>
 
+<input id="quickPhotoInput" type="file" accept="image/*" style="display:none">
 <div id="toast" class="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -394,7 +430,7 @@ const firebaseConfig={apiKey:"AIzaSyDrisvfPogoX_bpiyQO2tpJrLbw_Dy6P2s",authDomai
 let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
 let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='';
-let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false;
+let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false,quickPhotoTargetId=null;
 try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; }catch(e){}
 function $(id){return document.getElementById(id)}
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
@@ -459,6 +495,13 @@ function initMap(){
   renderMarkers();
 }
 function pinIcon(n){ return L.divIcon({className:'', html:`<div class="pin-num">${n}</div>`, iconSize:[32,32], iconAnchor:[16,16]}); }
+const SILHOUETTE_SVG='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" fill="#f3e6c8"/><path d="M4.5 20.2c.8-3.6 3.8-5.4 7.5-5.4s6.7 1.8 7.5 5.4" fill="#f3e6c8"/></svg>';
+function hasPhoto(c){ return !!(c && c.photo && typeof c.photo==='string' && c.photo.indexOf('data:image/')===0); }
+function photoIcon(c){ const inner=hasPhoto(c)?`<img src="${c.photo}" alt="">` : SILHOUETTE_SVG; return L.divIcon({className:'photo-marker-wrap', html:`<div class="photo-marker">${inner}</div>`, iconSize:[48,48], iconAnchor:[24,24], popupAnchor:[0,-24]}); }
+function avatarHtml(c,small){ return `<div class="avatar${small?' avatar-sm':''}">${hasPhoto(c)?`<img src="${c.photo}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:SILHOUETTE_SVG}</div>`; }
+function popupHtml(c){ const photo=hasPhoto(c)?`<img class="popup-photo" src="${c.photo}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:''; return `${photo}<div style="text-align:center"><b>${escapeHtml(c.name||'')}</b><br>${escapeHtml(fullAddress(c))}<br><a href="tel:${escapeHtml(c.phone||'')}">Call</a> • <a target="_blank" href="${directionsUrl(c)}">Directions</a></div>`; }
+function processPhotoFile(file){ return new Promise((resolve,reject)=>{ if(!file) return reject(new Error('No file')); const url=URL.createObjectURL(file); const img=new Image(); img.onload=()=>{ try{ const size=256; const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=size; const ctx=canvas.getContext('2d'); const side=Math.min(img.width,img.height); const sx=(img.width-side)/2, sy=(img.height-side)/2; ctx.drawImage(img,sx,sy,side,side,0,0,size,size); URL.revokeObjectURL(url); resolve(canvas.toDataURL('image/jpeg',0.82)); }catch(e){ URL.revokeObjectURL(url); reject(e); } }; img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error('Could not read that image')); }; img.src=url; }); }
+function renderPhotoPreview(){ const data=$('photoData').value; const box=$('photoPreview'); if(!box) return; box.innerHTML=data?`<img src="${data}" alt="Selected photo preview">`:SILHOUETTE_SVG; const rm=$('removePhotoBtn'); if(rm) rm.style.display=data?'inline-flex':'none'; }
 function filteredContacts(){
   return contacts.filter(c=>{
     if(searchTerm){ const hay=((c.name||'')+' '+(c.phone||'')+' '+(c.street||'')+' '+(c.city||'')+' '+(c.state||'')+' '+(c.zip||'')).toLowerCase(); if(!hay.includes(searchTerm.toLowerCase())) return false; }
@@ -483,7 +526,7 @@ function renderMarkers(){
   markers.forEach(m=>map.removeLayer(m)); markers=[];
   const list=filteredContacts().filter(c=>c.onMap!==false && c.lat!=null && c.lng!=null);
   list.forEach((c,i)=>{
-    const m=L.marker([c.lat,c.lng],{icon:pinIcon(i+1)}).addTo(map).bindPopup(`<b>${escapeHtml(c.name||'')}</b><br>${escapeHtml(fullAddress(c))}<br><a href="tel:${c.phone||''}">Call</a> • <a target="_blank" href="${directionsUrl(c)}">Directions</a>`);
+    const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(map).bindPopup(popupHtml(c));
     markers.push(m);
   });
   $('mapCount').textContent=list.length+' on map';
@@ -527,17 +570,20 @@ function renderList(){
     const card=document.createElement('div'); card.className='contact-card';
     const badge=c.geocodeStatus==='exact'?'<span class="badge badge-exact">Exact pin</span>':c.geocodeStatus==='approximate'?'<span class="badge badge-approx">Approximate — town</span>':(c.lat!=null?'<span class="badge badge-exact">On map</span>':'<span class="badge badge-nopin">No pin yet</span>');
     card.innerHTML=`
-      <div class="contact-head"><div><div class="contact-name">${idx+1}. ${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${escapeHtml(fullAddress(c)||'No address yet')}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}</div></div>${badge}</div>
+      <div class="contact-head"><div style="display:flex;gap:12px;align-items:flex-start">${avatarHtml(c)}<div><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${escapeHtml(fullAddress(c)||'No address yet')}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}</div></div></div>${badge}</div>
       <div class="actions">
         ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
         <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
+        <button class="btn btn-outline photo-btn">📷 ${hasPhoto(c)?'Change photo':'Add photo'}</button>
         <button class="btn btn-outline edit-btn">Edit</button>
         <button class="btn btn-outline del-btn" style="color:var(--red)">Delete</button>
       </div>
+      ${hasPhoto(c)?'':'<p class="muted" style="margin:8px 0 0">No photo yet — tap <strong>Add photo</strong> (for example after a visit) and his picture will replace the silhouette on the map.</p>'}
       <div class="toggle-row"><span>On my map — include in driving alerts</span><label class="switch"><input type="checkbox" class="onmap-toggle" ${c.onMap!==false?'checked':''}><span class="switch-track"></span><span class="switch-thumb"></span></label></div>
       <div class="del-confirm" style="display:none;margin-top:10px;padding:12px;background:#fff1f1;border-radius:10px"><strong>Delete ${escapeHtml(c.name||'this contact')}?</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-small" style="background:#8b1e1e;color:#fff;flex:1">Yes, delete</button><button class="btn btn-outline btn-small cancel-del" style="flex:1">Keep</button></div></div>
     `;
     card.querySelector('.onmap-toggle').addEventListener('change', async e=>{ await updateContact(c.id,{onMap:e.target.checked}); toast(e.target.checked?'Added to your map':'Removed from map'); });
+    card.querySelector('.photo-btn').addEventListener('click', ()=>{ quickPhotoTargetId=c.id; const qi=$('quickPhotoInput'); qi.value=''; qi.click(); });
     card.querySelector('.edit-btn').addEventListener('click', ()=>startEdit(c));
     const dc=card.querySelector('.del-confirm');
     card.querySelector('.del-btn').addEventListener('click', ()=>{ dc.style.display='block'; });
@@ -594,12 +640,13 @@ function stateAbbr(name){ const map={'New York':'NY','New Jersey':'NJ','Pennsylv
 function startEdit(c){
   $('editId').value=c.id; $('formTitle').textContent='Edit contact';
   $('fName').value=c.name||''; $('fPhone').value=c.phone||''; $('fStreet').value=c.street||''; $('fCity').value=c.city||''; $('fState').value=c.state||''; $('fZip').value=c.zip||'';
+  $('photoData').value=hasPhoto(c)?c.photo:''; renderPhotoPreview();
   $('exactLat').value=c.lat!=null?c.lat:''; $('exactLng').value=c.lng!=null?c.lng:''; $('exactStatus').value=c.geocodeStatus||'';
   $('cancelEdit').style.display='inline-flex';
   document.getElementById('contactForm').scrollIntoView({behavior:'smooth',block:'center'});
 }
 $('cancelEdit').addEventListener('click', resetForm);
-function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.'; }
+function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.'; }
 
 $('contactForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -608,13 +655,25 @@ $('contactForm').addEventListener('submit', async e=>{
   let lat=null,lng=null,geocodeStatus='not_found';
   if($('exactLat').value){ lat=parseFloat($('exactLat').value); lng=parseFloat($('exactLng').value); geocodeStatus='exact'; }
   else { toast('Finding address on the map…'); const g=await geocodeForSave(obj); lat=g.lat; lng=g.lng; geocodeStatus=g.geocodeStatus; }
-  const payload={...obj,lat,lng,geocodeStatus};
+  const payload={...obj,lat,lng,geocodeStatus,photo:$('photoData').value||''};
   try{
     const editId=$('editId').value;
     if(editId){ await updateContact(editId,payload); toast('Contact updated'); } else { await addContactToFirestore(payload); toast(geocodeStatus==='approximate'?'Saved — approximate town pin (exact address not found)':'Contact saved'); }
     resetForm();
   }catch(err){ toast('Could not save — check connection and try again'); }
 });
+
+/* PHOTO PICKERS */
+$('fPhoto').addEventListener('change', async e=>{
+  const file=e.target.files[0]; e.target.value=''; if(!file) return;
+  try{ toast('Adding photo…'); $('photoData').value=await processPhotoFile(file); renderPhotoPreview(); toast('Photo added — save the contact to keep it'); }catch(err){ toast('Could not use that photo — try another picture'); }
+});
+$('removePhotoBtn').addEventListener('click', ()=>{ $('photoData').value=''; renderPhotoPreview(); toast('Photo removed — save the contact to keep the change'); });
+$('quickPhotoInput').addEventListener('change', async e=>{
+  const file=e.target.files[0]; e.target.value=''; const id=quickPhotoTargetId; quickPhotoTargetId=null; if(!file||!id) return;
+  try{ toast('Adding photo…'); const data=await processPhotoFile(file); await updateContact(id,{photo:data}); toast('Photo saved — his face is now on the map'); }catch(err){ toast('Could not save that photo — try again'); }
+});
+renderPhotoPreview();
 
 /* PHONE PICKER */
 const pickerSupported = 'contacts' in navigator && 'ContactsManager' in window;
@@ -683,7 +742,7 @@ function renderNearList(){
   const el=$('nearList'); const sorted=sortedByDistance().filter(c=>c._dist<=alertMiles);
   if(!myLoc){ el.innerHTML=''; return; }
   if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody on your map is within '+alertMiles+' miles right now. Try a larger alert distance in settings.</p>'; return; }
-  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.innerHTML=`<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(fullAddress(c))}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(fullAddress(c))}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
 }
 $('nearBtn').addEventListener('click', showNear);
 $('useLocationBtn').addEventListener('click', showNear);
@@ -738,7 +797,7 @@ function renderDriveList(){
   if(!myLoc){ el.innerHTML='<p class="muted">Waiting for your location… once GPS is found, everyone nearby appears here closest first.</p>'; return; }
   const sorted=sortedByDistance();
   if(!sorted.length){ el.innerHTML='<p class="muted">No contacts on your map yet.</p>'; return; }
-  el.innerHTML=''; sorted.forEach(c=>{ const within=c._dist<=alertMiles; const div=document.createElement('div'); div.className='near-item'; if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px'; div.innerHTML=`<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(fullAddress(c))}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+  el.innerHTML=''; sorted.forEach(c=>{ const within=c._dist<=alertMiles; const div=document.createElement('div'); div.className='near-item'; if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px'; div.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(fullAddress(c))}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
 }
 function checkAlerts(){
   if(!myLoc) return;
@@ -748,6 +807,7 @@ function checkAlerts(){
   for(const c of sorted){
     if(nowInside.has(c.id) && !insideSet.has(c.id)){
       // first entry
+      $('alertAvatar').innerHTML=avatarHtml(c);
       $('alertText').textContent=`${c.name} is ${c._dist.toFixed(1)} miles away — ${fullAddress(c)}`;
       $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
       $('alertBanner').classList.add('show');
@@ -771,7 +831,7 @@ function updateDriveMap(){
   if(driveUserMarker) driveMap.removeLayer(driveUserMarker);
   driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
   driveMarkers.forEach(m=>driveMap.removeLayer(m)); driveMarkers=[];
-  contacts.filter(c=>c.onMap!==false&&c.lat!=null).forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:pinIcon(i+1)}).addTo(driveMap).bindPopup(`<b>${escapeHtml(c.name)}</b>`); driveMarkers.push(m); });
+  contacts.filter(c=>c.onMap!==false&&c.lat!=null).forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(driveMap).bindPopup(popupHtml(c)); driveMarkers.push(m); });
   /* Zoomed in close: fit exactly the chosen radius around the driver */
   if(driveRadiusCircle) driveMap.removeLayer(driveRadiusCircle);
   driveRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(driveMap);
