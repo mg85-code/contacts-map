@@ -48,6 +48,12 @@ input,select{ min-height:48px }
 .welcome-title{font-family:"Playfair Display",Georgia,serif;font-size:42px;line-height:.95;letter-spacing:-.02em;margin:10px 0 0;color:var(--green)}
 @media(max-width:480px){.welcome-title{font-size:36px}}
 .welcome-sub{font-size:17px;line-height:1.5;color:#33473c;margin:10px 6px 0}
+@media (prefers-color-scheme: dark){
+  .welcome-title{color:#f3e6c8}
+  .welcome-sub{color:#e6efe9}
+  .welcome-eyebrow{color:#e6c87a}
+  .welcome-card .muted{color:#c2d1c6}
+}
 .login-box{text-align:left;margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
 @media(prefers-color-scheme:dark){.login-box{background:var(--card)}}
 .login-box label{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin:12px 0 6px}
@@ -147,6 +153,23 @@ input,select{ min-height:48px }
 .dist-btns{display:flex;flex-wrap:wrap;gap:8px}
 .dist-btn{padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;cursor:pointer}
 .dist-btn.active{background:var(--gold);border-color:var(--gold);color:#1a1405}
+/* ALERT SOUNDS */
+.sound-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+@media(max-width:520px){.sound-options{grid-template-columns:1fr}}
+.sound-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--cream);color:var(--ink);cursor:pointer;min-height:56px}
+.sound-opt.active{border-color:var(--gold);background:var(--gold-light);box-shadow:0 0 0 1px var(--gold)}
+@media(prefers-color-scheme:dark){.sound-opt.active{background:#3a2f14;color:#fff}}
+.sound-opt-main{flex:1;min-width:0}
+.sound-opt-name{font-weight:700;font-size:15px;line-height:1.2;display:block}
+.sound-opt-desc{font-size:13px;color:var(--muted);line-height:1.35;display:block;margin-top:2px}
+.sound-opt.active .sound-opt-desc{color:inherit;opacity:.8}
+.sound-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;background:#fff}
+@media(prefers-color-scheme:dark){.sound-check{background:transparent}}
+.sound-opt.active .sound-check{background:var(--green);border-color:var(--green);color:#fff}
+.sound-play{width:44px;height:44px;min-height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--green);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;padding:0}
+@media(prefers-color-scheme:dark){.sound-play{background:var(--card);color:#f3e6c8}}
+.custom-sound-box{margin-top:12px;border:1.5px dashed var(--gold);border-radius:12px;padding:12px;background:var(--cream)}
+.sound-off-note{opacity:.55}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:999;background:var(--green);color:#fff;padding:13px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;max-width:92vw;text-align:center}
 .toast.show{display:block}
 .pin-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
@@ -320,9 +343,44 @@ input,select{ min-height:48px }
               </div>
               <p id="viewLabel" class="muted" style="margin-top:6px"></p>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px">
-              <div><strong>Alert sound</strong><div class="muted">Play a sound with the alert</div></div>
-              <label class="switch"><input id="soundToggle" type="checkbox" checked><span class="switch-track"></span><span class="switch-thumb"></span></label>
+            <div style="padding:14px;border:1px solid var(--line);border-radius:12px" id="soundPanel">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                <div><strong style="font-size:16px">Alert sound</strong><div class="muted">Play a sound when someone is nearby</div></div>
+                <label class="switch"><input id="soundToggle" type="checkbox" checked><span class="switch-track"></span><span class="switch-thumb"></span></label>
+              </div>
+              <div id="soundPickerWrap">
+                <p class="muted" style="margin:12px 0 0">Choose your alert tone. Tap a sound to choose it — tap <strong>▶</strong> to hear it first. Your choice is remembered on this device and is used in Driving Mode.</p>
+                <p id="currentSoundLabel" style="font-weight:700;margin:10px 0 0;font-size:15px">Now using: Classic Chime</p>
+                <div class="sound-options" id="soundOptions" role="radiogroup" aria-label="Choose alert sound">
+                  <button type="button" class="sound-opt" data-sound="classic" role="radio" aria-checked="true"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">1 · Classic Chime</span><span class="sound-opt-desc">Two clear tones — the original alert</span></span><span class="sound-play" data-preview="classic" role="button" aria-label="Hear Classic Chime" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="bell" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">2 · Bright Bell</span><span class="sound-opt-desc">High, ringing bell — easy to hear outdoors</span></span><span class="sound-play" data-preview="bell" role="button" aria-label="Hear Bright Bell" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="ding" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">3 · Soft Ding</span><span class="sound-opt-desc">Gentle single ding — quiet and calm</span></span><span class="sound-play" data-preview="ding" role="button" aria-label="Hear Soft Ding" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="fanfare" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">4 · Fanfare</span><span class="sound-opt-desc">Rising trumpet-style notes — exciting</span></span><span class="sound-play" data-preview="fanfare" role="button" aria-label="Hear Fanfare" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="marimba" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">5 · Warm Marimba</span><span class="sound-opt-desc">Warm wooden notes, pleasant in the car</span></span><span class="sound-play" data-preview="marimba" role="button" aria-label="Hear Warm Marimba" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="beeps" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">6 · Beep Beep</span><span class="sound-opt-desc">Three short beeps — hard to miss</span></span><span class="sound-play" data-preview="beeps" role="button" aria-label="Hear Beep Beep" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="arpeggio" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">7 · Chime Melody</span><span class="sound-opt-desc">Four notes climbing up, like a doorbell song</span></span><span class="sound-play" data-preview="arpeggio" role="button" aria-label="Hear Chime Melody" title="Hear it">▶</span></button>
+                  <button type="button" class="sound-opt" data-sound="shofar" role="radio" aria-checked="false"><span class="sound-check" aria-hidden="true">✓</span><span class="sound-opt-main"><span class="sound-opt-name">8 · Shofar Call</span><span class="sound-opt-desc">One long, strong blast — Tekiah style</span></span><span class="sound-play" data-preview="shofar" role="button" aria-label="Hear Shofar Call" title="Hear it">▶</span></button>
+                </div>
+
+                <div class="custom-sound-box" id="customSoundBox">
+                  <strong style="font-size:15px">9 · Your own sound or music</strong>
+                  <p class="muted" style="margin:6px 0 0">Use any alert, ringtone or song from this phone. Pick a file and it becomes your alert — only the start of the song plays with each alert.</p>
+                  <label class="btn btn-gold btn-small" style="cursor:pointer;margin-top:10px">📁 Choose sound from my phone <input id="customSoundInput" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" style="display:none"></label>
+                  <div id="customSoundInfo" style="display:none;margin-top:10px">
+                    <p style="margin:0;font-size:14px;line-height:1.45">🎵 <strong id="customSoundName"></strong></p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                      <button type="button" id="previewCustomBtn" class="btn btn-green btn-small">▶ Hear my sound</button>
+                      <button type="button" id="useCustomBtn" class="btn btn-gold btn-small">Use this sound</button>
+                      <button type="button" id="removeCustomBtn" class="btn btn-outline btn-small">Remove</button>
+                    </div>
+                    <p id="customSoundNote" class="muted" style="margin:8px 0 0"></p>
+                  </div>
+                  <p id="customSoundEmpty" class="muted" style="margin:8px 0 0">No custom sound chosen yet.</p>
+                </div>
+
+                <button type="button" id="testAlertBtn" class="btn btn-green" style="width:100%;margin-top:12px">▶ Test my alert sound now</button>
+                <p class="muted" style="margin:8px 0 0;text-align:center">Turn the switch off at the top and alerts stay silent — the banner on screen still shows.</p>
+              </div>
             </div>
             <div style="padding:12px;border:1px solid var(--line);border-radius:12px">
               <strong>Phone notifications</strong>
@@ -360,7 +418,10 @@ input,select{ min-height:48px }
 
           <!-- C Manual -->
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
-            <h3 id="formTitle">Add one by hand</h3>
+            <button type="button" id="toggleManualBtn" class="btn btn-outline btn-large" aria-expanded="false" aria-controls="manualFormWrap">✏️ Add by hand</button>
+            <p class="muted" style="margin-top:6px;text-align:center">Tap to open the form — name, phone and address. Tap again to close it.</p>
+            <div id="manualFormWrap" style="display:none">
+            <h3 id="formTitle" style="margin-top:14px">Add one by hand</h3>
             <form id="contactForm" style="margin-top:12px">
               <input type="hidden" id="editId">
               <input type="hidden" id="exactLat"><input type="hidden" id="exactLng"><input type="hidden" id="exactStatus">
@@ -392,6 +453,7 @@ input,select{ min-height:48px }
                 <button type="button" id="cancelEdit" class="btn btn-outline" style="display:none">Cancel edit</button>
               </div>
             </form>
+            </div>
           </div>
         </div>
 
@@ -399,12 +461,16 @@ input,select{ min-height:48px }
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
             <h2>Your contacts</h2><span id="listCount" class="muted"></span>
           </div>
+          <button type="button" id="toggleContactsBtn" class="btn btn-green btn-large" style="margin-top:12px" aria-expanded="false" aria-controls="contactsListWrap">👥 Show my contacts</button>
+          <p class="muted" style="margin-top:6px;text-align:center">Your list is closed to keep the page short. Tap to see everyone, tap again to hide it.</p>
+          <div id="contactsListWrap" style="display:none">
           <div id="emptyState" class="empty" style="display:none;margin-top:12px">
             <div style="font-size:32px">📍</div>
             <strong style="font-size:17px">No contacts yet</strong>
             <p class="muted">Add your first person above — pick from your phone, import a file, or add one by hand. They’ll appear here and on the map.</p>
           </div>
           <div id="contactList" class="contact-list"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -481,7 +547,8 @@ let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
 let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='';
 let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false,quickPhotoTargetId=null;
-try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; }catch(e){}
+let alertSound='classic',customSoundData=null,customSoundName='',customAudioEl=null;
+try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; const as=localStorage.getItem('rg_alert_sound'); if(as) alertSound=as; const cn=localStorage.getItem('rg_custom_sound_name'); if(cn) customSoundName=cn; const cd=localStorage.getItem('rg_custom_sound_data'); if(cd && cd.indexOf('data:audio')===0) customSoundData=cd; if(alertSound==='custom' && !customSoundData) alertSound='classic'; }catch(e){}
 function $(id){return document.getElementById(id)}
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
 function showAuthError(msg){ const e=$('authError'); if(!msg){e.classList.remove('show');e.textContent='';} else {e.textContent=msg; e.classList.add('show');} }
@@ -697,7 +764,11 @@ $('fStreet').addEventListener('input', ()=>{
 document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')) $('suggestBox').style.display='none'; });
 function stateAbbr(name){ const map={'New York':'NY','New Jersey':'NJ','Pennsylvania':'PA','Connecticut':'CT','Florida':'FL'}; return map[name]||name; }
 
+function setManualOpen(open){ const w=$('manualFormWrap'); const b=$('toggleManualBtn'); if(!w||!b) return; w.style.display=open?'block':'none'; b.setAttribute('aria-expanded',open?'true':'false'); b.textContent=open?'✏️ Hide add-by-hand form':'✏️ Add by hand'; }
+function setContactsOpen(open){ const w=$('contactsListWrap'); const b=$('toggleContactsBtn'); if(!w||!b) return; w.style.display=open?'block':'none'; b.setAttribute('aria-expanded',open?'true':'false'); b.textContent=open?'👥 Hide my contacts':'👥 Show my contacts'; }
+(function(){ const mb=$('toggleManualBtn'); if(mb) mb.addEventListener('click',()=>setManualOpen($('manualFormWrap').style.display==='none')); const cb=$('toggleContactsBtn'); if(cb) cb.addEventListener('click',()=>setContactsOpen($('contactsListWrap').style.display==='none')); })();
 function startEdit(c){
+  setManualOpen(true);
   $('editId').value=c.id; $('formTitle').textContent='Edit contact';
   $('fName').value=c.name||''; $('fPhone').value=c.phone||''; $('fStreet').value=c.street||''; $('fCity').value=c.city||''; $('fState').value=c.state||''; $('fZip').value=c.zip||'';
   $('photoData').value=hasPhoto(c)?c.photo:''; renderPhotoPreview();
@@ -706,7 +777,7 @@ function startEdit(c){
   document.getElementById('contactForm').scrollIntoView({behavior:'smooth',block:'center'});
 }
 $('cancelEdit').addEventListener('click', resetForm);
-function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.'; }
+function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.'; setManualOpen(false); }
 
 $('contactForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -867,14 +938,70 @@ document.querySelectorAll('.drive-view').forEach(b=>b.addEventListener('click',(
 $('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('customView').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cvd=$('customViewDrive'); if(cvd) cvd.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
 const _acvDrive=$('applyCustomViewDrive'); if(_acvDrive) _acvDrive.addEventListener('click',()=>{ const v=parseFloat($('customViewDrive').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cv=$('customView'); if(cv) cv.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
 $('soundToggle').checked=soundOn;
-$('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} });
+$('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} updateSoundUI(); if(!soundOn) stopCustomAudio(); });
 function updateNotifUI(){ const el=$('notifState'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; $('notifBtn').style.display='none'; return; } const p=Notification.permission; el.textContent=p==='granted'?'✓ Notifications are ON for this device.':p==='denied'?'Notifications are blocked in browser settings. In-app banner + sound will still alert you.':'Notifications are not on yet.'; $('notifBtn').textContent=p==='granted'?'Notifications on ✓':'Turn on notifications'; }
 $('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; try{ await Notification.requestPermission(); }catch(e){} updateNotifUI(); });
 updateDistUI(); updateNotifUI(); updateViewUI();
 
-/* SOUND */
+/* SOUND — built-in tones (WebAudio, no files needed) + custom file from the phone */
 let audioCtx=null;
-function playAlertSound(){ if(!soundOn) return; try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=880; g.gain.setValueAtTime(0.001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.25,audioCtx.currentTime+0.05); o.start(); o.stop(audioCtx.currentTime+0.6); setTimeout(()=>{ try{ const o2=audioCtx.createOscillator(), g2=audioCtx.createGain(); o2.connect(g2); g2.connect(audioCtx.destination); o2.frequency.value=660; o2.start(); o2.stop(audioCtx.currentTime+0.5);}catch(e){} },650); }catch(e){} }
+const SOUND_NAMES={classic:'Classic Chime',bell:'Bright Bell',ding:'Soft Ding',fanfare:'Fanfare',marimba:'Warm Marimba',beeps:'Beep Beep',arpeggio:'Chime Melody',shofar:'Shofar Call',custom:'Your own sound'};
+function ensureCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
+function playNote(freq,delay,dur,type,vol,slideTo){ try{ const ctx=ensureCtx(); const t0=ctx.currentTime+delay; const o=ctx.createOscillator(), g=ctx.createGain(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,t0); if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo,t0+dur); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol||0.25,t0+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur); o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+dur+0.05); }catch(e){} }
+function playBuiltIn(id){
+  stopCustomAudio();
+  if(id==='bell'){ playNote(1568,0,1.1,'sine',0.28); playNote(2093,0,0.9,'sine',0.12); playNote(1568,0.55,1.0,'sine',0.22); }
+  else if(id==='ding'){ playNote(1046,0,0.9,'triangle',0.3); }
+  else if(id==='fanfare'){ playNote(523,0,0.22,'sawtooth',0.14); playNote(659,0.22,0.22,'sawtooth',0.14); playNote(784,0.44,0.22,'sawtooth',0.14); playNote(1046,0.66,0.7,'sawtooth',0.16); playNote(784,0.66,0.7,'triangle',0.2); }
+  else if(id==='marimba'){ playNote(587,0,0.35,'triangle',0.3); playNote(880,0.28,0.35,'triangle',0.28); playNote(587,0.56,0.55,'triangle',0.3); }
+  else if(id==='beeps'){ playNote(1000,0,0.16,'square',0.16); playNote(1000,0.26,0.16,'square',0.16); playNote(1000,0.52,0.32,'square',0.16); }
+  else if(id==='arpeggio'){ playNote(523,0,0.4,'sine',0.26); playNote(659,0.18,0.4,'sine',0.26); playNote(784,0.36,0.4,'sine',0.26); playNote(1046,0.54,0.8,'sine',0.28); }
+  else if(id==='shofar'){ playNote(233,0,1.5,'sawtooth',0.2,220); playNote(466,0,1.5,'sawtooth',0.06,440); }
+  else { playNote(880,0,0.6,'sine',0.25); playNote(660,0.65,0.55,'sine',0.25); }
+}
+function stopCustomAudio(){ if(customAudioEl){ try{ customAudioEl.pause(); customAudioEl.currentTime=0; }catch(e){} } }
+function playCustomSound(){ if(!customSoundData) return false; try{ stopCustomAudio(); if(!customAudioEl) customAudioEl=new Audio(); customAudioEl.src=customSoundData; customAudioEl.currentTime=0; const p=customAudioEl.play(); if(p&&p.catch) p.catch(()=>{}); /* alerts only need the opening — stop long songs after 6s */ setTimeout(()=>{ if(alertSound==='custom') stopCustomAudio(); },6000); return true; }catch(e){ return false; } }
+function playAlertSound(){ if(!soundOn) return; if(alertSound==='custom' && playCustomSound()) return; playBuiltIn(alertSound); }
+function previewSound(id){ if(id==='custom'){ if(!playCustomSound()) toast('Choose a sound file from your phone first'); return; } playBuiltIn(id); }
+function soundDisplayName(){ if(alertSound==='custom') return 'Your own sound'+(customSoundName?' — '+customSoundName:''); return SOUND_NAMES[alertSound]||'Classic Chime'; }
+function updateSoundUI(){
+  document.querySelectorAll('#soundOptions .sound-opt').forEach(b=>{ const on=b.dataset.sound===alertSound; b.classList.toggle('active',on); b.setAttribute('aria-checked',on?'true':'false'); });
+  const box=$('customSoundBox'); if(box){ box.style.borderColor=(alertSound==='custom')?'var(--green)':''; box.style.boxShadow=(alertSound==='custom')?'0 0 0 1px var(--green)':''; }
+  const lbl=$('currentSoundLabel'); if(lbl) lbl.textContent='Now using: '+soundDisplayName()+(soundOn?'':' (sound is OFF — turn the switch on to hear it)');
+  const wrap=$('soundPickerWrap'); if(wrap) wrap.classList.toggle('sound-off-note',!soundOn);
+  const has=!!customSoundData;
+  const info=$('customSoundInfo'), empty=$('customSoundEmpty');
+  if(info) info.style.display=has?'block':'none'; if(empty) empty.style.display=has?'none':'block';
+  if(has){ const nm=$('customSoundName'); if(nm) nm.textContent=customSoundName||'My sound'; const useBtn=$('useCustomBtn'); if(useBtn) useBtn.textContent=(alertSound==='custom')?'✓ This is your alert sound':'Use this sound'; }
+  try{ localStorage.setItem('rg_alert_sound', alertSound); }catch(e){}
+}
+function selectSound(id,play){ alertSound=id; updateSoundUI(); if(play!==false) previewSound(id); toast('Alert sound: '+soundDisplayName()); }
+document.querySelectorAll('#soundOptions .sound-opt').forEach(b=>{
+  b.addEventListener('click', e=>{
+    const pv=e.target.closest('[data-preview]');
+    if(pv){ e.stopPropagation(); previewSound(pv.dataset.preview); toast('Playing: '+(SOUND_NAMES[pv.dataset.preview]||'')); return; }
+    selectSound(b.dataset.sound);
+  });
+});
+const _testBtn=$('testAlertBtn'); if(_testBtn) _testBtn.addEventListener('click',()=>{ if(!soundOn){ $('soundToggle').checked=true; soundOn=true; try{localStorage.setItem('rg_sound','1')}catch(e){} updateSoundUI(); } previewSound(alertSound); toast('That is your alert sound: '+soundDisplayName()); });
+const _csi=$('customSoundInput'); if(_csi) _csi.addEventListener('change', e=>{
+  const file=e.target.files[0]; e.target.value=''; if(!file) return;
+  if(file.size>12*1024*1024){ toast('That file is very large — pick a shorter sound (under 12 MB)'); return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    customSoundData=reader.result; customSoundName=file.name;
+    let saved=true;
+    try{ localStorage.setItem('rg_custom_sound_data',customSoundData); localStorage.setItem('rg_custom_sound_name',customSoundName); }catch(err){ saved=false; }
+    const note=$('customSoundNote'); if(note) note.textContent=saved?'Saved on this device — it will still be here next time you open the app.':'Kept for this visit only — this file was too big to save on the device, so pick it again next time if needed.';
+    selectSound('custom');
+  };
+  reader.onerror=()=>toast('Could not read that file — try another sound');
+  reader.readAsDataURL(file);
+});
+const _pcb=$('previewCustomBtn'); if(_pcb) _pcb.addEventListener('click',()=>previewSound('custom'));
+const _ucb=$('useCustomBtn'); if(_ucb) _ucb.addEventListener('click',()=>selectSound('custom'));
+const _rcb=$('removeCustomBtn'); if(_rcb) _rcb.addEventListener('click',()=>{ stopCustomAudio(); customSoundData=null; customSoundName=''; try{ localStorage.removeItem('rg_custom_sound_data'); localStorage.removeItem('rg_custom_sound_name'); }catch(e){} if(alertSound==='custom') alertSound='classic'; updateSoundUI(); toast('Custom sound removed — Classic Chime is your alert now'); });
+updateSoundUI();
 
 /* DRIVING */
 async function requestWakeLock(){ const status='Screen wake lock: '; try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); $('wakeStatus').textContent=status+'ON — screen will stay awake while driving.'; $('wakeStatusMain').textContent='Wake lock supported on this device.'; wakeLock.addEventListener('release',()=>{ $('wakeStatus').textContent=status+'released — tap Start driving again if needed.'; }); } else { $('wakeStatus').textContent=status+'not supported here — keep the phone plugged in / screen on.'; } }catch(e){ $('wakeStatus').textContent=status+'could not start.'; } }
