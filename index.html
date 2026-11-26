@@ -233,8 +233,8 @@ input,select{ min-height:48px }
 .photo-preview svg{width:40px;height:40px}
 .leaflet-popup-content .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
 /* CONTACTS PAGE */
-#contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
-#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open{display:block}
+#contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay,#bonusesOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
+#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open,#bonusesOverlay.open{display:block}
 .contacts-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
@@ -440,6 +440,7 @@ input,select{ min-height:48px }
       </div>
       <button type="button" id="drawerFeedbackBtn" class="menu-row"><span>💬 Feedback</span></button>
       <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📊 Feedback dashboard</span></button>
+      <button type="button" id="drawerBonusesBtn" class="menu-row"><span>🎁 Bonuses — coming soon</span></button>
     </nav>
     <div class="side-download">
       <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
@@ -678,7 +679,7 @@ input,select{ min-height:48px }
         <div>
           <div style="font-weight:700;margin-bottom:8px">1 · Where are you starting from?</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Use where I am now</button>
+            <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Current location</button>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
             <input id="tripStartAddr" type="text" placeholder="Start address — e.g. your home" style="flex:1;min-width:200px;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
@@ -810,6 +811,17 @@ input,select{ min-height:48px }
     </div>
     <p id="inboxStatus" class="muted" style="margin-top:12px"></p>
     <div id="inboxList"></div>
+  </div>
+</div>
+
+<!-- BONUSES PAGE -->
+<div id="bonusesOverlay" role="dialog" aria-label="Bonuses">
+  <div class="contacts-head">
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🎁 Bonuses</div></div>
+    <button id="closeBonusesBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back</button>
+  </div>
+  <div style="max-width:760px;margin:0 auto;padding:48px 14px;text-align:center">
+    <p style="font-size:20px;font-weight:600;margin:0">Coming soon — stay tuned</p>
   </div>
 </div>
 
@@ -950,7 +962,7 @@ if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
     if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); }
-    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); updateInboxVisibility(); }
+    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); closeBonusesPage(); updateInboxVisibility(); }
   });
 } else { $('firebaseError').classList.add('show'); }
 
@@ -1536,6 +1548,13 @@ function renderAccounts(list){
 (function initInbox(){
   const ib=$('drawerInboxBtn'); if(ib) ib.addEventListener('click', ()=>{ closeSidePanel(); openInboxPage(); });
   const cb=$('closeInboxBtn'); if(cb) cb.addEventListener('click', closeInboxPage);
+})();
+/* BONUSES — coming-soon page only, no features yet */
+function openBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; }
+function closeBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow=''; }
+(function initBonuses(){
+  const bb=$('drawerBonusesBtn'); if(bb) bb.addEventListener('click', ()=>{ closeSidePanel(); openBonusesPage(); });
+  const cb=$('closeBonusesBtn'); if(cb) cb.addEventListener('click', closeBonusesPage);
 })();
 $('cancelEdit').addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
 function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('profilePhotoData').value=''; setProfileMode('same'); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; setManualOpen(false); }
