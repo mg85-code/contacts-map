@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="data:,">
 <title>The Rebbe's WAZE — נלכה באורחותיו</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -16,15 +16,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --green:#0e3b2c; --green2:#14523d; --green-light:#e6efe9;
-  --gold:#c19a4b; --gold2:#a8822f; --gold-light:#f3e6c8;
-  --cream:#fdf8ec; --cream2:#faf3df; --paper:#fffdf7;
-  --ink:#1a241f; --muted:#5a6b62; --line:#e2d9c2; --card:#ffffff;
+  color-scheme:light;
+  --green:#0e3b2c; --green2:#14523d; --green-light:#e9efe6;
+  --gold:#c19a4b; --gold2:#8a6a1f; --gold-light:#f3e6c8;
+  --sand:#e9dec0; --sand-soft:#f4ecd7; --sand-field:#f7efdb;
+  --cream:#e9dec0; --cream2:#f4ecd7; --paper:#fffdf8;
+  --ink:#1c2420; --muted:#5c6656; --line:#d9cba6; --card:#ffffff;
   --red:#8b1e1e;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --cream:#121a16; --cream2:#16211b; --paper:#1a2620; --card:#1e2e26; --ink:#eef2ed; --muted:#a8b8ad; --line:#2e4238; --green-light:#1e352c; }
-}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden;overflow-x:clip;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -49,15 +49,9 @@ input,select{ min-height:48px }
 .welcome-title-he{font-family:Georgia,serif;font-size:24px;line-height:1.2;margin:8px 0 0;color:#7a5a12}
 @media(max-width:480px){.welcome-title{font-size:36px}.welcome-title-he{font-size:21px}}
 .welcome-sub{font-size:17px;line-height:1.5;color:#33473c;margin:10px 6px 0}
-@media (prefers-color-scheme: dark){
-  .welcome-title{color:#f3e6c8}
-  .welcome-title-he{color:#e6c87a}
-  .welcome-sub{color:#e6efe9}
-  .welcome-eyebrow{color:#e6c87a}
-  .welcome-card .muted{color:#c2d1c6}
-}
+
 .login-box{text-align:left;margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
-@media(prefers-color-scheme:dark){.login-box{background:var(--card)}}
+
 .login-box label:not(.btn){font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin:12px 0 6px}
 .login-box input{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink);font-size:16px}
 .pw-wrap{position:relative}
@@ -66,8 +60,8 @@ input,select{ min-height:48px }
 .pw-toggle svg{width:22px;height:22px;flex-shrink:0;pointer-events:none}
 .pw-toggle:active,.pw-toggle:focus-visible{background:var(--gold-light);color:#5c430a;outline:none}
 .pw-toggle[aria-pressed="true"]{color:var(--green)}
-@media(prefers-color-scheme:dark){.pw-toggle[aria-pressed="true"]{color:#f3e6c8}}
-@media(prefers-color-scheme:dark){.del-confirm{background:#3d1d1d !important}}
+
+
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font-weight:700;border:1px solid transparent;cursor:pointer;text-decoration:none;font-size:16px;line-height:1;text-align:center}
 .btn-green{background:var(--green);color:#fff}
 .btn-gold{background:var(--gold);color:#1a1405}
@@ -81,7 +75,7 @@ input,select{ min-height:48px }
 .btn-gold,.btn-download{color:#1a1405 !important}
 .new-badge{color:#1a1405 !important}
 .menu-btn{color:#0e3b2c !important}
-@media(prefers-color-scheme:dark){.btn-outline{background:#2c4638;color:#fff;border-color:var(--gold)}}
+
 /* CONTRAST FIX — trip planner / trip views (and buttons everywhere): a dark-green
    button must never sit invisibly on a dark background, and a pale outline must
    never wash out on a pale one. Solid buttons get a lighter fill + a gold edge
@@ -92,23 +86,7 @@ input,select{ min-height:48px }
 #tripPreviewShowBtn{background:#0e3b2c !important;color:#fff !important;border:2px solid var(--gold) !important}
 #tripMapActions .btn-green{border:2px solid #0e3b2c}
 #tripMapActions .btn-gold{border:2px solid #7a5a12}
-@media(prefers-color-scheme:dark){
-  .btn-green{background:#1e7a52;color:#fff;border-color:#e6c87a;box-shadow:0 2px 10px rgba(0,0,0,.5)}
-  .btn-gold{background:#d9b45f;color:#1a1405;border-color:#f3e6c8}
-  .chip{background:#2c4638;color:#fff;border-color:#9db8a8}
-  .chip.active{background:#1e7a52;color:#fff;border-color:#e6c87a}
-  .dist-btn{background:#2c4638;color:#fff;border-color:#9db8a8}
-  .dist-btn.active,.sort-bar .dist-btn.active{background:#d9b45f;color:#1a1405;border-color:#f3e6c8}
-  #tripPanel .btn-outline,#tripPreviewWrap .btn-outline,#tripResult .btn-outline{background:#2c4638;color:#fff;border:2px solid var(--gold)}
-  #tripPanel .btn-green,#tripPreviewWrap .btn-green{border:2px solid #e6c87a}
-  #tripPreviewShowBtn{background:#1e7a52 !important;color:#fff !important;border:2px solid #e6c87a !important}
-  #tripPreviewWrap{background:#24382e;border-color:#d9b45f;color:#eef2ed}
-  #tripPreviewWrap .muted{color:#c7d6cb}
-  .trip-result-item{background:#24382e;color:#eef2ed}
-  .sound-select{background:#2c4638;color:#fff;border-color:#9db8a8}
-  #tripPanel input[type="text"],#tripPanel input[type="number"]{background:#2c4638 !important;color:#fff !important;border-color:#9db8a8 !important}
-  #tripPanel input::placeholder{color:#c7d6cb;opacity:1}
-}
+
 .btn-large{width:100%;padding:16px 20px;font-size:17px}
 .btn-small{min-height:40px;padding:9px 14px;font-size:14px}
 .auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
@@ -133,7 +111,7 @@ input,select{ min-height:48px }
 .wrap{max-width:1180px;margin:0 auto;padding:16px 14px 28px}
 .hero-strip{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 .hero-strip h1{font-family:"Playfair Display",Georgia,serif;font-size:28px;margin:0;line-height:1;color:var(--green)}
-@media(prefers-color-scheme:dark){.hero-strip h1{color:#e9d8a6}}
+
 .hero-strip p{margin:6px 0 0;color:var(--muted);line-height:1.5}
 .workspace{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
 @media(min-width:980px){.workspace{grid-template-columns:1.08fr .92fr;align-items:start}}
@@ -157,7 +135,7 @@ input,select{ min-height:48px }
 .search-result-name{font-weight:700;font-size:16px;line-height:1.25;display:block}
 .search-result-sub{font-size:13px;color:var(--muted);line-height:1.4;margin-top:2px;display:block;overflow-wrap:break-word}
 .search-result-open{flex-shrink:0;font-weight:700;color:var(--green);font-size:14px;white-space:nowrap}
-@media(prefers-color-scheme:dark){.search-result-open{color:#e6c87a}}
+
 /* CONTACT NOTES */
 .note-box-label{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
 .note-text-view{margin:0;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word}
@@ -166,15 +144,15 @@ input,select{ min-height:48px }
 .note-entry:active{transform:scale(.99)}
 .note-entry:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .note-open-hint{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--green2)}
-@media(prefers-color-scheme:dark){.note-open-hint{color:#e6c87a}}
+
 /* SINGLE NOTE WINDOW — opens over the notes list, above every other modal */
 #noteViewModal{z-index:320}
 .btn-danger{background:#8b1e1e;color:#fff;border-color:#8b1e1e}
 .note-del-confirm{display:none;margin-top:14px;background:#fff1f1;border:1px solid #e8b4b4;color:#7a1212;border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5}
 .note-del-confirm.show{display:block}
-@media(prefers-color-scheme:dark){.note-del-confirm{background:#3d1d1d;color:#f3c9c9;border-color:#7c3a3a}}
+
 .note-date{font-size:12px;font-weight:700;color:#7a5a12;letter-spacing:.03em;margin-bottom:4px}
-@media(prefers-color-scheme:dark){.note-date{color:#e6c87a}}
+
 /* SIDE PANEL FOOTER — Download button + version line pinned to the very bottom of the panel, always visible */
 .side-footer{flex-shrink:0;background:var(--cream);border-top:1px solid var(--line);z-index:2}
 .side-download{padding:14px 14px 4px;background:var(--cream)}
@@ -195,7 +173,7 @@ input,select{ min-height:48px }
 }
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:42px}
-@media(prefers-color-scheme:dark){.chip{background:transparent;color:var(--ink)}}
+
 .chip.active{background:var(--green);color:#fff;border-color:var(--green)}
 .contact-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .contact-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--paper);transition:border-color .3s,box-shadow .3s}
@@ -226,7 +204,7 @@ input,select{ min-height:48px }
 .field input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:var(--cream);font-size:16px;color:var(--ink)}
 .autocomplete{position:relative}
 .suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:20;overflow:hidden;display:none}
-@media(prefers-color-scheme:dark){.suggest{background:#1e2e26}}
+
 .suggest button{display:block;width:100%;text-align:left;padding:12px;border:0;background:transparent;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;line-height:1.4}
 .checklist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}
 .check-item{display:flex;gap:10px;align-items:flex-start;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
@@ -293,14 +271,14 @@ input,select{ min-height:48px }
 .alert-banner.show{display:block}
 .alert-banner b{font-size:20px}
 .near-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:10px}
-@media(prefers-color-scheme:dark){.near-item{background:var(--card)}}
+
 /* DOWNLOAD / INSTALL */
 .btn-download{background:var(--gold);color:#1a1405;font-size:14px;padding:10px 16px;min-height:44px;box-shadow:none;opacity:.95}
 .install-modal{position:fixed;inset:0;z-index:300;background:rgba(10,25,18,.62);display:none;align-items:center;justify-content:center;padding:16px}
 .install-modal.open{display:flex}
 .install-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:480px;width:100%;padding:24px 22px;max-height:88dvh;overflow:auto}
 .install-card h2{margin:0;font-size:22px;font-family:"Playfair Display",Georgia,serif;color:var(--green)}
-@media(prefers-color-scheme:dark){.install-card h2{color:#f3e6c8}}
+
 .install-steps{margin:10px 0 0;padding-left:22px;line-height:1.65;font-size:15px}
 .install-steps li{margin-top:6px}
 /* TRIP PLANNER */
@@ -318,12 +296,12 @@ input,select{ min-height:48px }
 @media(min-width:640px){.dash-grid{grid-template-columns:repeat(4,1fr)}}
 .dash-stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 12px;text-align:center}
 .dash-num{font-family:"Playfair Display",Georgia,serif;font-size:38px;font-weight:800;line-height:1;color:var(--gold2)}
-@media(prefers-color-scheme:dark){.dash-num{color:#e6c87a}}
+
 .dash-label{font-size:14px;font-weight:600;color:var(--muted);margin-top:6px;line-height:1.3}
 .dash-stat-new{border-color:var(--gold);background:var(--gold-light)}
 .dash-stat-new .dash-num{color:#5c430a}
 .dash-stat-new .dash-label{color:#4a3a10}
-@media(prefers-color-scheme:dark){.dash-stat-new{background:#2e2a18}.dash-stat-new .dash-num{color:#e6c87a}.dash-stat-new .dash-label{color:#c7d6cb}}
+
 .new-badge{display:inline-block;background:var(--gold);color:#1a1405;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;letter-spacing:.02em}
 /* FEEDBACK CHAT WIDGET */
 .chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
@@ -334,7 +312,7 @@ input,select{ min-height:48px }
 .map-wrap{margin-top:12px}
 .front-stat{display:flex;align-items:baseline;gap:8px}
 .stat-num{font-family:"Playfair Display",Georgia,serif;font-size:26px;font-weight:800;line-height:1;color:var(--gold2)}
-@media(prefers-color-scheme:dark){.stat-num{color:#e6c87a}}
+
 .stat-label{font-size:15px;font-weight:600;color:var(--muted)}
 .menu-btn:active{transform:scale(.97)}
 .chat-fab:active{transform:scale(.97)}
@@ -360,7 +338,7 @@ input,select{ min-height:48px }
 .copy-addr-btn svg{width:22px;height:22px;pointer-events:none}
 .copy-addr-btn:active{transform:scale(.95)}
 .edit-addr-btn{font-size:20px;line-height:1}
-@media(prefers-color-scheme:dark){.copy-addr-btn{color:#e6c87a;background:#2e2a18}}
+
 @media (prefers-reduced-motion: reduce){.chat-rec-dot{animation:none}}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:10px;border-top:1px solid var(--line);background:var(--paper);flex-shrink:0}
 .chat-input{flex:1;width:100%;min-width:0;padding:12px 54px 12px 14px;border:1.5px solid var(--line);border-radius:20px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.4;resize:none;max-height:96px}
@@ -408,6 +386,93 @@ input,select{ min-height:48px }
 .trip-dest-addr-wrap{position:relative;margin-top:10px}
 .footer{text-align:center;padding:28px 16px 36px;color:var(--muted);font-size:14px;line-height:1.6}
 .empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px;text-align:center;background:var(--cream)}
+/* ============================================================
+   THE NEW LOOK (Version 2.6) — the approved hybrid redesign:
+   warm sand page, white cards, dark-green serif headings, gold
+   accents. This layer only restyles; every feature, page and
+   behaviour above it is unchanged, and removing this layer (plus
+   the tab bar) returns the app to the Version 2.5 look.
+   ============================================================ */
+html,body{background:var(--sand)}
+#welcomeScreen{background:radial-gradient(800px 400px at 50% -80px,#f8f0da 0,transparent 60%),var(--sand)}
+.welcome-card{background:#fff;border-color:var(--line);border-radius:22px;box-shadow:0 14px 44px rgba(90,70,20,.16)}
+.login-box input{background:#fff}
+/* Form fields read as clean white on the white cards */
+input[type="text"],input[type="email"],input[type="password"],input[type="search"],input[type="tel"],input[type="number"],select,textarea{background-color:#fff !important}
+/* HEADER — logo badge, the name in big English, Hebrew under it, gold Menu button */
+.topbar{background:var(--sand);color:var(--ink);border-bottom:2px solid var(--gold);padding:12px 16px 14px}
+.topbar-logo{border-radius:50%;border:2.5px solid var(--gold);box-shadow:0 2px 8px rgba(90,70,20,.25)}
+.topbar-title{color:var(--green);font-size:24px;font-weight:700}
+.topbar-title-he{color:#8a6a1f;font-size:15px}
+.topbar-sub{color:var(--muted);opacity:1}
+.user-email{background:#fff;color:var(--green);border:1px solid var(--line)}
+.logout-btn{border:1.5px solid var(--green)}
+.menu-btn{border-radius:999px;padding:0 20px 0 16px;box-shadow:0 4px 14px rgba(168,130,47,.45)}
+/* CARDS & PANELS — white on sand, serif green headings */
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 16px rgba(90,70,20,.09)}
+.panel h2{font-family:"Playfair Display",Georgia,serif;color:var(--green);font-size:22px;font-weight:700;letter-spacing:0}
+.panel h3{font-family:"Playfair Display",Georgia,serif;color:var(--green);font-weight:700}
+.hero-strip{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 16px rgba(90,70,20,.09)}
+.stat-num{color:var(--gold2)}
+#map{border-radius:16px;border:2px solid var(--gold)}
+#tripPreviewMap{border-radius:16px;border:2px solid var(--gold);background:var(--sand-soft)}
+.search-row input{background:#fff;border-color:var(--line);box-shadow:0 2px 8px rgba(90,70,20,.07)}
+.chip{background:#fff;color:var(--green);border-color:#c9b98d}
+.sort-bar{background:#fff}
+.dist-btn{background:#fff}
+.checklist{background:#fff}
+.sub-row{background:#fff}
+.empty{background:#fff}
+.custom-sound-box{background:var(--sand-field)}
+.dash-stat{background:#fff}
+.feedback-item{background:#fff}
+.trip-result-item{background:#fff}
+.note-entry{background:#fff}
+.near-item{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(90,70,20,.06)}
+.search-result{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(90,70,20,.06)}
+/* THE BIG START DRIVING BUTTON — one deep-green button under the map */
+.start-driving-big{width:100%;margin-top:14px;padding:19px 20px;font-size:21px;font-weight:800;border-radius:16px;box-shadow:0 10px 24px rgba(14,59,44,.30);letter-spacing:.01em}
+.start-driving-big:active{transform:scale(.99)}
+/* CONTACT CARDS — the clean mockup style: white card, gold edge, photo avatar,
+   name with the address under it; Call stays deep green, Directions and Notes
+   become cream buttons with a green edge (settled card structure unchanged) */
+.contact-card{background:#fff;border:1.5px solid var(--gold);border-radius:16px;box-shadow:0 3px 12px rgba(90,70,20,.09)}
+.contact-name{color:var(--ink)}
+.contact-card .actions .btn-gold{background:var(--sand-field);color:var(--green);border:1.5px solid var(--green)}
+.contact-card .actions .btn-outline{background:var(--sand-field);color:var(--green);border:1.5px solid var(--green)}
+/* LIST ROWS (Who's near me) — one gold Call button leads, the rest stay quiet */
+#nearList .near-item .btn-green{background:var(--gold);color:#1a1405;border:1.5px solid var(--gold2)}
+#nearList .near-item .btn-gold{background:var(--sand-field);color:var(--green);border:1.5px solid var(--green)}
+.drive-addr-panel{background:var(--sand-field)}
+/* PAGE HEADS (Contacts, Trip, Driving, dashboard…) — sand with a green serif title */
+.contacts-head,.drive-head{background:var(--sand);color:var(--green);border-bottom:2px solid var(--gold)}
+.contacts-head .btn,.drive-head .btn{border:1.5px solid var(--green)}
+#contactsPageCount{color:var(--muted)}
+/* MENU PANEL — sand ground, white rows, pinned footer on sand */
+.side-panel{background:var(--sand)}
+.side-head{background:var(--sand);color:var(--green);border-bottom:2px solid var(--gold)}
+.side-title-btn{color:var(--green)}
+.side-footer{background:var(--sand);border-top:1px solid var(--line)}
+.side-download{background:var(--sand)}
+.menu-row{background:#fff;box-shadow:0 2px 8px rgba(90,70,20,.07)}
+/* MODALS & CHAT */
+.install-card{background:#fff}
+.chat-window{background:var(--sand-soft)}
+.chat-thread{background:var(--sand-soft)}
+.chat-app{background:#fff}
+.chat-input-row{background:#fff}
+/* Room for the fixed tab bar, and the feedback bubble floats above it */
+.wrap{padding-bottom:112px}
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#tripOverlayBody{padding-bottom:104px !important}
+#drivingOverlay>div:last-child{padding-bottom:104px !important}
+.chat-fab{bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:210}
+.toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+/* BOTTOM TAB BAR — Map / Contacts / Trip / More, deep green with a gold active tab */
+.tab-bar{position:fixed;left:0;right:0;bottom:0;z-index:205;background:var(--green);display:flex;gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 20px rgba(14,59,44,.30)}
+.tab-btn{flex:1;background:transparent;border:0;color:#efe8d2;font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 4px;border-radius:12px;cursor:pointer;min-height:54px;-webkit-tap-highlight-color:transparent}
+.tab-btn svg{width:23px;height:23px;flex-shrink:0}
+.tab-btn.active{color:var(--gold);background:rgba(255,255,255,.09)}
+.tab-btn:active{transform:scale(.97)}
 </style>
 </head>
 <body>
@@ -468,6 +533,7 @@ input,select{ min-height:48px }
       </div>
     </div>
     <div class="userbar">
+      <button type="button" id="menuBtnTop" class="menu-btn" aria-label="Open menu" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span class="menu-word">Menu</span></button>
       <span id="signedInEmail" class="user-email"></span>
       <button id="logoutBtn" class="logout-btn">Log out</button>
     </div>
@@ -504,15 +570,11 @@ input,select{ min-height:48px }
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 2.5</div>
+      <div class="side-version">Version 2.6</div>
     </div>
   </aside>
 
   <div class="wrap">
-    <div class="menu-stat-row">
-      <button type="button" id="menuBtn" class="menu-btn" aria-label="Open menu" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span class="menu-word">Menu</span></button>
-      <button id="startDrivingTop" class="btn btn-green" style="font-size:17px;padding:14px 20px">🚗 Start driving</button>
-    </div>
     <div class="hero-strip">
       <div>
         <h1>Who’s around to visit?</h1>
@@ -531,6 +593,7 @@ input,select{ min-height:48px }
           <div class="map-wrap">
             <div id="map"></div>
           </div>
+          <button id="startDrivingTop" class="btn btn-green start-driving-big">🚗 Start driving</button>
           <div id="tripMapActions" style="display:none;margin-top:12px;gap:10px;flex-wrap:wrap">
             <button type="button" id="editTripBtn" class="btn btn-green btn-large" style="flex:1;min-width:150px">✏️ Edit trip</button>
             <button type="button" id="exitTripBtn" class="btn btn-gold btn-large" style="flex:1;min-width:150px">✕ Exit trip — reset map</button>
@@ -823,6 +886,12 @@ input,select{ min-height:48px }
       <button type="button" id="chatSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
   </div>
+  <nav id="tabBar" class="tab-bar" aria-label="Main pages">
+    <button type="button" class="tab-btn active" data-tab="map" aria-label="Map — the main page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.8"/></svg><span>Map</span></button>
+    <button type="button" class="tab-btn" data-tab="contacts" aria-label="Contacts — My Contacts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.2 14.6c2.2.2 3.8 1.6 4.3 4.4"/></svg><span>Contacts</span></button>
+    <button type="button" class="tab-btn" data-tab="trip" aria-label="Trip — Trip Planner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></svg><span>Trip</span></button>
+    <button type="button" class="tab-btn" data-tab="more" aria-label="More — the Menu panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg><span>More</span></button>
+  </nav>
 </section>
 
 <!-- CONTACTS PAGE -->
@@ -1510,6 +1579,7 @@ function toggleSubSection(name){
   if(a&&aSlot) aSlot.appendChild(a);
   if(b&&cSlot) cSlot.appendChild(b);
   const mb=$('menuBtn'); if(mb) mb.addEventListener('click', openSidePanel);
+  const mbTop=$('menuBtnTop'); if(mbTop) mbTop.addEventListener('click', openSidePanel);
   const cb=$('closeSideBtn'); if(cb) cb.addEventListener('click', closeSidePanel);
   const stb=$('sideTitleBtn'); if(stb) stb.addEventListener('click', closeSidePanel);
   const bd=$('sideBackdrop'); if(bd) bd.addEventListener('click', closeSidePanel);
@@ -2742,6 +2812,32 @@ let chatCaptionBeforeRecord='';
 const _crc=$('chatCancelRecBtn'); if(_crc) _crc.addEventListener('click',()=>{ stopVoiceRecord('discard'); toast('Voice note cancelled — nothing was sent'); });
 const _cpr=$('chatPauseRecBtn'); if(_cpr) _cpr.addEventListener('click', toggleRecordPause);
 renderChatThread();
+
+/* BOTTOM TAB BAR — Map (the main page) / Contacts (My Contacts) / Trip (Trip
+   Planner) / More (the Menu panel). Pure navigation: it opens and closes the
+   same pages the buttons and menu always opened, and changes nothing else.
+   While driving, the tabs wait — Stop leaves driving mode first. */
+(function initTabBar(){
+  const bar=$('tabBar'); if(!bar) return;
+  const btns=Array.prototype.slice.call(bar.querySelectorAll('.tab-btn'));
+  function setActive(name){ btns.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===name)); }
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    const t=b.getAttribute('data-tab');
+    const driving=$('drivingOverlay') && $('drivingOverlay').classList.contains('open');
+    if(driving){ toast('Tap Stop to leave driving mode first'); return; }
+    if(t==='map'){ closeContactView(); closeContactsPage(); closeTripPage(); closeInboxPage(); closeBonusesPage(); setActive('map'); window.scrollTo({top:0,behavior:'smooth'}); }
+    else if(t==='contacts'){ closeTripPage(); setActive('contacts'); openContactsPage(); }
+    else if(t==='trip'){ setActive('trip'); openTripPage(); }
+    else if(t==='more'){ setActive('more'); openSidePanel(); }
+  }));
+  /* Keep the gold highlight honest when pages close through their own buttons */
+  const cc=$('closeContactsBtn'); if(cc) cc.addEventListener('click',()=>setActive('map'));
+  const ct=$('closeTripBtn'); if(ct) ct.addEventListener('click',()=>setActive('map'));
+  const cs=$('closeSideBtn'); if(cs) cs.addEventListener('click',()=>setActive('map'));
+  const bd=$('sideBackdrop'); if(bd) bd.addEventListener('click',()=>setActive('map'));
+  const oc=$('drawerOpenContacts'); if(oc) oc.addEventListener('click',()=>setActive('contacts'));
+  const dt=$('drawerTripBtn'); if(dt) dt.addEventListener('click',()=>setActive('trip'));
+})();
 </script>
 </body>
 </html>
