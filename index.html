@@ -69,8 +69,35 @@ input,select{ min-height:48px }
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font-weight:700;border:1px solid transparent;cursor:pointer;text-decoration:none;font-size:16px;line-height:1;text-align:center}
 .btn-green{background:var(--green);color:#fff}
 .btn-gold{background:var(--gold);color:#1a1405}
-.btn-outline{background:#fff;color:var(--green);border-color:var(--line)}
-@media(prefers-color-scheme:dark){.btn-outline{background:transparent;color:var(--ink)}}
+.btn-outline{background:#fff;color:var(--green);border-color:#8a7a4a;border-width:1.5px}
+@media(prefers-color-scheme:dark){.btn-outline{background:#2c4638;color:#fff;border-color:var(--gold)}}
+/* CONTRAST FIX — trip planner / trip views (and buttons everywhere): a dark-green
+   button must never sit invisibly on a dark background, and a pale outline must
+   never wash out on a pale one. Solid buttons get a lighter fill + a gold edge
+   in dark mode; outline buttons get a visible fill and a strong border in both
+   modes, so every option is clearly readable against what is behind it. */
+#tripPanel .btn-outline,#tripPreviewWrap .btn-outline,#tripResult .btn-outline{background:#fff;color:#0e3b2c;border:2px solid #0e3b2c}
+#tripPanel .btn-green,#tripPreviewWrap .btn-green{border:2px solid #0e3b2c}
+#tripPreviewShowBtn{background:#0e3b2c !important;color:#fff !important;border:2px solid var(--gold) !important}
+#tripMapActions .btn-green{border:2px solid #0e3b2c}
+#tripMapActions .btn-gold{border:2px solid #7a5a12}
+@media(prefers-color-scheme:dark){
+  .btn-green{background:#1e7a52;color:#fff;border-color:#e6c87a;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+  .btn-gold{background:#d9b45f;color:#1a1405;border-color:#f3e6c8}
+  .chip{background:#2c4638;color:#fff;border-color:#9db8a8}
+  .chip.active{background:#1e7a52;color:#fff;border-color:#e6c87a}
+  .dist-btn{background:#2c4638;color:#fff;border-color:#9db8a8}
+  .dist-btn.active,.sort-bar .dist-btn.active{background:#d9b45f;color:#1a1405;border-color:#f3e6c8}
+  #tripPanel .btn-outline,#tripPreviewWrap .btn-outline,#tripResult .btn-outline{background:#2c4638;color:#fff;border:2px solid var(--gold)}
+  #tripPanel .btn-green,#tripPreviewWrap .btn-green{border:2px solid #e6c87a}
+  #tripPreviewShowBtn{background:#1e7a52 !important;color:#fff !important;border:2px solid #e6c87a !important}
+  #tripPreviewWrap{background:#24382e;border-color:#d9b45f;color:#eef2ed}
+  #tripPreviewWrap .muted{color:#c7d6cb}
+  .trip-result-item{background:#24382e;color:#eef2ed}
+  .sound-select{background:#2c4638;color:#fff;border-color:#9db8a8}
+  #tripPanel input[type="text"],#tripPanel input[type="number"]{background:#2c4638 !important;color:#fff !important;border-color:#9db8a8 !important}
+  #tripPanel input::placeholder{color:#c7d6cb;opacity:1}
+}
 .btn-large{width:100%;padding:16px 20px;font-size:17px}
 .btn-small{min-height:40px;padding:9px 14px;font-size:14px}
 .auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
@@ -103,6 +130,8 @@ input,select{ min-height:48px }
 .panel h3{margin:0;font-size:16px}
 .muted{color:var(--muted);font-size:14px;line-height:1.55}
 #map,#driveMap{width:100%;height:360px;border-radius:12px;border:1px solid var(--line);z-index:1}
+#tripPreviewMap{width:100%;height:340px;border-radius:12px;border:1px solid var(--line);z-index:1;background:var(--cream)}
+@media(max-width:640px){#tripPreviewMap{height:300px}}
 @media(max-width:640px){#map{height:300px}}
 .search-row{display:flex;gap:8px;margin-top:12px;min-width:0}
 .search-row input{flex:1;min-width:0;padding:12px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream);font-size:16px}
@@ -442,7 +471,10 @@ input,select{ min-height:48px }
           <div class="map-wrap">
             <div id="map"></div>
           </div>
-          <button type="button" id="exitTripBtn" class="btn btn-gold btn-large" style="display:none;margin-top:12px">✕ Exit trip — reset map</button>
+          <div id="tripMapActions" style="display:none;margin-top:12px;gap:10px;flex-wrap:wrap">
+            <button type="button" id="editTripBtn" class="btn btn-green btn-large" style="flex:1;min-width:150px">✏️ Edit trip</button>
+            <button type="button" id="exitTripBtn" class="btn btn-gold btn-large" style="flex:1;min-width:150px">✕ Exit trip — reset map</button>
+          </div>
           <div class="search-row">
             <input id="searchInput" type="search" placeholder="Search name, phone, street, city…">
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
@@ -674,7 +706,23 @@ input,select{ min-height:48px }
           <label style="display:flex;gap:8px;align-items:center;font-weight:600">Minutes at each visit: <input id="tripVisitMins" type="number" min="0" max="120" step="5" value="15" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"></label>
         </div>
         <button type="button" id="planTripBtn" class="btn btn-green btn-large">🧭 Plan my trip — best order</button>
+        <button type="button" id="tripPreviewShowBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>
+        <p class="muted" style="margin:6px 2px 0;text-align:center">See how the trip looks on a map right here on this page — no need to go back to the home page.</p>
         <div id="tripResult"></div>
+        <div id="tripPreviewWrap" style="display:none;margin-top:16px;border:1px solid var(--gold);border-radius:14px;padding:14px;background:var(--paper)">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <h3 style="margin:0">🗺️ Your trip — map preview</h3>
+            <span class="muted" style="font-size:13px">You are still in the Trip Planner</span>
+          </div>
+          <div id="tripPreviewMap" style="margin-top:12px"></div>
+          <p id="tripPreviewCaption" class="muted" style="margin:10px 0 0"></p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            <button type="button" id="tripPreviewEditBtn" class="btn btn-green" style="flex:1;min-width:140px">✏️ Edit trip</button>
+            <button type="button" id="tripPreviewHideBtn" class="btn btn-gold" style="flex:1;min-width:140px">Hide map</button>
+            <button type="button" id="tripPreviewMainBtn" class="btn btn-outline" style="flex:1;min-width:140px">See on main map</button>
+          </div>
+          <p class="muted" style="margin:8px 0 0">“Edit trip” and “Hide map” both take you back to the plan above — your start, destination and ticked people stay exactly as you left them. Nothing is erased unless you tap “Exit trip — reset map”.</p>
+        </div>
       </div>
     </div>
 
@@ -1941,14 +1989,74 @@ function drawTripLine(pts){
    and appears whenever a trip is showing; the same reset is offered inside the
    trip planner itself. Clearing removes the route line and flies the map back
    to its normal view of the contacts. */
-function updateTripExitBtn(){ const b=$('exitTripBtn'); if(b) b.style.display=tripLine?'inline-flex':'none'; }
+function updateTripExitBtn(){ const wrap=$('tripMapActions'); if(wrap) wrap.style.display=tripLine?'flex':'none'; const b=$('exitTripBtn'); if(b&&!wrap) b.style.display=tripLine?'inline-flex':'none'; const eb=$('editTripBtn'); if(eb&&!wrap) eb.style.display=tripLine?'inline-flex':'none'; }
 function clearTripFromMap(){
   if(tripLine&&map){ try{ map.removeLayer(tripLine); }catch(e){} }
-  tripLine=null;
+  tripLine=null; lastTripPts=null;
+  if(typeof hideTripPreview==='function') hideTripPreview();
   updateTripExitBtn();
   if(map) zoomToArea(currentFilter);
 }
 const _etb=$('exitTripBtn'); if(_etb) _etb.addEventListener('click', ()=>{ clearTripFromMap(); toast('Trip cleared — your map is back to normal'); });
+/* EDIT TRIP (main map) — go BACK to the Trip Planner page with the plan exactly as left:
+   start, destination and ticked people are kept in tripStart / tripDestId / tripDestCustom /
+   tripStopIds, and renderTripPlanner() re-renders from them. Nothing is cleared here —
+   only “Exit trip — reset map” clears the trip. */
+const _editTb=$('editTripBtn'); if(_editTb) _editTb.addEventListener('click', ()=>{ openTripPage(); const po=$('tripOverlay'); if(po) po.scrollTop=0; toast('Edit your trip — your start, destination and people are still ticked'); });
+/* TRIP PREVIEW MAP — inside the planner page itself. Shows how the trip looks without
+   leaving the planner for the home page, with Hide map + Edit trip always visible. */
+let tripPreviewMap=null, tripPreviewLine=null, tripPreviewMarkers=[], lastTripPts=null;
+function buildTripPts(){
+  if(!tripStart) return null;
+  const dest=tripDestContact(); const destPt=tripDestPoint();
+  const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
+  if(!stops.length&&!destPt) return null;
+  const remaining=stops.slice(); const ordered=[]; let cur={lat:tripStart.lat,lng:tripStart.lng};
+  while(remaining.length){ let bi=0,bd=Infinity; remaining.forEach((c,i)=>{ const d=haversineMiles(cur.lat,cur.lng,c.lat,c.lng); if(d<bd){bd=d;bi=i;} }); const nxt=remaining.splice(bi,1)[0]; ordered.push(nxt); cur={lat:nxt.lat,lng:nxt.lng}; }
+  if(dest) ordered.push(dest);
+  const returnHome=($('tripReturn')&&$('tripReturn').checked);
+  const pts=[{name:'Start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng}].concat(ordered.map(c=>({name:c.name||'No name',lat:c.lat,lng:c.lng,contact:c})));
+  if(destPt&&!dest) pts.push({name:'🏁 Destination — '+destPt.label,lat:destPt.lat,lng:destPt.lng,contact:null});
+  if(returnHome) pts.push({name:'Back to start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng});
+  lastTripPts=pts; return pts;
+}
+function initTripPreviewMap(){
+  if(tripPreviewMap){ setTimeout(()=>{ try{tripPreviewMap.invalidateSize();}catch(e){} },80); return; }
+  if(typeof L==='undefined') return;
+  tripPreviewMap=L.map('tripPreviewMap').setView([40.68,-73.95],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(tripPreviewMap);
+}
+function drawTripPreview(pts){
+  if(!tripPreviewMap||typeof L==='undefined') return;
+  if(tripPreviewLine){ try{tripPreviewMap.removeLayer(tripPreviewLine);}catch(e){} tripPreviewLine=null; }
+  tripPreviewMarkers.forEach(m=>{ try{tripPreviewMap.removeLayer(m);}catch(e){} }); tripPreviewMarkers=[];
+  tripPreviewLine=L.polyline(pts.map(p=>[p.lat,p.lng]),{color:'#c19a4b',weight:4,opacity:0.9}).addTo(tripPreviewMap);
+  pts.forEach((p,i)=>{
+    const label=i===0?'▶':String(i);
+    const icon=L.divIcon({className:'',html:'<div class="pin-num">'+label+'</div>',iconSize:[32,32],iconAnchor:[16,16]});
+    const m=L.marker([p.lat,p.lng],{icon:icon}).addTo(tripPreviewMap).bindPopup('<div style="text-align:center"><b>'+escapeHtml(p.name)+'</b>'+(p.contact?'<br>'+escapeHtml(fullAddress(p.contact)):'')+'</div>');
+    tripPreviewMarkers.push(m);
+  });
+  try{ tripPreviewMap.fitBounds(tripPreviewLine.getBounds().pad(0.18)); }catch(e){}
+}
+function showTripPreview(){
+  const wrap=$('tripPreviewWrap'); if(!wrap) return;
+  if(!tripStart){ toast('Set your start first — step 1 in the planner'); const r=$('tripResult'); if(r) r.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above, tick who to visit, then tap “Show trip on map”.</p>'; return; }
+  const pts=buildTripPts();
+  if(!pts){ toast('Tick at least one person — or pick a destination — first'); const r=$('tripResult'); if(r) r.innerHTML='<p class="muted" style="margin-top:10px">Tick at least one person to visit in step 3 — or pick a destination in step 2 — then tap “Show trip on map”.</p>'; return; }
+  /* Also draw on the main map so “See on main map” / Edit / Exit there stay in sync */
+  try{ drawTripLine(pts); }catch(e){}
+  wrap.style.display='block';
+  initTripPreviewMap();
+  setTimeout(()=>{ try{ if(tripPreviewMap) tripPreviewMap.invalidateSize(); }catch(e){} drawTripPreview(pts); const cap=$('tripPreviewCaption'); if(cap) cap.textContent=pts.length+' points on this trip — starting at '+tripStart.label+', visiting in the order shown by the numbered pins.'; },90);
+  setTimeout(()=>{ wrap.scrollIntoView({behavior:'smooth',block:'start'}); },120);
+}
+function hideTripPreview(){ const wrap=$('tripPreviewWrap'); if(wrap) wrap.style.display='none'; }
+function editFromPreview(){ hideTripPreview(); const tp=$('tripPanel'); if(tp) tp.scrollIntoView({behavior:'smooth',block:'start'}); const po=$('tripOverlay'); if(po) po.scrollTop=0; toast('Edit your trip — everything is still ticked as you left it'); }
+const _tpsb=$('tripPreviewShowBtn'); if(_tpsb) _tpsb.addEventListener('click', showTripPreview);
+const _tphb=$('tripPreviewHideBtn'); if(_tphb) _tphb.addEventListener('click', ()=>{ hideTripPreview(); const tp=$('tripPanel'); if(tp) tp.scrollIntoView({behavior:'smooth',block:'start'}); });
+const _tpeb=$('tripPreviewEditBtn'); if(_tpeb) _tpeb.addEventListener('click', editFromPreview);
+const _tpmb=$('tripPreviewMainBtn'); if(_tpmb) _tpmb.addEventListener('click', ()=>{ if(lastTripPts) { try{ drawTripLine(lastTripPts); }catch(e){} } closeTripPage(); const mel=document.getElementById('map'); if(mel) mel.scrollIntoView({behavior:'smooth',block:'center'}); });
 const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   const resEl=$('tripResult'); if(!resEl) return;
   if(!tripStart){ resEl.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above — where you are now, or an address like home.</p>'; toast('Set your start first'); return; }
@@ -1994,10 +2102,15 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   if(waypoints.length) gUrl+='&waypoints='+encodeURIComponent(waypoints.join('|'));
   html+=`<a class="btn btn-gold btn-large" style="margin-top:12px" target="_blank" rel="noopener" href="${gUrl}">🧭 Open this route in Google Maps</a>`;
   html+=`<button type="button" id="tripSeeMapBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ See this trip on my map</button>`;
+  html+=`<button type="button" id="tripPreviewBtn2" class="btn btn-green btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>`;
+  html+=`<button type="button" id="tripEditBtn2" class="btn btn-outline btn-large" style="margin-top:10px">✏️ Edit trip — change the plan above</button>`;
   html+=`<button type="button" id="tripResetBtn" class="btn btn-gold btn-large" style="margin-top:10px">✕ Exit trip — reset map</button>`;
-  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. When you are done with it, tap “Exit trip — reset map” — here, or under the map on the main screen — and the line comes off and your map goes back to normal. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
+  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. “Show trip on map — preview here” shows it on a map right here in the planner (tap “Hide map” or “Edit trip” there to get back to the plan). “See this trip on my map” takes you to the main map, where “Edit trip” brings you back here with everything still ticked. When you are done, tap “Exit trip — reset map” and the line comes off. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
   resEl.innerHTML=html;
+  lastTripPts=pts;
   const _smb=$('tripSeeMapBtn'); if(_smb) _smb.addEventListener('click', ()=>{ closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); });
+  const _pv2=$('tripPreviewBtn2'); if(_pv2) _pv2.addEventListener('click', showTripPreview);
+  const _ed2=$('tripEditBtn2'); if(_ed2) _ed2.addEventListener('click', editFromPreview);
   const _trb=$('tripResetBtn'); if(_trb) _trb.addEventListener('click', ()=>{ clearTripFromMap(); closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); toast('Trip cleared — your map is back to normal'); });
   drawTripLine(pts);
 });
