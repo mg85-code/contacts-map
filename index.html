@@ -213,8 +213,13 @@ input,select{ min-height:48px }
 .feedback-item audio{width:100%;margin-top:8px}
 /* FEEDBACK CHAT WIDGET */
 .chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
-.menu-fab{position:fixed;left:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;width:54px;height:54px;min-height:54px;border-radius:50%;background:var(--green);color:#fff;border:2px solid var(--gold);cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;justify-content:center;padding:0}
-.menu-fab svg{width:26px;height:26px}
+.menu-fab{position:absolute;left:10px;top:10px;z-index:600;width:44px;height:44px;min-height:44px;border-radius:50%;background:var(--paper);color:var(--green);border:1.5px solid var(--line);cursor:pointer;box-shadow:0 2px 8px rgba(14,59,44,.18);display:inline-flex;align-items:center;justify-content:center;padding:0}
+.menu-fab svg{width:22px;height:22px}
+.map-wrap{position:relative;margin-top:12px}
+.front-stat{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.stat-num{font-family:"Playfair Display",Georgia,serif;font-size:38px;font-weight:800;line-height:1;color:var(--gold2)}
+@media(prefers-color-scheme:dark){.stat-num{color:#e6c87a}}
+.stat-label{font-size:15px;font-weight:600;color:var(--muted)}
 .menu-fab:active{transform:scale(.97)}
 .chat-fab:active{transform:scale(.97)}
 .chat-window{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:185;width:min(385px,calc(100vw - 24px));height:min(580px,72dvh);background:var(--cream);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.30);display:none;flex-direction:column;overflow:hidden}
@@ -232,10 +237,12 @@ input,select{ min-height:48px }
 @keyframes chatPulse{0%,100%{opacity:1}50%{opacity:.25}}
 @media (prefers-reduced-motion: reduce){.chat-rec-dot{animation:none}}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:10px;border-top:1px solid var(--line);background:var(--paper);flex-shrink:0}
-.chat-input{flex:1;min-width:0;padding:12px 14px;border:1.5px solid var(--line);border-radius:20px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.4;resize:none;max-height:96px}
+.chat-input{flex:1;width:100%;min-width:0;padding:12px 54px 12px 14px;border:1.5px solid var(--line);border-radius:20px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.4;resize:none;max-height:96px}
+.chat-input-wrap{position:relative;flex:1;min-width:0;display:flex}
+.chat-mic-in{position:absolute;right:5px;bottom:5px;width:40px;height:40px;min-height:40px;border-radius:50%;border:0;background:var(--gold-light);color:#5c430a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:20px;padding:0;-webkit-tap-highlight-color:transparent}
+.chat-mic-in:active{transform:scale(.95)}
+.chat-mic-in.recording{background:#c02727;color:#fff}
 .chat-round-btn{width:50px;height:50px;min-height:50px;border-radius:50%;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;padding:0}
-.chat-mic{background:var(--gold);color:#1a1405}
-.chat-mic.recording{background:#c02727;color:#fff}
 .chat-send{background:var(--green);color:#fff}
 .chat-send:disabled{opacity:.45;cursor:default}
 .topbar-logo{width:46px;height:46px;border-radius:12px;border:2px solid var(--gold);overflow:hidden;flex-shrink:0;background:var(--green2)}
@@ -368,6 +375,7 @@ input,select{ min-height:48px }
     <div class="hero-strip">
       <div>
         <h1>Who’s around to visit?</h1>
+        <div class="front-stat"><span id="statNum" class="stat-num">0</span><span id="statLabel" class="stat-label">contacts</span></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
@@ -382,7 +390,10 @@ input,select{ min-height:48px }
             <h2>🗺️ Your map</h2>
             <span id="mapCount" class="muted"></span>
           </div>
-          <div id="map" style="margin-top:12px"></div>
+          <div class="map-wrap">
+            <div id="map"></div>
+            <button type="button" id="menuBtn" class="menu-fab" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+          </div>
           <div class="search-row">
             <input id="searchInput" type="search" placeholder="Search name, phone, street, city…">
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
@@ -624,7 +635,6 @@ input,select{ min-height:48px }
     </div>
   </div>
 
-  <button type="button" id="menuBtn" class="menu-fab" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
   <button type="button" id="chatFab" class="chat-fab" aria-label="Open feedback chat">💬 Feedback</button>
   <div id="chatWindow" class="chat-window" role="dialog" aria-label="Feedback chat">
     <div class="chat-head">
@@ -636,8 +646,10 @@ input,select{ min-height:48px }
     <p id="chatVoiceUnsupported" class="muted" style="display:none;margin:0;padding:8px 14px 0">Voice notes are not available in this browser — please type your message instead.</p>
     <div class="chat-input-row">
       <label for="chatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Type your feedback</label>
-      <textarea id="chatInput" class="chat-input" rows="1" placeholder="Type a message…"></textarea>
-      <button type="button" id="chatMicBtn" class="chat-round-btn chat-mic" aria-label="Record a voice note — tap once to start, then tap Send" title="Voice note: tap once to record">🎙️</button>
+      <div class="chat-input-wrap">
+        <textarea id="chatInput" class="chat-input" rows="1" placeholder="Type a message…"></textarea>
+        <button type="button" id="chatMicBtn" class="chat-mic-in" aria-label="Record a voice note — tap once to start, then tap Send" title="Voice note: tap once to record">🎙️</button>
+      </div>
       <button type="button" id="chatSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
     <p class="muted" style="margin:0;padding:0 14px 10px;background:var(--paper);font-size:13px">Type and tap ➤ — or tap 🎙️ once, talk, then tap ➤ to send it as a voice note, just like WhatsApp.</p>
@@ -767,13 +779,13 @@ input,select{ min-height:48px }
 const firebaseConfig={apiKey:"AIzaSyDrisvfPogoX_bpiyQO2tpJrLbw_Dy6P2s",authDomain:"map-for-rabbi-goldstein.firebaseapp.com",projectId:"map-for-rabbi-goldstein",storageBucket:"map-for-rabbi-goldstein.firebasestorage.app",messagingSenderId:"990836761457",appId:"1:990836761457:web:e7be3c8f150f2d8f24ccd0",measurementId:"G-LQ8G25J9D1"};
 let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
-let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='',contactsSearchTerm='';
+let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,notifOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='',contactsSearchTerm='';
 let contactsSortMode='name';
 let formReturnToContacts=false;
 let nearSortMode='distance';
 let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false,quickPhotoTargetId=null;
 let alertSound='classic',customSoundData=null,customSoundName='',customAudioEl=null;
-try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; const as=localStorage.getItem('rg_alert_sound'); if(as) alertSound=as; const cn=localStorage.getItem('rg_custom_sound_name'); if(cn) customSoundName=cn; const cd=localStorage.getItem('rg_custom_sound_data'); if(cd && cd.indexOf('data:audio')===0) customSoundData=cd; if(alertSound==='custom' && !customSoundData) alertSound='classic'; }catch(e){}
+try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; const nf=localStorage.getItem('rg_notif'); if(nf!==null) notifOn=nf==='1'; const as=localStorage.getItem('rg_alert_sound'); if(as) alertSound=as; const cn=localStorage.getItem('rg_custom_sound_name'); if(cn) customSoundName=cn; const cd=localStorage.getItem('rg_custom_sound_data'); if(cd && cd.indexOf('data:audio')===0) customSoundData=cd; if(alertSound==='custom' && !customSoundData) alertSound='classic'; }catch(e){}
 function $(id){return document.getElementById(id)}
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
 function showAuthError(msg){ const e=$('authError'); if(!msg){e.classList.remove('show');e.textContent='';} else {e.textContent=msg; e.classList.add('show');} }
@@ -843,6 +855,7 @@ function initMap(){
   if(map){ setTimeout(()=>map.invalidateSize(),100); renderMarkers(); return; }
   if(typeof L==='undefined') return;
   map=L.map('map').setView([40.68,-73.95],11);
+  if(map.zoomControl) map.zoomControl.setPosition('topright');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
   renderMarkers();
 }
@@ -930,6 +943,8 @@ function renderList(){
   if(sst) sst.textContent=contactsSortMode==='distance'?(refLoc?'Closest first — distances are from where you are right now. Tap “Distance from me now” again to update them.':'Getting your location for distances… if it does not appear, allow location for this site and tap the button again.'):'Showing in name order — the usual way.';
   const lc=$('listCount'); if(lc) lc.textContent=contacts.length+(contacts.length===1?' person':' people');
   const pc=$('contactsPageCount'); if(pc) pc.textContent=contacts.length+(contacts.length===1?' person':' people');
+  const fsn=$('statNum'), fsl=$('statLabel');
+  if(fsn&&fsl){ const n=currentFilter==='All'?contacts.length:contacts.filter(c=>getArea(c)===currentFilter).length; fsn.textContent=n; fsl.textContent=(n===1?'contact':'contacts')+(currentFilter==='All'?'':' in '+currentFilter); }
   $('emptyState').style.display=contacts.length===0?'block':'none';
   const el=$('contactList'); el.innerHTML='';
   list.forEach((c,idx)=>{
@@ -1259,8 +1274,8 @@ $('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('custom
 const _acvDrive=$('applyCustomViewDrive'); if(_acvDrive) _acvDrive.addEventListener('click',()=>{ const v=parseFloat($('customViewDrive').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; const cv=$('customView'); if(cv) cv.value=v; updateViewUI(); zoomMapsToRadius(v); toast('Map view: '+v+' miles around you'); });
 $('soundToggle').checked=soundOn;
 $('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} updateSoundUI(); if(!soundOn) stopCustomAudio(); });
-function updateNotifUI(){ const el=$('notifState'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; $('notifBtn').style.display='none'; return; } const p=Notification.permission; el.textContent=p==='granted'?'✓ Notifications are ON for this device.':p==='denied'?'Notifications are blocked in browser settings. In-app banner + sound will still alert you.':'Notifications are not on yet.'; $('notifBtn').textContent=p==='granted'?'Notifications on ✓':'Turn on notifications'; }
-$('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; try{ await Notification.requestPermission(); }catch(e){} updateNotifUI(); });
+function updateNotifUI(){ const el=$('notifState'); const btn=$('notifBtn'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; btn.style.display='none'; return; } const p=Notification.permission; if(p==='denied'){ el.textContent='Notifications are blocked in your browser settings. The in-app banner and sound will still alert you.'; btn.textContent='Turn notifications on'; return; } if(p==='granted'&&notifOn){ el.textContent='✓ Notifications are ON.'; btn.textContent='Turn notifications off'; } else { el.textContent='Notifications are OFF.'; btn.textContent='Turn notifications on'; } }
+$('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; if(Notification.permission==='granted'){ notifOn=!notifOn; try{ localStorage.setItem('rg_notif', notifOn?'1':'0'); }catch(e){} updateNotifUI(); toast(notifOn?'Notifications on':'Notifications off'); return; } try{ const r=await Notification.requestPermission(); if(r==='granted'){ notifOn=true; try{ localStorage.setItem('rg_notif','1'); }catch(e){} } }catch(e){} updateNotifUI(); });
 updateDistUI(); updateNotifUI(); updateViewUI();
 
 /* SOUND — built-in tones (WebAudio, no files needed) + custom file from the phone */
@@ -1342,7 +1357,7 @@ function checkAlerts(){
       $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
       $('alertBanner').classList.add('show');
       playAlertSound();
-      if('Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
+      if(notifOn && 'Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
       if(navigator.vibrate) navigator.vibrate([200,100,200]);
     }
   }
