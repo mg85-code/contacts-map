@@ -314,6 +314,18 @@ input,select{ min-height:48px }
 .trip-stop{display:flex;gap:10px;align-items:flex-start;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
 .trip-stop input{width:22px;height:22px;margin-top:2px;flex-shrink:0}
 .trip-result-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-top:10px}
+/* AI SPARKLE — the colorful Gemini-style star that stands for "Ask for help"
+   wherever the robot emoji used to be. Gentle twinkle; off for reduced motion. */
+.ai-spark{width:22px;height:22px;flex-shrink:0;vertical-align:-4px;filter:drop-shadow(0 1px 3px rgba(120,80,200,.45));animation:aiTwinkle 3.2s ease-in-out infinite}
+.ai-spark-lg{width:30px;height:30px;vertical-align:-7px}
+.ai-spark-sm{width:16px;height:16px;vertical-align:-2px}
+@keyframes aiTwinkle{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.15) rotate(9deg)}}
+@media (prefers-reduced-motion: reduce){.ai-spark{animation:none}}
+/* PLANNED TRIP LIST — swipe a stop sideways to remove it; press & hold, then
+   drag, to move it up or down. Vertical page scroll still works (pan-y). */
+.trip-result-item[data-cid]{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.trip-result-item.dragging{box-shadow:0 16px 36px rgba(0,0,0,.30);border-color:var(--gold);position:relative;z-index:6}
+.trip-result-item.swipe-remove{background:#fbe9e7;border-color:#c02727}
 .trip-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
 /* FEEDBACK */
 .feedback-text{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.5;resize:vertical}
@@ -345,7 +357,7 @@ input,select{ min-height:48px }
 .stat-label{font-size:15px;font-weight:600;color:var(--muted)}
 .menu-btn:active{transform:scale(.97)}
 .chat-fab:active{transform:scale(.97)}
-.chat-window{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:185;width:min(385px,calc(100vw - 24px));height:min(580px,72dvh);background:var(--cream);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.30);display:none;flex-direction:column;overflow:hidden}
+.chat-window{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:260;width:min(385px,calc(100vw - 24px));height:min(580px,72dvh);background:var(--cream);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.30);display:none;flex-direction:column;overflow:hidden}
 .chat-window.open{display:flex}
 .chat-head{background:var(--green);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
 .chat-thread{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:9px;background:var(--cream2)}
@@ -601,13 +613,13 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
         </div>
       </div>
       <button type="button" id="drawerFeedbackBtn" class="menu-row"><span>💬 Feedback</span></button>
-      <button type="button" id="drawerHelpBtn" class="menu-row"><span>🤖 Ask for help</span></button>
+      <button type="button" id="drawerHelpBtn" class="menu-row"><span><svg class="ai-spark" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="aiG1" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4285f4"/><stop offset=".5" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#aiG1)" d="M12 24A14.304 14.304 0 0 0 9.414 15.586 14.304 14.304 0 0 0 0 12a14.304 14.304 0 0 0 9.414-3.586A14.304 14.304 0 0 0 12 0a14.304 14.304 0 0 0 2.586 8.414A14.304 14.304 0 0 0 24 12a14.304 14.304 0 0 0-9.414 3.586A14.304 14.304 0 0 0 12 24Z"/></svg> Ask for help</span></button>
       <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📊 Feedback dashboard</span></button>
       <div class="menu-item" id="adminKeysItem" data-menu="keys" style="display:none">
         <button type="button" class="menu-row" data-menu="keys" aria-expanded="false"><span>🔑 App keys — admin</span><span class="chev" aria-hidden="true">▾</span></button>
         <div class="menu-body">
           <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px">
-            <p class="muted" style="margin:0">These two keys switch on the 🤖 help assistant and the Google address suggestions for everyone using the app. Paste each key once — it is saved inside the app and never shown again.</p>
+            <p class="muted" style="margin:0">These two keys switch on the <svg class="ai-spark ai-spark-sm" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="aiG3" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4285f4"/><stop offset=".5" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#aiG3)" d="M12 24A14.304 14.304 0 0 0 9.414 15.586 14.304 14.304 0 0 0 0 12a14.304 14.304 0 0 0 9.414-3.586A14.304 14.304 0 0 0 12 0a14.304 14.304 0 0 0 2.586 8.414A14.304 14.304 0 0 0 24 12a14.304 14.304 0 0 0-9.414 3.586A14.304 14.304 0 0 0 12 24Z"/></svg> help assistant and the Google address suggestions for everyone using the app. Paste each key once — it is saved inside the app and never shown again.</p>
             <div class="field" style="margin-top:14px">
               <label for="aiKeyInput">AI key</label>
               <input id="aiKeyInput" type="password" autocomplete="off" placeholder="Paste the AI key">
@@ -630,7 +642,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.2</div>
+      <div class="side-version">Version 3.3</div>
     </div>
   </aside>
 
@@ -871,10 +883,23 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
             <button type="button" id="tripSetStartBtn" class="btn btn-gold">Set start</button>
           </div>
           <p id="tripStartLabel" class="muted" style="margin-top:8px"></p>
+          <div style="font-weight:700;margin:12px 0 6px">— or start from one of your contacts —</div>
+          <div class="autocomplete">
+            <label for="tripStartSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search your contacts for the start</label>
+            <input id="tripStartSearch" type="text" autocomplete="off" placeholder="Type a name — e.g. Cohen" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+            <div id="tripStartResults" class="suggest"></div>
+          </div>
         </div>
         <div>
-          <label for="tripDestSelect" style="font-weight:700;display:block;margin-bottom:8px">2 · Where are you going? (your main destination)</label>
-          <select id="tripDestSelect" class="sound-select" style="width:100%"></select>
+          <label for="tripDestSearch" style="font-weight:700;display:block;margin-bottom:8px">2 · Where are you going? (your main destination)</label>
+          <div class="autocomplete">
+            <input id="tripDestSearch" type="text" autocomplete="off" placeholder="Type a name — e.g. Cohen" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+            <div id="tripDestResults" class="suggest"></div>
+          </div>
+          <div id="tripDestChosenWrap" style="display:none;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+            <span id="tripDestChosen" style="font-weight:700"></span>
+            <button type="button" id="tripDestClearContactBtn" class="btn btn-outline btn-small">✕ Clear</button>
+          </div>
           <p class="muted" style="margin:12px 0 0;text-align:center;font-weight:700">— or go to any address —</p>
           <div class="trip-dest-addr-wrap autocomplete">
             <label for="tripDestAddr" style="font-weight:700;display:block;margin-bottom:6px">Destination address</label>
@@ -889,21 +914,21 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
         </div>
         <div>
           <div style="font-weight:700;margin-bottom:8px">3 · How far out of your way are you ready to go?</div>
-          <p class="muted" style="margin:0 0 10px">Pick how far off your road a visit may be — the list below then shows only the people inside that distance.</p>
           <div class="dist-btns" id="tripShowBtns" role="group" aria-label="How far out of the way">
             <button type="button" class="dist-btn" data-trip-show="onway">On the way only</button>
             <button type="button" class="dist-btn" data-trip-show="1">1 mile</button>
             <button type="button" class="dist-btn" data-trip-show="2">2 miles</button>
             <button type="button" class="dist-btn" data-trip-show="5">5 miles</button>
             <button type="button" class="dist-btn" data-trip-show="10">10 miles</button>
-            <button type="button" class="dist-btn" data-trip-show="custom">My own number…</button>
+            <button type="button" class="dist-btn" data-trip-show="custom">My own number</button>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600">Within <input id="tripShowCustom" type="number" min="0" step="0.5" value="3" aria-label="Your own number of miles" style="width:76px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"> miles</span>
             <button type="button" class="dist-btn" data-trip-show="all">Everyone</button>
           </div>
-          <div id="tripShowCustomWrap" style="display:none;align-items:center;gap:6px;font-weight:600;margin-top:10px">Within <input id="tripShowCustom" type="number" min="0" step="0.5" value="3" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"> miles</div>
-          <p id="tripShowNote" class="muted" style="margin-top:8px"></p>
         </div>
         <div>
           <div style="font-weight:700;margin-bottom:8px">4 · Who do you want to visit? Tick them</div>
+          <label for="tripStopsSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search the people list</label>
+          <input id="tripStopsSearch" type="text" autocomplete="off" placeholder="🔍 Type a name to find someone fast…" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
           <div id="tripStops" class="checklist" style="max-height:300px"></div>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
@@ -911,7 +936,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
           <label style="display:flex;gap:8px;align-items:center;font-weight:600">Minutes at each visit: <input id="tripVisitMins" type="number" min="0" max="120" step="5" value="15" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"></label>
         </div>
         <button type="button" id="planTripBtn" class="btn btn-green btn-large">🧭 Plan my trip — best order</button>
-        <button type="button" id="tripPreviewShowBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>
+        <button type="button" id="tripPreviewShowBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ Show trip on map</button>
         <div id="tripResult"></div>
         <div id="tripPreviewWrap" style="display:none;margin-top:16px;border:1px solid var(--gold);border-radius:14px;padding:14px;background:var(--paper)">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
@@ -921,7 +946,6 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
             <button type="button" id="tripPreviewEditBtn" class="btn btn-green" style="flex:1;min-width:140px">✏️ Edit trip</button>
             <button type="button" id="tripPreviewHideBtn" class="btn btn-gold" style="flex:1;min-width:140px">Hide map</button>
-            <button type="button" id="tripPreviewMainBtn" class="btn btn-outline" style="flex:1;min-width:140px">See on main map</button>
           </div>
         </div>
       </div>
@@ -955,7 +979,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
   </div>
   <div id="helpWindow" class="chat-window" role="dialog" aria-label="Ask for help">
     <div class="chat-head">
-      <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1">🤖 Ask for help</div><div style="font-size:12px;opacity:.85;margin-top:3px">How to use The Rebbe's Waze</div></div>
+      <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1"><svg class="ai-spark ai-spark-lg" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="aiG2" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4285f4"/><stop offset=".5" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#aiG2)" d="M12 24A14.304 14.304 0 0 0 9.414 15.586 14.304 14.304 0 0 0 0 12a14.304 14.304 0 0 0 9.414-3.586A14.304 14.304 0 0 0 12 0a14.304 14.304 0 0 0 2.586 8.414A14.304 14.304 0 0 0 24 12a14.304 14.304 0 0 0-9.414 3.586A14.304 14.304 0 0 0 12 24Z"/></svg> Ask for help</div><div style="font-size:12px;opacity:.85;margin-top:3px">How to use The Rebbe's Waze</div></div>
       <button type="button" id="helpCloseBtn" class="btn" style="background:#fff;color:var(--green);padding:9px 14px;min-height:44px" aria-label="Close help chat">✕</button>
     </div>
     <div id="helpThread" class="chat-thread" aria-live="polite"></div>
@@ -1091,7 +1115,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
     <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
-  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><span id="alertCount" style="display:block;width:fit-content;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:6px"></span><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><span id="alertCount" style="display:block;width:fit-content;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:6px"></span><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button><button id="dismissAllAlerts" class="btn" style="background:#fff;color:#7c1d1d;display:none">Dismiss all</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
     <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -1641,7 +1665,7 @@ $('fStreet').addEventListener('input', ()=>{
     }catch(e){ box.style.display='none'; }
   },350);
 });
-document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')){ const sbx=$('suggestBox'); if(sbx) sbx.style.display='none'; const tdx=$('tripDestSuggest'); if(tdx) tdx.style.display='none'; const tsx=$('tripStartSuggest'); if(tsx) tsx.style.display='none'; } });
+document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')){ const sbx=$('suggestBox'); if(sbx) sbx.style.display='none'; const tdx=$('tripDestSuggest'); if(tdx) tdx.style.display='none'; const tsx=$('tripStartSuggest'); if(tsx) tsx.style.display='none'; const tsr=$('tripStartResults'); if(tsr) tsr.style.display='none'; const tdr=$('tripDestResults'); if(tdr) tdr.style.display='none'; } });
 function stateAbbr(name){ const map={'New York':'NY','New Jersey':'NJ','Pennsylvania':'PA','Connecticut':'CT','Florida':'FL'}; return map[name]||name; }
 
 /* SIDE PANEL — settings, alert sound and Add a contact live here, off the main page */
@@ -2347,6 +2371,8 @@ function checkAlerts(){
 function updateAlertCountUI(){
   const cnt=$('alertCount'); if(cnt) cnt.textContent=alertBatchShown+' of '+(alertBatchShown+alertQueue.length)+' near you';
   const dis=$('dismissAlert'); if(dis) dis.textContent=alertQueue.length?('Dismiss — next ('+alertQueue.length+' more)'):'Dismiss';
+  /* "Dismiss all" appears only while more alerts are waiting behind this one */
+  const all=$('dismissAllAlerts'); if(all){ if(alertQueue.length){ all.style.display=''; all.textContent='Dismiss all ('+(alertQueue.length+1)+')'; } else all.style.display='none'; }
 }
 function showNextAlert(){
   /* Skip anyone who was deleted while waiting, then show the next in line.
@@ -2378,6 +2404,9 @@ function displayAlertBanner(c){
   if(navigator.vibrate) navigator.vibrate([200,100,200]);
 }
 $('dismissAlert').addEventListener('click',()=>{ resetAlertAddrPanel(); alertShowingId=null; showNextAlert(); });
+/* DISMISS ALL — clear the whole line of waiting alerts at once: the banner
+   closes and the count starts fresh, exactly like stopping driving does. */
+const _daa=$('dismissAllAlerts'); if(_daa) _daa.addEventListener('click',()=>{ resetAlertAddrPanel(); alertQueue=[]; alertShowingId=null; alertBatchShown=0; $('alertBanner').classList.remove('show'); toast('All nearby alerts dismissed'); });
 /* ALERT BANNER — Show address: reveals the person's address inside the banner, with the
    same two-squares copy button as the driving list. */
 let alertAddr=''; let alertContactId=null;
@@ -2472,6 +2501,8 @@ const _im=$('installModal'); if(_im) _im.addEventListener('click', e=>{ if(e.tar
 
 /* TRIP PLANNER */
 let tripStart=null, tripDestId='', tripDestCustom=null, tripStopIds=new Set(), tripLine=null;
+let tripPlanOrder=null; /* the planned trip's stop order (contact ids) once the person has arranged it — their order wins over the automatic best order */
+let tripStopsQuery='';  /* step-4 search text for the people-to-visit list */
 let tripShowMode='all', tripShowCustomMiles=3;
 function tripShowLimit(){
   if(tripShowMode==='onway') return 0.1;
@@ -2533,42 +2564,37 @@ function clearTripDestCustom(silent){
   if(!silent) renderTripPlanner();
 }
 function renderTripPlanner(){
-  const sel=$('tripDestSelect'); if(!sel) return;
   const withPin=contacts.filter(c=>c.lat!=null&&c.lng!=null);
-  const prev=tripDestId;
-  sel.innerHTML='<option value="">— No fixed destination — just visit the people I tick —</option>'+withPin.map(c=>`<option value="${c.id}">${escapeHtml(c.name||'No name')}${c.city?' — '+escapeHtml(c.city):''}</option>`).join('');
-  if(withPin.some(c=>c.id===prev)) sel.value=prev; else { sel.value=''; tripDestId=''; }
+  if(tripDestId && !withPin.some(c=>c.id===tripDestId)) tripDestId='';
   const dest=tripDestContact();
   const destPt=tripDestPoint();
+  /* Step 2 — the chosen destination contact is named under its search box,
+     with a Clear button; the box itself shows the name when not being typed in */
+  const chosenWrap=$('tripDestChosenWrap'), chosenTxt=$('tripDestChosen'), destSearch=$('tripDestSearch');
+  if(chosenWrap&&chosenTxt){
+    if(dest){ chosenWrap.style.display='flex'; chosenTxt.textContent='✓ Destination: '+(dest.name||'No name')+(fullAddress(dest)?' — '+fullAddress(dest):''); if(destSearch&&document.activeElement!==destSearch) destSearch.value=dest.name||''; }
+    else { chosenWrap.style.display='none'; if(destSearch&&document.activeElement!==destSearch&&!tripDestCustom) destSearch.value=''; }
+  }
   const box=$('tripStops'); if(!box) return;
   box.innerHTML='';
   if(!withPin.length){ box.innerHTML='<p class="muted" style="padding:12px">No contacts on the map yet.</p>'; return; }
   const rows=withPin.map(c=>({c, w:onTheWayInfo(c), fromStart:tripStart?haversineMiles(tripStart.lat,tripStart.lng,c.lat,c.lng):null, fromDest:destPt?haversineMiles(destPt.lat,destPt.lng,c.lat,c.lng):null}));
-  /* Step 3 — "How far out of your way are you ready to go?" The setting is always
-     visible. With a start and a destination it measures how far off the road each
-     person is; with only a start (or only a destination) it measures from there.
-     The destination itself and anyone already ticked always stay visible, so a
-     chosen stop can never vanish from the list. */
+  /* Step 3 — "How far out of your way are you ready to go?" With a start and a
+     destination it measures how far off the road each person is; with only a
+     start (or only a destination) it measures from there. The destination
+     itself and anyone already ticked always stay visible, so a chosen stop
+     can never vanish from the list. */
   document.querySelectorAll('#tripShowBtns .dist-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-trip-show')===tripShowMode));
-  const showWrap=$('tripShowCustomWrap'); if(showWrap) showWrap.style.display=tripShowMode==='custom'?'inline-flex':'none';
   const limit=tripShowLimit();
   const canFilter=!!(tripStart||destPt);
-  let hiddenCount=0;
   const visible=rows.filter(r=>{
     if(!canFilter||limit===Infinity) return true;
     if(dest&&r.c.id===dest.id) return true;
     if(tripStopIds.has(r.c.id)) return true;
     const d=tripDetourDist(r);
     if(d!=null&&d<=limit) return true;
-    hiddenCount++; return false;
+    return false;
   });
-  const showNote=$('tripShowNote');
-  if(showNote){
-    if(!canFilter) showNote.textContent='Set your start in step 1 (and your destination in step 2 for "off the road") and this choice will narrow the list below.';
-    else if(hiddenCount>0) showNote.textContent=hiddenCount+(hiddenCount===1?' person is':' people are')+' further away than that — tap "Everyone" above to see them.';
-    else if(limit!==Infinity) showNote.textContent='Showing everyone within '+(tripShowMode==='onway'?'the road itself':(limit+' mile'+(limit===1?'':'s')))+(tripStart&&destPt?' of your road.':' of your '+(tripStart?'start.':'destination.'));
-    else showNote.textContent='';
-  }
   visible.sort((a,b)=>{
     const ad=dest&&a.c.id===dest.id?1:0, bd=dest&&b.c.id===dest.id?1:0;
     if(ad!==bd) return ad-bd;
@@ -2578,8 +2604,11 @@ function renderTripPlanner(){
     if(db!=null) return 1;
     return (a.c.name||'').localeCompare(b.c.name||'');
   });
-  if(!visible.length) box.innerHTML='<p class="muted" style="padding:12px">Nobody is that close — widen the distance in step 3 above to see more people.</p>';
-  visible.forEach(({c,w,fromStart})=>{
+  /* Step 4 search — typing a name narrows the tick list to the matches */
+  const q=tripStopsQuery.trim().toLowerCase();
+  const shown=q?visible.filter(r=>(((r.c.name||'')+' '+(r.c.city||'')+' '+fullAddress(r.c)).toLowerCase().indexOf(q)>-1)):visible;
+  if(!shown.length) box.innerHTML='<p class="muted" style="padding:12px">'+(q?('No one matches &ldquo;'+escapeHtml(tripStopsQuery.trim())+'&rdquo; — clear the search box to see everyone again.'):'Nobody is that close — widen the distance in step 3 above to see more people.')+'</p>';
+  shown.forEach(({c,w,fromStart})=>{
     const isDest=dest&&c.id===dest.id;
     const onWay=!!(w&&w.dist<=3);
     let note='';
@@ -2589,13 +2618,52 @@ function renderTripPlanner(){
     const label=document.createElement('label'); label.className='trip-stop';
     label.innerHTML=`<input type="checkbox" ${tripStopIds.has(c.id)||isDest?'checked':''} ${isDest?'disabled':''}>${avatarHtml(c,true)}<span><strong>${escapeHtml(c.name||'No name')}</strong><br><span class="muted">${escapeHtml(fullAddress(c))}${note?'<br>'+escapeHtml(note):''}</span></span>`;
     const chk=label.querySelector('input');
-    chk.addEventListener('change',()=>{ if(chk.checked) tripStopIds.add(c.id); else tripStopIds.delete(c.id); });
+    chk.addEventListener('change',()=>{ if(chk.checked) tripStopIds.add(c.id); else tripStopIds.delete(c.id); tripPlanOrder=null; });
     box.appendChild(label);
   });
 }
-const _tds=$('tripDestSelect'); if(_tds) _tds.addEventListener('change', e=>{ tripDestId=e.target.value; if(tripDestId) clearTripDestCustom(true); autoTickOnWay(); renderTripPlanner(); if(tripDestId) toast('Destination set'); });
+/* CONTACT SEARCH — one pattern wherever the planner picks a contact (step 1
+   start, step 2 destination): type a name, the matches come up, tap to pick.
+   Only contacts with a place on the map can be a start or a destination. */
+function contactMatches(q){
+  const s=(q||'').trim().toLowerCase(); if(!s) return [];
+  return contacts.filter(c=>c.lat!=null&&c.lng!=null&&(((c.name||'')+' '+(c.city||'')+' '+fullAddress(c)+' '+(c.phone||'')).toLowerCase().indexOf(s)>-1)).slice(0,8);
+}
+function wireContactSearch(inputId, boxId, onPick){
+  const inp=$(inputId), box=$(boxId); if(!inp||!box) return;
+  const render=()=>{
+    const list=contactMatches(inp.value);
+    box.innerHTML='';
+    if(!inp.value.trim()||!list.length){ box.style.display='none'; return; }
+    list.forEach(c=>{
+      const btn=document.createElement('button'); btn.type='button';
+      btn.textContent=(c.name||'No name')+(fullAddress(c)?' — '+fullAddress(c):'');
+      btn.addEventListener('click', ()=>{ box.style.display='none'; onPick(c); });
+      box.appendChild(btn);
+    });
+    box.style.display='block';
+  };
+  inp.addEventListener('input', render);
+  inp.addEventListener('focus', render);
+}
+wireContactSearch('tripStartSearch','tripStartResults', c=>{
+  tripStart={lat:c.lat,lng:c.lng,label:c.name||'Contact'};
+  tripPlanOrder=null;
+  const addr=$('tripStartAddr'); if(addr) addr.value=c.name||'';
+  const lbl=$('tripStartLabel'); if(lbl) lbl.textContent='';
+  const si=$('tripStartSearch'); if(si) si.value='';
+  autoTickOnWay(); renderTripPlanner();
+  toast('Start set: '+(c.name||'contact'));
+});
+wireContactSearch('tripDestSearch','tripDestResults', c=>{
+  tripDestId=c.id; clearTripDestCustom(true); tripPlanOrder=null;
+  autoTickOnWay(); renderTripPlanner();
+  toast('Destination set');
+});
+const _tdcc=$('tripDestClearContactBtn'); if(_tdcc) _tdcc.addEventListener('click', ()=>{ tripDestId=''; tripPlanOrder=null; const ds=$('tripDestSearch'); if(ds) ds.value=''; renderTripPlanner(); });
+const _tStopSearch=$('tripStopsSearch'); if(_tStopSearch) _tStopSearch.addEventListener('input', ()=>{ tripStopsQuery=_tStopSearch.value; renderTripPlanner(); });
 document.querySelectorAll('#tripShowBtns .dist-btn').forEach(b=>b.addEventListener('click', ()=>{ tripShowMode=b.getAttribute('data-trip-show'); renderTripPlanner(); }));
-const _tShowCustom=$('tripShowCustom'); if(_tShowCustom) _tShowCustom.addEventListener('input', e=>{ const v=parseFloat(e.target.value); tripShowCustomMiles=isNaN(v)?0:v; renderTripPlanner(); });
+const _tShowCustom=$('tripShowCustom'); if(_tShowCustom) _tShowCustom.addEventListener('input', e=>{ const v=parseFloat(e.target.value); tripShowCustomMiles=isNaN(v)?0:v; tripShowMode='custom'; renderTripPlanner(); });
 /* Destination address autocomplete — same live suggestions as the add-contact form */
 let tripAcTimer=null;
 const _tda=$('tripDestAddr'); if(_tda) _tda.addEventListener('input', ()=>{
@@ -2639,15 +2707,18 @@ const _tdsb=$('tripDestSetBtn'); if(_tdsb) _tdsb.addEventListener('click', async
 const _tdcb=$('tripDestClearBtn'); if(_tdcb) _tdcb.addEventListener('click', ()=>{ clearTripDestCustom(false); toast('Address destination cleared'); });
 const _tgb=$('tripGpsBtn'); if(_tgb) _tgb.addEventListener('click', async()=>{
   $('tripStartLabel').textContent='Getting your location…';
-  try{ const loc=await getLocationOnce(); if(!myLoc) myLoc=loc; tripStart={lat:loc.lat,lng:loc.lng,label:'where you are now'}; $('tripStartLabel').textContent='✓ Starting from where you are now.'; autoTickOnWay(); renderTripPlanner(); }
+  try{ const loc=await getLocationOnce(); if(!myLoc) myLoc=loc; tripStart={lat:loc.lat,lng:loc.lng,label:'Current location'}; tripPlanOrder=null; const _sa=$('tripStartAddr'); if(_sa) _sa.value='Current location'; $('tripStartLabel').textContent=''; autoTickOnWay(); renderTripPlanner(); }
   catch(e){ $('tripStartLabel').textContent='Could not get your location — allow location for this site, or type your start address instead.'; }
 });
 const _tss=$('tripSetStartBtn'); if(_tss) _tss.addEventListener('click', async()=>{
   const q=$('tripStartAddr').value.trim();
   if(!q){ toast('Type a start address first'); return; }
+  /* The box already names the chosen start (Current location, or a contact
+     picked in the search) — Set start must not look that text up as an address */
+  if(tripStart && q===tripStart.label){ toast('Your start is already set — type a different address to change it'); return; }
   $('tripStartLabel').textContent='Finding that address…';
   try{ const res=await nominatimSearch(q,1);
-    if(res&&res[0]){ tripStart={lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),label:q}; $('tripStartLabel').textContent='✓ Starting from: '+res[0].display_name; autoTickOnWay(); renderTripPlanner(); }
+    if(res&&res[0]){ tripStart={lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),label:q}; tripPlanOrder=null; $('tripStartLabel').textContent='✓ Starting from: '+res[0].display_name; autoTickOnWay(); renderTripPlanner(); }
     else $('tripStartLabel').textContent='Could not find that address — check it and try again.';
   }catch(e){ $('tripStartLabel').textContent='Could not look up that address right now — check your connection and try again.'; }
 });
@@ -2683,13 +2754,25 @@ const _editTb=$('editTripBtn'); if(_editTb) _editTb.addEventListener('click', ()
 /* TRIP PREVIEW MAP — inside the planner page itself. Shows how the trip looks without
    leaving the planner for the home page, with Hide map + Edit trip always visible. */
 let tripPreviewMap=null, tripPreviewLine=null, tripPreviewMarkers=[], lastTripPts=null;
+/* Order the ticked stops for a trip: once the person has arranged the plan
+   by hand (tripPlanOrder), their order wins; anyone ticked afterwards is
+   slotted in by nearest-next. With no hand order, it is the automatic best
+   order — always drive to the nearest next stop. */
+function orderTripStops(stops){
+  const remaining=stops.slice(); const ordered=[];
+  if(tripPlanOrder&&tripPlanOrder.length){
+    tripPlanOrder.forEach(id=>{ const i=remaining.findIndex(c=>c.id===id); if(i>-1) ordered.push(remaining.splice(i,1)[0]); });
+  }
+  let cur=ordered.length?{lat:ordered[ordered.length-1].lat,lng:ordered[ordered.length-1].lng}:{lat:tripStart.lat,lng:tripStart.lng};
+  while(remaining.length){ let bi=0,bd=Infinity; remaining.forEach((c,i)=>{ const d=haversineMiles(cur.lat,cur.lng,c.lat,c.lng); if(d<bd){bd=d;bi=i;} }); const nxt=remaining.splice(bi,1)[0]; ordered.push(nxt); cur={lat:nxt.lat,lng:nxt.lng}; }
+  return ordered;
+}
 function buildTripPts(){
   if(!tripStart) return null;
   const dest=tripDestContact(); const destPt=tripDestPoint();
   const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
   if(!stops.length&&!destPt) return null;
-  const remaining=stops.slice(); const ordered=[]; let cur={lat:tripStart.lat,lng:tripStart.lng};
-  while(remaining.length){ let bi=0,bd=Infinity; remaining.forEach((c,i)=>{ const d=haversineMiles(cur.lat,cur.lng,c.lat,c.lng); if(d<bd){bd=d;bi=i;} }); const nxt=remaining.splice(bi,1)[0]; ordered.push(nxt); cur={lat:nxt.lat,lng:nxt.lng}; }
+  const ordered=orderTripStops(stops);
   if(dest) ordered.push(dest);
   const returnHome=($('tripReturn')&&$('tripReturn').checked);
   const pts=[{name:'Start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng}].concat(ordered.map(c=>({name:c.name||'No name',lat:c.lat,lng:c.lng,contact:c})));
@@ -2731,29 +2814,22 @@ function showTripPreview(){
 function hideTripPreview(){ const wrap=$('tripPreviewWrap'); if(wrap) wrap.style.display='none'; }
 function editFromPreview(){ hideTripPreview(); const tp=$('tripPanel'); if(tp) tp.scrollIntoView({behavior:'smooth',block:'start'}); const po=$('tripOverlay'); if(po) po.scrollTop=0; toast('Edit your trip — everything is still ticked as you left it'); }
 const _tpsb=$('tripPreviewShowBtn'); if(_tpsb) _tpsb.addEventListener('click', showTripPreview);
-const _tphb=$('tripPreviewHideBtn'); if(_tphb) _tphb.addEventListener('click', ()=>{ hideTripPreview(); const tp=$('tripPanel'); if(tp) tp.scrollIntoView({behavior:'smooth',block:'start'}); });
+const _tphb=$('tripPreviewHideBtn'); if(_tphb) _tphb.addEventListener('click', ()=>{ hideTripPreview(); });
 const _tpeb=$('tripPreviewEditBtn'); if(_tpeb) _tpeb.addEventListener('click', editFromPreview);
 const _tpmb=$('tripPreviewMainBtn'); if(_tpmb) _tpmb.addEventListener('click', ()=>{ if(lastTripPts) { try{ drawTripLine(lastTripPts); }catch(e){} } closeTripPage(); const mel=document.getElementById('map'); if(mel) mel.scrollIntoView({behavior:'smooth',block:'center'}); });
-const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
+/* THE PLANNED TRIP — "Your trip — best order". renderTripResult() draws the
+   list from buildTripPts(), so the automatic order, a hand-arranged order
+   and the map preview all show the same trip. A stop row carries data-cid
+   when it is a visit the person can swipe away or drag into a new place;
+   the start, the destination and the drive home stay fixed. */
+function renderTripResult(){
   const resEl=$('tripResult'); if(!resEl) return;
-  if(!tripStart){ toast('Set your start first'); return; }
+  const pts=buildTripPts();
+  if(!pts){ resEl.innerHTML='<p class="muted" style="margin-top:14px">Everyone was taken off this trip — tick people in step 4 above, then tap "Plan my trip" again.</p>'; lastTripPts=null; return; }
   const dest=tripDestContact();
   const destPt=tripDestPoint();
-  const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
-  if(!stops.length&&!destPt){ toast('Tick who to visit first'); return; }
-  /* Best order: always drive to the nearest next stop; the destination goes last */
-  const remaining=stops.slice(); const ordered=[]; let cur={lat:tripStart.lat,lng:tripStart.lng};
-  while(remaining.length){
-    let bi=0, bd=Infinity;
-    remaining.forEach((c,i)=>{ const d=haversineMiles(cur.lat,cur.lng,c.lat,c.lng); if(d<bd){ bd=d; bi=i; } });
-    const nxt=remaining.splice(bi,1)[0]; ordered.push(nxt); cur={lat:nxt.lat,lng:nxt.lng};
-  }
-  if(dest) ordered.push(dest);
-  const numContactStops=ordered.length;
+  const numContactStops=pts.filter(p=>p.contact).length;
   const returnHome=$('tripReturn').checked;
-  const pts=[{name:'Start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng}].concat(ordered.map(c=>({name:c.name||'No name',lat:c.lat,lng:c.lng,contact:c})));
-  if(destPt&&!dest) pts.push({name:'🏁 Destination — '+destPt.label,lat:destPt.lat,lng:destPt.lng,contact:null});
-  if(returnHome) pts.push({name:'Back to start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng});
   let total=0; const legs=[];
   for(let i=1;i<pts.length;i++){ const d=haversineMiles(pts[i-1].lat,pts[i-1].lng,pts[i].lat,pts[i].lng); legs.push(d); total+=d; }
   const visitMins=parseFloat($('tripVisitMins').value)||0;
@@ -2761,10 +2837,11 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   const driveMins=total/25*60;
   const totalMins=driveMins+visitMins*numVisits;
   let html='<h3 style="margin-top:16px">Your trip — best order</h3>';
+  html+='<p class="muted" style="margin:4px 0 2px">Swipe a person sideways to take them off the trip. Press &amp; hold a person, then drag, to change the order — the route and times follow your order.</p>';
   pts.forEach((p,i)=>{
     if(i===0){ html+=`<div class="trip-result-item"><div class="trip-num">▶</div><div><strong>${escapeHtml(p.name)}</strong><div class="muted">Your starting point</div></div></div>`; return; }
     const c=p.contact;
-    html+=`<div class="trip-result-item"><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&(c.phone||fullAddress(c))?`<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}${fullAddress(c)?`<button type="button" class="btn btn-gold btn-small trip-copy-btn" data-addr="${escapeHtml(fullAddress(c))}">📋 Copy address</button>`:''}</div>`:''}</div>`;
+    html+=`<div class="trip-result-item"${c&&c.id!==tripDestId?` data-cid="${c.id}"`:''}><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&(c.phone||fullAddress(c))?`<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}${fullAddress(c)?`<button type="button" class="btn btn-gold btn-small trip-copy-btn" data-addr="${escapeHtml(fullAddress(c))}">📋 Copy address</button>`:''}</div>`:''}</div>`;
   });
   html+=`<div style="margin-top:14px;padding:14px;border:1px solid var(--gold);border-radius:12px;background:var(--cream)"><strong style="font-size:17px">Total: ${total.toFixed(1)} miles</strong><div class="muted" style="margin-top:4px">Driving about ${fmtTime(driveMins)}${numVisits&&visitMins?` • plus ${numVisits} visit${numVisits===1?'':'s'} × ${visitMins} min = ${fmtTime(visitMins*numVisits)} of visiting`:''}<br><strong>Whole trip: about ${fmtTime(totalMins)}</strong>${returnHome?' • includes the drive back to your start':' • one-way — ends at your last stop'}</div></div>`;
   const origin=tripStart.lat+','+tripStart.lng;
@@ -2777,19 +2854,100 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   let gUrl='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(origin)+'&destination='+encodeURIComponent(destinationParam)+'&travelmode=driving';
   if(waypoints.length) gUrl+='&waypoints='+encodeURIComponent(waypoints.join('|'));
   html+=`<a class="btn btn-gold btn-large" style="margin-top:12px" target="_blank" rel="noopener" href="${gUrl}">🧭 Open this route in Google Maps</a>`;
-  html+=`<button type="button" id="tripSeeMapBtn" class="btn btn-outline btn-large" style="margin-top:10px">🗺️ See this trip on my map</button>`;
-  html+=`<button type="button" id="tripPreviewBtn2" class="btn btn-green btn-large" style="margin-top:10px">🗺️ Show trip on map — preview here</button>`;
+  html+=`<button type="button" id="tripPreviewBtn2" class="btn btn-green btn-large" style="margin-top:10px">🗺️ Show trip on map</button>`;
   html+=`<button type="button" id="tripEditBtn2" class="btn btn-outline btn-large" style="margin-top:10px">✏️ Edit trip — change the plan above</button>`;
   html+=`<button type="button" id="tripResetBtn" class="btn btn-gold btn-large" style="margin-top:10px">✕ Exit trip — reset map</button>`;
   resEl.innerHTML=html;
   resEl.querySelectorAll('.trip-copy-btn').forEach(b=>b.addEventListener('click',()=>copyTextToClipboard(b.getAttribute('data-addr'),b)));
+  resEl.querySelectorAll('.trip-result-item[data-cid]').forEach(row=>attachTripRowGestures(row));
   lastTripPts=pts;
-  const _smb=$('tripSeeMapBtn'); if(_smb) _smb.addEventListener('click', ()=>{ closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); });
   const _pv2=$('tripPreviewBtn2'); if(_pv2) _pv2.addEventListener('click', showTripPreview);
   const _ed2=$('tripEditBtn2'); if(_ed2) _ed2.addEventListener('click', editFromPreview);
   const _trb=$('tripResetBtn'); if(_trb) _trb.addEventListener('click', ()=>{ clearTripFromMap(); closeTripPage(); const _mel=document.getElementById('map'); if(_mel) _mel.scrollIntoView({behavior:'smooth',block:'center'}); toast('Trip cleared — your map is back to normal'); });
   drawTripLine(pts);
+}
+/* PLAN MY TRIP — a fresh plan starts from the automatic best order; from
+   there the person's own arrangement (tripPlanOrder) takes over. */
+const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
+  if(!tripStart){ toast('Set your start first'); return; }
+  const destPt=tripDestPoint();
+  const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
+  if(!stops.length&&!destPt){ toast('Tick who to visit first'); return; }
+  tripPlanOrder=null;
+  tripPlanOrder=orderTripStops(stops).map(c=>c.id);
+  renderTripResult();
 });
+/* Take one person off the planned trip (the swipe): untick them in step 4 as
+   well, so the plan and the tick list never disagree. */
+function removeTripStop(cid){
+  tripStopIds.delete(cid);
+  if(tripPlanOrder) tripPlanOrder=tripPlanOrder.filter(id=>id!==cid);
+  renderTripPlanner();
+  renderTripResult();
+  toast('Removed from the trip');
+}
+/* SWIPE & DRAG on a planned stop — a quick sideways swipe (either way) past
+   ~84px removes the person; a press-and-hold (380ms) turns the row into a
+   drag: moving it past a neighbour swaps them in the list, and letting go
+   saves the new order and re-draws the route and times to match. A plain
+   vertical scroll is left alone — the hold must come first. */
+function attachTripRowGestures(row){
+  const cid=row.getAttribute('data-cid'); if(!cid) return;
+  let sx=0, sy=0, mode=null, holdTimer=null, active=false;
+  /* While a drag is live, stop the page itself from scrolling away with the
+     finger — added only at drag start (after the hold), removed at the end */
+  const blockTouch=e=>{ if(e.cancelable) e.preventDefault(); };
+  const stopBlock=()=>{ document.removeEventListener('touchmove', blockTouch); };
+  row.addEventListener('click', e=>{ if(row._suppress){ e.preventDefault(); e.stopPropagation(); row._suppress=false; } }, true);
+  row.addEventListener('pointerdown', e=>{
+    if(e.target.closest('a,button')) return;
+    sx=e.clientX; sy=e.clientY; mode=null; active=true;
+    if(holdTimer) clearTimeout(holdTimer);
+    holdTimer=setTimeout(()=>{ if(!active) return; mode='drag'; row.classList.add('dragging'); document.addEventListener('touchmove', blockTouch, {passive:false}); try{ row.setPointerCapture(e.pointerId); }catch(err){} if(navigator.vibrate) navigator.vibrate(30); },380);
+  });
+  row.addEventListener('pointermove', e=>{
+    if(!active) return;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(mode==='drag'){
+      e.preventDefault();
+      row.style.transform='translateY('+dy+'px)';
+      const siblings=Array.prototype.slice.call(row.parentNode.querySelectorAll('.trip-result-item[data-cid]'));
+      const idx=siblings.indexOf(row); if(idx<0) return;
+      const rect=row.getBoundingClientRect(); const centre=rect.top+rect.height/2;
+      if(dy<0&&idx>0){ const prev=siblings[idx-1]; const pr=prev.getBoundingClientRect(); if(centre<pr.top+pr.height/2){ row.parentNode.insertBefore(row,prev); sy-=(pr.height+10); row.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
+      else if(dy>0&&idx<siblings.length-1){ const nxt=siblings[idx+1]; const nr=nxt.getBoundingClientRect(); if(centre>nr.top+nr.height/2){ row.parentNode.insertBefore(nxt,row); sy+=(nr.height+10); row.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
+    } else if(mode==='swipe'||(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy))){
+      if(mode!=='swipe'){ mode='swipe'; if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } try{ row.setPointerCapture(e.pointerId); }catch(err){} }
+      row.style.transform='translateX('+dx+'px)';
+      row.classList.toggle('swipe-remove', Math.abs(dx)>84);
+    } else if(Math.abs(dy)>12){
+      /* A vertical scroll — the page keeps it; cancel the hold */
+      if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; }
+      active=false;
+    }
+  });
+  const finish=e=>{
+    if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; }
+    stopBlock();
+    if(!active) return;
+    active=false;
+    if(mode==='swipe'){
+      const dx=e.clientX-sx;
+      row.style.transform=''; row.classList.remove('swipe-remove');
+      row._suppress=true; setTimeout(()=>{ row._suppress=false; },350);
+      if(Math.abs(dx)>84) removeTripStop(cid);
+    } else if(mode==='drag'){
+      row.style.transform=''; row.classList.remove('dragging');
+      row._suppress=true; setTimeout(()=>{ row._suppress=false; },350);
+      tripPlanOrder=Array.prototype.slice.call(row.parentNode.querySelectorAll('.trip-result-item[data-cid]')).map(r=>r.getAttribute('data-cid'));
+      renderTripResult();
+      toast('Order saved — the route and times follow your order');
+    }
+    mode=null;
+  };
+  row.addEventListener('pointerup', finish);
+  row.addEventListener('pointercancel', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } stopBlock(); active=false; mode=null; row.style.transform=''; row.classList.remove('dragging'); row.classList.remove('swipe-remove'); });
+}
 
 /* FEEDBACK CHAT — a chat bubble, bottom-right. Type, or leave a WhatsApp-style voice note.
    Everything sent goes to the shared /feedback collection, which only Mendel's login can read,
@@ -2831,10 +2989,21 @@ function renderChatThread(){
 }
 /* The login handler calls renderSentFeedback() — in the chat it renders the thread */
 function renderSentFeedback(){ renderChatThread(); }
+/* The Feedback bubble must never sit on top of an open chat window — it used
+   to float over the Ask-for-help window's Send button. While either chat is
+   open, the bubble steps aside; both windows have their own ✕ to close. */
+function syncChatFab(){
+  const fab=$('chatFab'); if(!fab) return;
+  const cw=$('chatWindow'), hw=$('helpWindow');
+  const anyOpen=(cw&&cw.classList.contains('open'))||(hw&&hw.classList.contains('open'));
+  fab.style.display=anyOpen?'none':'';
+}
 function setChatOpen(open){
   const w=$('chatWindow'); if(!w) return;
+  if(open && typeof setHelpOpen==='function') setHelpOpen(false);
   w.classList.toggle('open',open);
   if(open){ renderChatThread(); const inp=$('chatInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
+  syncChatFab();
 }
 const _fab=$('chatFab'); if(_fab) _fab.addEventListener('click',()=>{ const w=$('chatWindow'); setChatOpen(!(w&&w.classList.contains('open'))); });
 const _ccb=$('chatCloseBtn'); if(_ccb) _ccb.addEventListener('click',()=>setChatOpen(false));
@@ -2987,6 +3156,19 @@ async function saveAppKey(field, slot, inputId){
     if(inp) inp.value='';
     refreshKeyStatusUI();
     toast('Saved ✔');
+    /* The AI key is tested the moment it is saved — one tiny question to
+       Google — so the admin sees right here whether the help assistant will
+       actually answer, and if not, exactly what Google said. */
+    if(slot==='gemini' && typeof geminiGenerate==='function'){
+      const st=$('aiKeyStatus'); if(st) st.textContent='Saved ✔ — testing the key…';
+      try{
+        await geminiGenerate([{role:'user',parts:[{text:'Reply with just the word: ready'}]}], false);
+        if(st) st.textContent='Saved ✔ — tested, and the AI answers 👍 (••••'+v.slice(-4)+')';
+        toast('AI key works ✔ — Ask for help is on');
+      }catch(e2){
+        if(st) st.textContent='Saved — but the test failed: '+(((e2&&e2.googleMessage)||'could not reach Google')).slice(0,160);
+      }
+    }
   }catch(e){ toast('Could not save — check your connection and try again'); }
 }
 (function initAppKeys(){
@@ -3048,7 +3230,7 @@ const _tsInp=$('tripStartAddr'); if(_tsInp) _tsInp.addEventListener('input', ()=
   if(q.length<4){ box.style.display='none'; return; }
   clearTimeout(tripStartAcTimer);
   tripStartAcTimer=setTimeout(async()=>{
-    const applyStart=(lat,lng,label)=>{ tripStart={lat:lat,lng:lng,label:label}; $('tripStartLabel').textContent='✓ Starting from: '+label; autoTickOnWay(); renderTripPlanner(); };
+    const applyStart=(lat,lng,label)=>{ tripStart={lat:lat,lng:lng,label:label}; tripPlanOrder=null; $('tripStartLabel').textContent='✓ Starting from: '+label; autoTickOnWay(); renderTripPlanner(); };
     const gList=await googlePlaceSuggestions(q);
     if(gList){
       box.innerHTML=''; gList.forEach(sug=>{
@@ -3090,14 +3272,14 @@ const HELP_SYSTEM_PROMPT=[
 '- Adding a contact — three ways, all under Menu → "Add a contact", and also on the My Contacts page: (1) "Add from phone contacts" picks people from the phone (not available in every browser); (2) "Choose file" imports a contacts file (.vcf); (3) "Add by hand" — the form starts CLOSED and opens only when that button is tapped. In the form, typing a street address brings up live address suggestions; tapping one fills the street, city, state and ZIP and sets the exact pin. Then tap "Save contact".',
 '- My Contacts: the Contacts tab at the bottom, or Menu → "Open my contacts". Search at the top; sort by Name A–Z or by Distance from me now. Each card shows the photo, name, address with a small copy button, and Call / Directions / Notes buttons, plus an "On my map" switch. Tapping a person opens their full contact page, where Edit, the photos and Delete live.',
 '- Who\'s near me now?: the big button under the map on the main page. It uses the phone\'s location and lists the closest contacts first; it can be sorted by distance or by name.',
-'- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
+'- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. If several people are near, their alerts come one at a time — Dismiss shows the next person, and "Dismiss all" clears the whole line at once. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
 '- Settings live in the Menu (the gold Menu button at the top) → "Alerts, sounds & notifications": Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
-'- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now, or type a start address (suggestions appear; or "Set start"). Step 2: the main destination — pick one of your contacts from the list, or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, your own number, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. "Show trip on map — preview here" draws the trip on a map; "Edit trip" changes it and "Exit trip — reset map" clears it.',
+'- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now (the start box then reads "Current location"), or type a start address (suggestions appear; or "Set start"), or search your contacts by name under "or start from one of your contacts" and tap the person. Step 2: the main destination — type a name in the search box and tap the contact (the chosen destination is named under the box, with a Clear button), or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, "My own number" with your own number of miles typed in right next to it, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit — there is a search box above the list, type a name to find someone fast; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. In the planned list ("Your trip — best order") you can change the plan by hand: swipe a person sideways to take them off the trip, or press and hold a person and drag them up or down — your own order wins and the route and times update to match. There is one map button, "Show trip on map", which draws the trip on a map right there in the planner (Hide map closes it and the page stays where it is); "Edit trip" changes the plan and "Exit trip — reset map" clears it.',
 '- Notes: every contact has a Notes button (on their card and on their page). Write a note and save it. Tapping an older note opens it, with Edit and Delete inside.',
 '- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
 '- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.2.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.3.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
@@ -3120,25 +3302,82 @@ function setHelpOpen(open){
   const w=$('helpWindow'); if(!w) return;
   w.classList.toggle('open',open);
   if(open){ if(typeof setChatOpen==='function') setChatOpen(false); renderHelpThread(); const inp=$('helpInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
+  if(typeof syncChatFab==='function') syncChatFab();
 }
-async function askGemini(userText){
-  const contents=[];
-  /* helpMsgs already ends with this user message (appended before the call) —
-     take the earlier turns only, then add the question once. */
-  helpMsgs.slice(-13,-1).forEach(m=>{ contents.push({role:m.from==='me'?'user':'model', parts:[{text:m.text}]}); });
-  contents.push({role:'user', parts:[{text:userText}]});
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-goog-api-key':appKeys.gemini},
-    body:JSON.stringify({system_instruction:{parts:[{text:HELP_SYSTEM_PROMPT}]}, contents:contents, generationConfig:{temperature:0.4, maxOutputTokens:900, thinkingConfig:{thinkingBudget:0}}})
-  });
-  if(!r.ok) throw new Error('gemini '+r.status);
+/* GEMINI CALLS — one place that talks to Google's Gemini API with the saved
+   AI key. It tries more than one model before giving up, and when Google
+   refuses it keeps Google's own error (status + message) on the thrown
+   error, so the chat can say exactly what is wrong instead of a blanket
+   "check the connection". The key travels only in the x-goog-api-key header
+   — never in the URL, where it could be captured by logs. */
+async function geminiAttempt(model, contents, withSystem){
+  const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent';
+  const headers={'Content-Type':'application/json','x-goog-api-key':appKeys.gemini};
+  const body={contents:contents, generationConfig:{temperature:0.4, maxOutputTokens:900, thinkingConfig:{thinkingBudget:0}}};
+  if(withSystem) body.system_instruction={parts:[{text:HELP_SYSTEM_PROMPT}]};
+  const ctl=('AbortController' in window)?new AbortController():null;
+  const timer=ctl?setTimeout(()=>{ try{ctl.abort();}catch(e){} },20000):null;
+  let r;
+  try{ r=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body),signal:ctl?ctl.signal:undefined}); }
+  finally{ if(timer) clearTimeout(timer); }
+  if(!r.ok){
+    let msg='';
+    try{ const ej=await r.json(); msg=(ej&&ej.error&&(ej.error.message||ej.error.status))||''; }catch(e){}
+    const err=new Error('gemini '+r.status); err.status=r.status; err.googleMessage=String(msg||''); throw err;
+  }
   const data=await r.json();
   const cand=data&&data.candidates&&data.candidates[0];
   const parts=(cand&&cand.content&&cand.content.parts)||[];
   const text=parts.map(p=>p.text||'').join('').trim();
-  if(!text) throw new Error('empty reply');
+  if(!text){ const err=new Error('empty reply'); err.status=0; err.googleMessage='empty:'+((cand&&cand.finishReason)||'none'); throw err; }
   return text;
+}
+async function geminiGenerate(contents, withSystem){
+  const models=['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'];
+  let lastErr=null;
+  for(let i=0;i<models.length;i++){
+    try{ return await geminiAttempt(models[i], contents, withSystem); }
+    catch(e){
+      lastErr=e;
+      /* A key Google flatly rejects will fail every retry the same way — stop early */
+      if(e && /API key not valid/i.test(e.googleMessage||'')) throw e;
+    }
+  }
+  throw lastErr||new Error('no reply');
+}
+/* Turn a Gemini failure into one short, honest line that names the real
+   problem (and what fixes it), instead of "check the connection". */
+function helpErrorMessage(e){
+  const m=(e&&e.googleMessage)||''; const s=e&&e.status;
+  if(/API key not valid/i.test(m)) return 'Google is not accepting the AI key saved in this app. The admin can fix it in the Menu, under "🔑 App keys — admin": paste the AI key again and tap Save (the app tests it right there).';
+  if(s===403){
+    if(/has not been used|is disabled|SERVICE_DISABLED/i.test(m)) return 'The AI is not switched on for this key yet: Google says the "Generative Language API" is not enabled on the key\u2019s project. The admin needs to enable it once in Google Cloud (or paste a key from Google AI Studio instead) — then I will answer right here.';
+    if(/referer|referrer/i.test(m)) return 'Google is blocking this AI key on this website — the key is limited to a different site. The admin can lift that limit in Google Cloud, under the key\u2019s "Website restrictions".';
+    return 'Google refused the AI key (error 403)'+(m?': '+m.slice(0,140):'')+'. The admin may need to check the key in the Menu, under "🔑 App keys — admin".';
+  }
+  if(s===404) return 'Google could not find the AI model for this key — please try asking again in a little while.';
+  if(s===429) return 'The AI is getting a lot of questions right now — wait a minute and ask me again.';
+  if(/empty:SAFETY/i.test(m)) return 'I am not able to answer that one — but ask me anything about using this app and I will gladly help.';
+  if(!s) return 'I could not reach Google just now — please check the connection and try again.';
+  return 'Sorry — Google sent back an error ('+s+')'+(m?': '+m.slice(0,140):'')+'. Please try again in a moment.';
+}
+async function askGemini(userText){
+  /* Build the conversation for Gemini: earlier turns only (helpMsgs already
+     ends with this question), cleaned so it always starts with the person
+     and the two sides take turns — a long chat used to break that rule and
+     Google refused the whole request. */
+  const raw=helpMsgs.slice(0,-1).map(m=>({role:m.from==='me'?'user':'model', text:m.text}));
+  const contents=[];
+  raw.forEach(t=>{
+    if(!contents.length && t.role!=='user') return;
+    const last=contents[contents.length-1];
+    if(last && last.role===t.role) last.parts[0].text+='\n'+t.text;
+    else contents.push({role:t.role, parts:[{text:t.text}]});
+  });
+  const lastC=contents[contents.length-1];
+  if(lastC && lastC.role==='user') lastC.parts[0].text+='\n'+userText;
+  else contents.push({role:'user', parts:[{text:userText}]});
+  return geminiGenerate(contents, true);
 }
 async function sendHelpText(){
   if(helpSending) return;
@@ -3157,7 +3396,7 @@ async function sendHelpText(){
     appendHelpMsg('app',reply);
   }catch(e){
     if(thinking.parentNode) thinking.parentNode.removeChild(thinking);
-    appendHelpMsg('app','Sorry — I could not answer just now. Please check the connection and try again.');
+    appendHelpMsg('app',helpErrorMessage(e));
   }
   helpSending=false;
   if(sendBtn) sendBtn.disabled=false;
