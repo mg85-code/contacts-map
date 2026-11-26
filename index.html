@@ -159,7 +159,17 @@ input,select{ min-height:48px }
 .note-box-label{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
 .note-text-view{margin:0;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word}
 .note-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.5;resize:vertical}
-.note-entry{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);margin-top:10px}
+.note-entry{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);margin-top:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.note-entry:active{transform:scale(.99)}
+.note-entry:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.note-open-hint{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--green2)}
+@media(prefers-color-scheme:dark){.note-open-hint{color:#e6c87a}}
+/* SINGLE NOTE WINDOW — opens over the notes list, above every other modal */
+#noteViewModal{z-index:320}
+.btn-danger{background:#8b1e1e;color:#fff;border-color:#8b1e1e}
+.note-del-confirm{display:none;margin-top:14px;background:#fff1f1;border:1px solid #e8b4b4;color:#7a1212;border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5}
+.note-del-confirm.show{display:block}
+@media(prefers-color-scheme:dark){.note-del-confirm{background:#3d1d1d;color:#f3c9c9;border-color:#7c3a3a}}
 .note-date{font-size:12px;font-weight:700;color:#7a5a12;letter-spacing:.03em;margin-bottom:4px}
 @media(prefers-color-scheme:dark){.note-date{color:#e6c87a}}
 /* SIDE PANEL FOOTER — Download button + version line pinned to the very bottom of the panel, always visible */
@@ -315,8 +325,9 @@ input,select{ min-height:48px }
 /* FEEDBACK CHAT WIDGET */
 .chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
 .menu-stat-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px}
-.menu-btn{position:static;width:48px;height:48px;min-height:48px;border-radius:12px;background:var(--gold);color:#0e3b2c;border:2px solid var(--gold2);box-shadow:0 3px 10px rgba(168,130,47,.5);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
-.menu-btn svg{width:24px;height:24px}
+.menu-btn{position:static;width:auto;height:48px;min-height:48px;border-radius:12px;background:var(--gold);color:#0e3b2c;border:2px solid var(--gold2);box-shadow:0 3px 10px rgba(168,130,47,.5);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 18px 0 14px;flex-shrink:0}
+.menu-btn svg{width:24px;height:24px;flex-shrink:0}
+.menu-btn .menu-word{font-size:17px;font-weight:800;letter-spacing:.01em;line-height:1;color:#0e3b2c}
 .map-wrap{margin-top:12px}
 .front-stat{display:flex;align-items:baseline;gap:8px}
 .stat-num{font-family:"Playfair Display",Georgia,serif;font-size:26px;font-weight:800;line-height:1;color:var(--gold2)}
@@ -460,7 +471,7 @@ input,select{ min-height:48px }
   <div id="sideBackdrop" class="side-backdrop"></div>
   <aside id="sidePanel" class="side-panel" aria-label="Settings and more">
     <div class="side-head">
-      <button type="button" id="sideTitleBtn" class="side-title-btn" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span>Settings</span></button>
+      <button type="button" id="sideTitleBtn" class="side-title-btn" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span>Menu</span></button>
       <button type="button" id="closeSideBtn" class="btn" style="background:#fff;color:var(--green);padding:10px 16px" aria-label="Close menu">✕ Close</button>
     </div>
     <div class="side-scroll">
@@ -494,7 +505,7 @@ input,select{ min-height:48px }
 
   <div class="wrap">
     <div class="menu-stat-row">
-      <button type="button" id="menuBtn" class="menu-btn" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+      <button type="button" id="menuBtn" class="menu-btn" aria-label="Open menu" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span class="menu-word">Menu</span></button>
       <button id="startDrivingTop" class="btn btn-green" style="font-size:17px;padding:14px 20px">🚗 Start driving</button>
     </div>
     <div class="hero-strip">
@@ -910,7 +921,7 @@ input,select{ min-height:48px }
     <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
-  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><span id="alertCount" style="display:block;width:fit-content;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:6px"></span><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
     <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -997,6 +1008,40 @@ input,select{ min-height:48px }
     </div>
     <button type="button" id="addNoteBtn" class="btn btn-gold btn-large" style="margin-top:14px">＋ Add a note</button>
     <button type="button" id="doneNotesBtn" class="btn btn-outline btn-large" style="margin-top:10px">Done</button>
+  </div>
+</div>
+
+<!-- SINGLE NOTE WINDOW — one note opened up on its own, with Edit and Delete -->
+<div id="noteViewModal" class="install-modal" role="dialog" aria-modal="true" aria-label="Note">
+  <div class="install-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <h2>📝 Note</h2>
+      <button type="button" id="closeNoteView" class="btn btn-outline btn-small" aria-label="Close note">✕</button>
+    </div>
+    <div id="noteViewDate" class="note-date" style="margin-top:10px"></div>
+    <div id="noteViewRead">
+      <p id="noteViewText" class="note-text-view" style="margin-top:6px"></p>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button type="button" id="editNoteBtn" class="btn btn-gold" style="flex:1">✏️ Edit</button>
+        <button type="button" id="deleteNoteBtn" class="btn btn-danger" style="flex:1">🗑 Delete</button>
+      </div>
+      <div id="noteDelConfirm" class="note-del-confirm" role="alert">
+        <strong>Delete this note?</strong><br>It will be gone for good — this cannot be undone.
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button type="button" id="confirmDeleteNoteBtn" class="btn btn-danger" style="flex:1">Yes, delete it</button>
+          <button type="button" id="cancelDeleteNoteBtn" class="btn btn-outline" style="flex:1">Keep the note</button>
+        </div>
+      </div>
+      <button type="button" id="backToNotesBtn" class="btn btn-outline btn-large" style="margin-top:12px">← Back to all notes</button>
+    </div>
+    <div id="noteViewEdit" style="display:none;margin-top:6px">
+      <label class="note-box-label" for="editNoteText">Edit note</label>
+      <textarea id="editNoteText" class="note-textarea" rows="5"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button type="button" id="saveNoteEditBtn" class="btn btn-green" style="flex:1">Save changes</button>
+        <button type="button" id="cancelNoteEditBtn" class="btn btn-outline" style="flex:1">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1559,19 +1604,99 @@ function contactNotes(c){
   return arr.slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
 }
 function openNotes(id){ notesTargetId=id; hideNoteComposer(); renderNotesModal(); const m=$('notesModal'); if(m) m.classList.add('open'); }
-function closeNotes(){ const m=$('notesModal'); if(m) m.classList.remove('open'); notesTargetId=null; hideNoteComposer(); }
+function closeNotes(){ closeNoteView(); const m=$('notesModal'); if(m) m.classList.remove('open'); notesTargetId=null; hideNoteComposer(); }
 function renderNotesModal(){
   const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
   $('notesTitle').textContent='📝 Notes — '+(c.name||'Contact');
   const list=contactNotes(c); const el=$('notesList'); if(!el) return; el.innerHTML='';
   if(!list.length){ el.innerHTML='<p class="muted" style="margin-top:10px">No notes yet for this person.</p>'; return; }
-  list.forEach(n=>{
+  list.forEach((n,idx)=>{
     const d=document.createElement('div'); d.className='note-entry';
+    d.setAttribute('role','button'); d.setAttribute('tabindex','0');
+    d.setAttribute('aria-label','Open this note');
     const when=n.ts?new Date(n.ts).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'';
-    d.innerHTML=(when?'<div class="note-date">'+escapeHtml(when)+'</div>':'')+'<p class="note-text-view">'+escapeHtml(n.t||'')+'</p>';
+    d.innerHTML=(when?'<div class="note-date">'+escapeHtml(when)+'</div>':'')+'<p class="note-text-view">'+escapeHtml(n.t||'')+'</p><span class="note-open-hint">Tap to open ›</span>';
+    d.addEventListener('click', ()=>openNoteView(idx));
+    d.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openNoteView(idx); } });
     el.appendChild(d);
   });
 }
+/* SINGLE NOTE — tapping a note in the list opens it on its own, full text,
+   with Edit (change the words, save) and Delete (asks first, in the window). */
+let noteViewPos=-1; /* position of the open note in the contact's sorted notes list */
+let noteViewKey=null; /* {t, ts} snapshot, so the note is found again even if the list shifts */
+function noteViewFindPos(c){
+  const list=contactNotes(c); if(!list.length) return -1;
+  if(noteViewPos>=0 && noteViewPos<list.length && noteViewKey && list[noteViewPos].t===noteViewKey.t && (list[noteViewPos].ts||null)===(noteViewKey.ts||null)) return noteViewPos;
+  for(let i=0;i<list.length;i++){ if(noteViewKey && list[i].t===noteViewKey.t && (list[i].ts||null)===(noteViewKey.ts||null)) return i; }
+  return -1;
+}
+function openNoteView(idx){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const list=contactNotes(c); const n=list[idx]; if(!n) return;
+  noteViewPos=idx; noteViewKey={t:n.t,ts:n.ts||null};
+  showNoteViewRead();
+  const m=$('noteViewModal'); if(m) m.classList.add('open');
+}
+function closeNoteView(){ const m=$('noteViewModal'); if(m) m.classList.remove('open'); noteViewPos=-1; noteViewKey=null; hideDeleteConfirm(); }
+function showNoteViewRead(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const pos=noteViewFindPos(c); if(pos<0){ closeNoteView(); return; }
+  noteViewPos=pos;
+  const n=contactNotes(c)[pos];
+  const rd=$('noteViewRead'), ed=$('noteViewEdit');
+  if(rd) rd.style.display=''; if(ed) ed.style.display='none';
+  hideDeleteConfirm();
+  const dt=$('noteViewDate'); if(dt) dt.textContent=n.ts?new Date(n.ts).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}):'';
+  const tx=$('noteViewText'); if(tx) tx.textContent=n.t||'';
+}
+function showNoteViewEdit(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const pos=noteViewFindPos(c); if(pos<0){ closeNoteView(); return; }
+  const n=contactNotes(c)[pos];
+  hideDeleteConfirm();
+  const rd=$('noteViewRead'), ed=$('noteViewEdit');
+  if(rd) rd.style.display='none'; if(ed) ed.style.display='';
+  const ta=$('editNoteText'); if(ta){ ta.value=n.t||''; setTimeout(()=>{ try{ ta.focus({preventScroll:true}); }catch(e){} },80); }
+}
+async function saveNoteEdit(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const ta=$('editNoteText'); const text=ta?ta.value.trim():'';
+  if(!text){ toast('The note is empty — write something, or tap Delete to remove it'); return; }
+  const pos=noteViewFindPos(c); if(pos<0){ closeNoteView(); return; }
+  const arr=contactNotes(c); arr[pos]={t:text,ts:arr[pos].ts||null};
+  try{
+    await updateContact(c.id,{notes:arr,note:''});
+    c.notes=arr; c.note='';
+    noteViewKey={t:text,ts:arr[pos].ts||null}; noteViewPos=pos;
+    toast('Note saved');
+    showNoteViewRead(); renderNotesModal(); renderList();
+  }catch(e){ toast('Could not save the note — check your connection and try again'); }
+}
+function showDeleteConfirm(){ const b=$('noteDelConfirm'); if(b) b.classList.add('show'); }
+function hideDeleteConfirm(){ const b=$('noteDelConfirm'); if(b) b.classList.remove('show'); }
+async function deleteNoteConfirmed(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const pos=noteViewFindPos(c); if(pos<0){ closeNoteView(); return; }
+  const arr=contactNotes(c); arr.splice(pos,1);
+  try{
+    await updateContact(c.id,{notes:arr,note:''});
+    c.notes=arr; c.note='';
+    toast('Note deleted');
+    closeNoteView(); renderNotesModal(); renderList();
+  }catch(e){ toast('Could not delete the note — check your connection and try again'); }
+}
+(function initNoteView(){
+  const eb=$('editNoteBtn'); if(eb) eb.addEventListener('click', showNoteViewEdit);
+  const sb=$('saveNoteEditBtn'); if(sb) sb.addEventListener('click', saveNoteEdit);
+  const cb=$('cancelNoteEditBtn'); if(cb) cb.addEventListener('click', showNoteViewRead);
+  const db=$('deleteNoteBtn'); if(db) db.addEventListener('click', showDeleteConfirm);
+  const cd=$('confirmDeleteNoteBtn'); if(cd) cd.addEventListener('click', deleteNoteConfirmed);
+  const kd=$('cancelDeleteNoteBtn'); if(kd) kd.addEventListener('click', hideDeleteConfirm);
+  const bk=$('backToNotesBtn'); if(bk) bk.addEventListener('click', closeNoteView);
+  const cl=$('closeNoteView'); if(cl) cl.addEventListener('click', closeNoteView);
+  const m=$('noteViewModal'); if(m) m.addEventListener('click', e=>{ if(e.target===m) closeNoteView(); });
+})();
 function showNoteComposer(){ const w=$('notesAddWrap'); if(w) w.style.display='block'; const b=$('addNoteBtn'); if(b) b.style.display='none'; const ta=$('newNoteText'); if(ta){ ta.value=''; setTimeout(()=>{ try{ ta.focus({preventScroll:true}); }catch(e){} },80); } }
 function hideNoteComposer(){ const w=$('notesAddWrap'); if(w) w.style.display='none'; const b=$('addNoteBtn'); if(b) b.style.display=''; const ta=$('newNoteText'); if(ta) ta.value=''; }
 async function saveNewNote(){
@@ -1993,6 +2118,15 @@ function renderDriveList(){
     el.appendChild(div);
   });
 }
+/* NEARBY ALERT QUEUE — when several contacts come into range at once, each one
+   gets their OWN banner, one after another: dismissing a banner brings up the
+   next person in line, so nobody is silently dropped. The banner shows how
+   many are near ("1 of 5 near you"). Every contact also gets their own phone
+   notification the moment they come into range (a per-contact tag keeps the
+   phone from collapsing them into one). */
+let alertQueue=[];       /* contact ids waiting for their banner, nearest first */
+let alertShowingId=null; /* contact id whose banner is on screen right now */
+let alertBatchShown=0;   /* banners shown so far in this run — for the "1 of 5" count */
 function checkAlerts(){
   if(!myLoc) return;
   const sorted=sortedByDistance();
@@ -2000,26 +2134,51 @@ function checkAlerts(){
   sorted.forEach(c=>{ if(c._dist<=alertMiles) nowInside.add(c.id); });
   for(const c of sorted){
     if(nowInside.has(c.id) && !insideSet.has(c.id)){
-      // first entry
-      $('alertAvatar').innerHTML=avatarHtml(c);
-      $('alertText').textContent=`${c.name} is ${c._dist.toFixed(1)} miles away — ${fullAddress(c)}`;
-      $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
-      alertAddr=fullAddress(c);
-      $('alertAddrText').textContent=alertAddr||'No address saved for this person yet.';
-      $('alertCopyAddr').style.display=alertAddr?'inline-flex':'none';
-      /* Only start with the address closed when the alert is for a NEW person.
-         Re-firing for the same person must not slam an opened address shut. */
-      if(alertContactId!==c.id) resetAlertAddrPanel();
-      alertContactId=c.id;
-      $('alertBanner').classList.add('show');
-      playAlertSound();
-      if(notifOn && 'Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
-      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+      /* A new person just came into range: line up their banner behind any
+         already showing or waiting — never overwrite one — and send their
+         own phone notification right away. */
+      if(alertShowingId!==c.id && alertQueue.indexOf(c.id)===-1) alertQueue.push(c.id);
+      if(notifOn && 'Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`,tag:'nearby-'+c.id}); }catch(e){} }
     }
   }
   insideSet=nowInside;
+  if(alertShowingId==null){ showNextAlert(); }
+  else { updateAlertCountUI(); }
 }
-$('dismissAlert').addEventListener('click',()=>{ $('alertBanner').classList.remove('show'); resetAlertAddrPanel(); });
+function updateAlertCountUI(){
+  const cnt=$('alertCount'); if(cnt) cnt.textContent=alertBatchShown+' of '+(alertBatchShown+alertQueue.length)+' near you';
+  const dis=$('dismissAlert'); if(dis) dis.textContent=alertQueue.length?('Dismiss — next ('+alertQueue.length+' more)'):'Dismiss';
+}
+function showNextAlert(){
+  /* Skip anyone who was deleted while waiting, then show the next in line.
+     With nobody left, the banner closes and the count starts fresh next time. */
+  while(alertQueue.length){
+    const id=alertQueue.shift();
+    const c=contacts.find(x=>x.id===id);
+    if(c && c.lat!=null){ displayAlertBanner(c); return; }
+  }
+  alertShowingId=null; alertBatchShown=0;
+  $('alertBanner').classList.remove('show');
+}
+function displayAlertBanner(c){
+  alertShowingId=c.id;
+  alertBatchShown++;
+  const dist=myLoc?haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng):0;
+  $('alertAvatar').innerHTML=avatarHtml(c);
+  $('alertText').textContent=`${c.name} is ${dist.toFixed(1)} miles away — ${fullAddress(c)}`;
+  $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
+  alertAddr=fullAddress(c);
+  $('alertAddrText').textContent=alertAddr||'No address saved for this person yet.';
+  $('alertCopyAddr').style.display=alertAddr?'inline-flex':'none';
+  /* A new person's banner always starts with their address closed. */
+  resetAlertAddrPanel();
+  alertContactId=c.id;
+  updateAlertCountUI();
+  $('alertBanner').classList.add('show');
+  playAlertSound();
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
+}
+$('dismissAlert').addEventListener('click',()=>{ resetAlertAddrPanel(); alertShowingId=null; showNextAlert(); });
 /* ALERT BANNER — Show address: reveals the person's address inside the banner, with the
    same two-squares copy button as the driving list. */
 let alertAddr=''; let alertContactId=null;
@@ -2076,7 +2235,7 @@ function stopDriving(){
   $('drivingOverlay').classList.remove('open'); document.body.style.overflow='';
   if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
   if(wakeLock){ try{wakeLock.release()}catch(e){} wakeLock=null; }
-  insideSet=new Set(); $('alertBanner').classList.remove('show');
+  insideSet=new Set(); alertQueue=[]; alertShowingId=null; alertBatchShown=0; $('alertBanner').classList.remove('show');
 }
 $('startDrivingTop').addEventListener('click', startDriving);
 $('stopDriving').addEventListener('click', stopDriving);
