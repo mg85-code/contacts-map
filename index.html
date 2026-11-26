@@ -215,7 +215,7 @@ input,select{ min-height:48px }
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
           </div>
           <div id="areaChips" class="chips" role="group" aria-label="Filter by area"></div>
-          <p class="muted" style="margin-top:10px">Pins are numbered to match the list. Gold border = on your map.</p>
+          <p class="muted" style="margin-top:10px">Tap an area — Brooklyn, Queens, Manhattan and the rest — and the map zooms straight to that area. Pins are numbered to match the list.</p>
         </div>
 
         <div class="panel">
@@ -248,6 +248,23 @@ input,select{ min-height:48px }
                 <button id="applyCustomDist" class="btn btn-gold btn-small">Use this</button>
               </div>
               <p id="distLabel" class="muted" style="margin-top:6px"></p>
+            </div>
+            <div>
+              <div style="font-weight:700;margin-bottom:8px">Map view around me while driving</div>
+              <p class="muted" style="margin:0 0 8px">How much map to show around your location. The driving map stays zoomed in close and fits exactly this radius around you.</p>
+              <div class="dist-btns" id="viewBtns">
+                <button class="dist-btn view-btn" data-miles="1">1 mile around me</button>
+                <button class="dist-btn view-btn" data-miles="2">2 miles around me</button>
+                <button class="dist-btn view-btn" data-miles="5">5 miles around me</button>
+                <button class="dist-btn view-btn" data-miles="10">10 miles around me</button>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+                <label for="customView" style="font-weight:600;font-size:14px">Or type your own:</label>
+                <input id="customView" type="number" min="0.25" max="50" step="0.25" placeholder="e.g. 0.5 or 3" style="width:130px;padding:10px;border-radius:10px;border:1.5px solid var(--line)">
+                <span class="muted">miles (up to 50)</span>
+                <button id="applyCustomView" class="btn btn-gold btn-small">Use this</button>
+              </div>
+              <p id="viewLabel" class="muted" style="margin-top:6px"></p>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px">
               <div><strong>Alert sound</strong><div class="muted">Play a sound with the alert</div></div>
@@ -349,6 +366,15 @@ input,select{ min-height:48px }
       <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
       <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
     </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px">
+      <strong>Show around me:</strong>
+      <span id="driveViewLabel" style="font-weight:700"></span>
+      <button class="btn btn-outline btn-small drive-view" data-miles="1">1 mi</button>
+      <button class="btn btn-outline btn-small drive-view" data-miles="2">2 mi</button>
+      <button class="btn btn-outline btn-small drive-view" data-miles="5">5 mi</button>
+      <button class="btn btn-outline btn-small drive-view" data-miles="10">10 mi</button>
+      <span class="muted">Map fits this radius around you — zoomed in close.</span>
+    </div>
     <p id="wakeStatus" class="muted" style="margin-top:8px"></p>
     <p id="driveStatus" class="muted"></p>
     <h2 style="font-family:Georgia,serif;font-size:24px;margin:16px 0 0">Who’s around to visit</h2>
@@ -367,8 +393,9 @@ input,select{ min-height:48px }
 const firebaseConfig={apiKey:"AIzaSyDrisvfPogoX_bpiyQO2tpJrLbw_Dy6P2s",authDomain:"map-for-rabbi-goldstein.firebaseapp.com",projectId:"map-for-rabbi-goldstein",storageBucket:"map-for-rabbi-goldstein.firebasestorage.app",messagingSenderId:"990836761457",appId:"1:990836761457:web:e7be3c8f150f2d8f24ccd0",measurementId:"G-LQ8G25J9D1"};
 let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
-let myLoc=null,alertMiles=2,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='';
-try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; }catch(e){}
+let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='';
+let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false;
+try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; }catch(e){}
 function $(id){return document.getElementById(id)}
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
 function showAuthError(msg){ const e=$('authError'); if(!msg){e.classList.remove('show');e.textContent='';} else {e.textContent=msg; e.classList.add('show');} }
@@ -381,7 +408,7 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); }
     else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} contacts=[]; stopDriving(); }
   });
 } else { $('firebaseError').classList.add('show'); }
@@ -460,7 +487,30 @@ function renderMarkers(){
     markers.push(m);
   });
   $('mapCount').textContent=list.length+' on map';
-  if(list.length && !myLoc){ try{ map.fitBounds(L.latLngBounds(list.map(c=>[c.lat,c.lng])).pad(0.2)); }catch(e){} }
+  if(list.length && !myLoc && !initialFitDone){ initialFitDone=true; try{ map.fitBounds(L.latLngBounds(list.map(c=>[c.lat,c.lng])).pad(0.2)); }catch(e){} }
+}
+/* AREA VIEWS — tapping an area chip zooms the map to that area */
+const AREA_VIEWS={
+  'Brooklyn':{center:[40.65,-73.95],zoom:12},
+  'Manhattan':{center:[40.783,-73.966],zoom:12},
+  'Queens':{center:[40.728,-73.85],zoom:11},
+  'Bronx':{center:[40.85,-73.87],zoom:12},
+  'Staten Island':{center:[40.58,-74.15],zoom:11},
+  'Long Island':{center:[40.75,-73.6],zoom:10},
+  'New Jersey':{center:[40.75,-74.15],zoom:10}
+};
+function zoomToArea(area){
+  if(!map||typeof L==='undefined') return;
+  if(area==='All'){
+    const all=contacts.filter(c=>c.lat!=null&&c.lng!=null);
+    if(all.length>1){ try{ map.flyToBounds(L.latLngBounds(all.map(c=>[c.lat,c.lng])).pad(0.15),{duration:0.7}); return; }catch(e){} }
+    if(all.length===1){ map.flyTo([all[0].lat,all[0].lng],13,{duration:0.7}); return; }
+    map.flyTo([40.71,-74.0],10,{duration:0.7}); return;
+  }
+  const inArea=contacts.filter(c=>getArea(c)===area&&c.lat!=null&&c.lng!=null);
+  if(inArea.length===1){ map.flyTo([inArea[0].lat,inArea[0].lng],14,{duration:0.7}); return; }
+  if(inArea.length>1){ try{ map.flyToBounds(L.latLngBounds(inArea.map(c=>[c.lat,c.lng])).pad(0.25),{duration:0.7}); return; }catch(e){} }
+  const v=AREA_VIEWS[area]; if(v) map.flyTo(v.center,v.zoom,{duration:0.7});
 }
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function fullAddress(c){ return [c.street,c.city,c.state,c.zip].filter(Boolean).join(', '); }
@@ -501,7 +551,7 @@ function renderList(){
 /* FILTERS */
 const areas=['All','Brooklyn','Manhattan','Queens','Bronx','Staten Island','Long Island','New Jersey'];
 const chipsEl=$('areaChips');
-areas.forEach(a=>{ const b=document.createElement('button'); b.className='chip'+(a==='All'?' active':''); b.textContent=a; b.addEventListener('click',()=>{ currentFilter=a; chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderAll(); }); chipsEl.appendChild(b); });
+areas.forEach(a=>{ const b=document.createElement('button'); b.className='chip'+(a==='All'?' active':''); b.textContent=a; b.setAttribute('aria-label','Show and zoom to '+a); b.addEventListener('click',()=>{ currentFilter=a; chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderAll(); zoomToArea(a); const mapEl=document.getElementById('map'); if(mapEl) mapEl.scrollIntoView({behavior:'smooth',block:'center'}); }); chipsEl.appendChild(b); });
 $('searchInput').addEventListener('input', e=>{ searchTerm=e.target.value; renderAll(); });
 $('clearSearch').addEventListener('click', ()=>{ $('searchInput').value=''; searchTerm=''; renderAll(); });
 
@@ -626,7 +676,7 @@ $('vcfInput').addEventListener('change', async e=>{
 function getLocationOnce(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) rej(new Error('No GPS')); else navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000}); }); }
 async function showNear(){
   $('nearStatus').textContent='Getting your location…';
-  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles, closest first.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); map.setView([loc.lat,loc.lng],12); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
+  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles, closest first. Map is showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
 }
 function sortedByDistance(){ if(!myLoc) return []; return contacts.filter(c=>c.onMap!==false&&c.lat!=null).map(c=>({...c,_dist:haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng)})).sort((a,b)=>a._dist-b._dist); }
 function renderNearList(){
@@ -637,6 +687,22 @@ function renderNearList(){
 }
 $('nearBtn').addEventListener('click', showNear);
 $('useLocationBtn').addEventListener('click', showNear);
+
+/* VIEW RADIUS — how much map shows around you */
+function applyMainViewRadius(){
+  if(!map||!myLoc||typeof L==='undefined') return;
+  if(mainRadiusCircle) map.removeLayer(mainRadiusCircle);
+  mainRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(map);
+  try{ map.flyToBounds(mainRadiusCircle.getBounds(),{padding:[14,14],duration:0.6}); }catch(e){ map.setView([myLoc.lat,myLoc.lng], viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
+}
+function updateViewUI(){
+  const lbl=$('viewLabel'); if(lbl) lbl.textContent='Current view: '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you — the driving map fits exactly this area around your location.';
+  const dl=$('driveViewLabel'); if(dl) dl.textContent=viewMiles+' miles';
+  document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===viewMiles));
+  document.querySelectorAll('.drive-view').forEach(b=>{ b.style.background=parseFloat(b.dataset.miles)===viewMiles?'var(--gold)':''; });
+  try{ localStorage.setItem('rg_view_miles', String(viewMiles)); }catch(e){}
+  if(myLoc){ applyMainViewRadius(); if($('drivingOverlay').classList.contains('open')) updateDriveMap(); }
+}
 
 /* SETTINGS */
 function updateDistUI(){
@@ -650,11 +716,14 @@ function updateDistUI(){
 document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); $('customDist').value=''; updateDistUI(); toast('Alert distance: '+alertMiles+' miles'); }));
 document.querySelectorAll('.drive-dist').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); updateDistUI(); }));
 $('applyCustomDist').addEventListener('click',()=>{ const v=parseFloat($('customDist').value); if(isNaN(v)||v<=0||v>50){ toast('Type a distance between 0.5 and 50 miles'); return; } alertMiles=v; updateDistUI(); toast('Alert distance: '+v+' miles'); });
+document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); const cv=$('customView'); if(cv) cv.value=''; updateViewUI(); toast('Map view: '+viewMiles+' miles around you'); }));
+document.querySelectorAll('.drive-view').forEach(b=>b.addEventListener('click',()=>{ viewMiles=parseFloat(b.dataset.miles); updateViewUI(); toast('Map view: '+viewMiles+' miles around you'); }));
+$('applyCustomView').addEventListener('click',()=>{ const v=parseFloat($('customView').value); if(isNaN(v)||v<=0||v>50){ toast('Type a view radius between 0.25 and 50 miles'); return; } viewMiles=v; updateViewUI(); toast('Map view: '+v+' miles around you'); });
 $('soundToggle').checked=soundOn;
 $('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} });
 function updateNotifUI(){ const el=$('notifState'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; $('notifBtn').style.display='none'; return; } const p=Notification.permission; el.textContent=p==='granted'?'✓ Notifications are ON for this device.':p==='denied'?'Notifications are blocked in browser settings. In-app banner + sound will still alert you.':'Notifications are not on yet.'; $('notifBtn').textContent=p==='granted'?'Notifications on ✓':'Turn on notifications'; }
 $('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; try{ await Notification.requestPermission(); }catch(e){} updateNotifUI(); });
-updateDistUI(); updateNotifUI();
+updateDistUI(); updateNotifUI(); updateViewUI();
 
 /* SOUND */
 let audioCtx=null;
@@ -694,16 +763,19 @@ $('dismissAlert').addEventListener('click',()=>$('alertBanner').classList.remove
 function initDriveMap(){
   if(driveMap){ setTimeout(()=>driveMap.invalidateSize(),100); return; }
   if(typeof L==='undefined') return;
-  driveMap=L.map('driveMap').setView([40.68,-73.95],12);
+  driveMap=L.map('driveMap').setView([40.68,-73.95],15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(driveMap);
 }
 function updateDriveMap(){
   if(!driveMap||!myLoc) return;
-  driveMap.setView([myLoc.lat,myLoc.lng],13);
   if(driveUserMarker) driveMap.removeLayer(driveUserMarker);
   driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
   driveMarkers.forEach(m=>driveMap.removeLayer(m)); driveMarkers=[];
   contacts.filter(c=>c.onMap!==false&&c.lat!=null).forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:pinIcon(i+1)}).addTo(driveMap).bindPopup(`<b>${escapeHtml(c.name)}</b>`); driveMarkers.push(m); });
+  /* Zoomed in close: fit exactly the chosen radius around the driver */
+  if(driveRadiusCircle) driveMap.removeLayer(driveRadiusCircle);
+  driveRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(driveMap);
+  try{ driveMap.fitBounds(driveRadiusCircle.getBounds(),{padding:[12,12]}); }catch(e){ driveMap.setView([myLoc.lat,myLoc.lng], viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
 }
 function startDriving(){
   $('drivingOverlay').classList.add('open'); document.body.style.overflow='hidden';
@@ -713,7 +785,7 @@ function startDriving(){
   if(watchId!=null) navigator.geolocation.clearWatch(watchId);
   watchId=navigator.geolocation.watchPosition(pos=>{
     myLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};
-    $('driveStatus').textContent='Location on • Updated '+new Date().toLocaleTimeString()+' • Alert within '+alertMiles+' miles';
+    $('driveStatus').textContent='Location on • Updated '+new Date().toLocaleTimeString()+' • Alert within '+alertMiles+' miles • Showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you';
     updateDriveMap(); renderDriveList(); checkAlerts(); if(myLoc) renderNearList();
   }, err=>{ $('driveStatus').textContent='Could not get location. Allow location for this site, then try again.'; }, {enableHighAccuracy:true, maximumAge:5000, timeout:15000});
 }
