@@ -278,6 +278,15 @@ input,select{ min-height:48px }
 /* MAP POPUP — real buttons in a tidy 2-column grid, not small text links */
 .leaflet-popup-content .popup-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
 .leaflet-popup-content .popup-btns .btn{min-height:42px;padding:8px 6px;font-size:13px}
+/* POPUP BUTTON TEXT — Leaflet's own stylesheet colours every link inside the
+   map dark blue (.leaflet-container a{color:#0078A8}), which outranks
+   .btn-green and left "Call"/"WhatsApp" dark blue on dark green — unreadable.
+   Force the popup's buttons to their proper readable colours: white on the
+   green buttons, dark on the gold Directions button, green on the white
+   Copy address outline button. */
+.leaflet-popup-content .btn-green{color:#fff !important}
+.leaflet-popup-content .btn-gold{color:#1a1405 !important}
+.leaflet-popup-content .btn-outline{color:var(--green) !important}
 .contacts-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
@@ -591,7 +600,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 2.8</div>
+      <div class="side-version">Version 2.9</div>
     </div>
   </aside>
 
@@ -1654,6 +1663,10 @@ function openAddSheet(){
   const body=$('addSheetBody'); if(body) body.appendChild(p);
   const o=$('addOverlay'); if(o){ o.classList.add('open'); o.scrollTop=0; }
   addSheetOpen=true;
+  /* The sheet ALWAYS opens with the by-hand form CLOSED — just the three
+     options (phone contacts / choose file / add by hand). The form opens
+     only when he taps "Add by hand" himself. */
+  setManualOpen(false);
 }
 function closeAddSheet(){
   const p=$('addContactsPanel');
@@ -1662,11 +1675,12 @@ function closeAddSheet(){
   addSheetOpen=false;
 }
 const _asb=$('closeAddSheetBtn'); if(_asb) _asb.addEventListener('click', ()=>{ resetForm(); closeAddSheet(); });
-/* CONTACTS PAGE TOP — the three add buttons at the top of My Contacts. Each opens its
-   own flow directly in the add sheet: the by-hand form, the phone contact picker, or
-   the file chooser (whose import checklist then appears in the sheet). */
+/* CONTACTS PAGE TOP — the three add buttons at the top of My Contacts. "Add a
+   contact" opens the add sheet showing just the three ways to add (the by-hand
+   form stays CLOSED until "Add by hand" is tapped); the other two open the
+   phone contact picker or the file chooser directly in the sheet. */
 (function(){
-  const addB=$('contactsAddBtn'); if(addB) addB.addEventListener('click', ()=>{ openAddSheet(); setManualOpen(true); setTimeout(()=>{ const nf=$('fName'); if(nf){ try{ nf.focus({preventScroll:true}); }catch(e){} } },60); });
+  const addB=$('contactsAddBtn'); if(addB) addB.addEventListener('click', ()=>{ openAddSheet(); });
   const pickB=$('contactsPickPhoneBtn'); if(pickB) pickB.addEventListener('click', ()=>{ openAddSheet(); const pb=$('pickPhoneBtn'); if(pb) pb.click(); });
   const impB=$('contactsImportBtn'); if(impB) impB.addEventListener('click', ()=>{ openAddSheet(); const vi=$('vcfInput'); if(vi) vi.click(); });
 })();
