@@ -106,6 +106,30 @@ input,select{ min-height:48px }
 @media(max-width:640px){#map{height:300px}}
 .search-row{display:flex;gap:8px;margin-top:12px;min-width:0}
 .search-row input{flex:1;min-width:0;padding:12px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream);font-size:16px}
+/* FRONT-PAGE SEARCH RESULTS */
+.search-results{display:none;margin-top:12px}
+.search-results.show{display:block}
+.search-results-head{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:2px}
+.search-result{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-top:8px;cursor:pointer;color:var(--ink);font:inherit}
+.search-result:active{transform:scale(.99)}
+.search-result-main{flex:1;min-width:0}
+.search-result-name{font-weight:700;font-size:16px;line-height:1.25;display:block}
+.search-result-sub{font-size:13px;color:var(--muted);line-height:1.4;margin-top:2px;display:block;overflow-wrap:break-word}
+.search-result-open{flex-shrink:0;font-weight:700;color:var(--green);font-size:14px;white-space:nowrap}
+@media(prefers-color-scheme:dark){.search-result-open{color:#e6c87a}}
+/* CONTACT NOTES */
+.note-box-label{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.note-text-view{margin:0;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word}
+.note-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.5;resize:vertical}
+.note-entry{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);margin-top:10px}
+.note-date{font-size:12px;font-weight:700;color:var(--gold2);letter-spacing:.03em;margin-bottom:4px}
+@media(prefers-color-scheme:dark){.note-date{color:#e6c87a}}
+/* SIDE PANEL DOWNLOAD — a standout gold button pinned to the bottom of the panel, not a menu row */
+.side-download{position:sticky;bottom:0;margin-top:16px;padding:14px;background:var(--cream);border-top:1px solid var(--line);z-index:2}
+.side-download .btn-download{box-shadow:0 6px 18px rgba(168,130,47,.35)}
+/* EDIT SHEET — the edit form opens over the Contacts page, never in the side panel */
+#editOverlay{display:none;position:fixed;inset:0;z-index:195;background:var(--cream);overflow:auto}
+#editOverlay.open{display:block}
 @media(max-width:640px){
   .wrap{padding:12px 10px 24px}
   .panel{padding:14px 12px}
@@ -180,8 +204,8 @@ input,select{ min-height:48px }
 .photo-preview svg{width:40px;height:40px}
 .leaflet-popup-content .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
 /* CONTACTS PAGE */
-#contactsOverlay,#nearOverlay,#tripOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
-#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open{display:block}
+#contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
+#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open{display:block}
 .contacts-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
@@ -214,12 +238,12 @@ input,select{ min-height:48px }
 .feedback-item audio{width:100%;margin-top:8px}
 /* FEEDBACK CHAT WIDGET */
 .chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
-.menu-stat-row{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px}
+.menu-stat-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px}
 .menu-btn{position:static;width:44px;height:44px;min-height:44px;border-radius:10px;background:var(--cream);color:var(--green);border:1.5px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
 .menu-btn svg{width:22px;height:22px}
 .map-wrap{margin-top:12px}
 .front-stat{display:flex;align-items:baseline;gap:8px}
-.stat-num{font-family:"Playfair Display",Georgia,serif;font-size:38px;font-weight:800;line-height:1;color:var(--gold2)}
+.stat-num{font-family:"Playfair Display",Georgia,serif;font-size:26px;font-weight:800;line-height:1;color:var(--gold2)}
 @media(prefers-color-scheme:dark){.stat-num{color:#e6c87a}}
 .stat-label{font-size:15px;font-weight:600;color:var(--muted)}
 .menu-btn:active{transform:scale(.97)}
@@ -236,7 +260,16 @@ input,select{ min-height:48px }
 .chat-record-bar{display:none;align-items:center;gap:10px;padding:9px 14px;background:#fdf0f0;border-top:1px solid #eec9c9;color:#7c1d1d;font-weight:600;font-size:14px;flex-shrink:0}
 .chat-record-bar.show{display:flex}
 .chat-rec-dot{width:12px;height:12px;border-radius:50%;background:#c02727;flex-shrink:0;animation:chatPulse 1s infinite}
+.chat-rec-dot.paused{animation:none;background:#b8860b}
 @keyframes chatPulse{0%,100%{opacity:1}50%{opacity:.25}}
+/* DRIVING LIST — in-app address panel + copy button */
+.drive-addr-panel{display:none;align-items:center;gap:10px;margin-top:12px;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.drive-addr-panel.open{display:flex}
+.drive-addr-text{flex:1;min-width:0;font-size:16px;font-weight:600;line-height:1.4;overflow-wrap:break-word}
+.copy-addr-btn{width:48px;height:48px;min-height:48px;border-radius:10px;border:1.5px solid var(--gold);background:var(--gold-light);color:#5c430a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.copy-addr-btn svg{width:22px;height:22px;pointer-events:none}
+.copy-addr-btn:active{transform:scale(.95)}
+@media(prefers-color-scheme:dark){.copy-addr-btn{color:#e6c87a;background:#2e2a18}}
 @media (prefers-reduced-motion: reduce){.chat-rec-dot{animation:none}}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:10px;border-top:1px solid var(--line);background:var(--paper);flex-shrink:0}
 .chat-input{flex:1;width:100%;min-width:0;padding:12px 54px 12px 14px;border:1.5px solid var(--line);border-radius:20px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.4;resize:none;max-height:96px}
@@ -368,23 +401,24 @@ input,select{ min-height:48px }
           <div id="drawerAlertsSlot"></div>
         </div>
       </div>
-      <button type="button" id="downloadBtnSide" class="menu-row"><span>⬇️ Download the app</span></button>
       <button type="button" id="drawerFeedbackBtn" class="menu-row"><span>💬 Feedback</span></button>
+      <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📥 Feedback inbox</span></button>
     </nav>
+    <div class="side-download">
+      <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
+    </div>
   </aside>
 
   <div class="wrap">
     <div class="menu-stat-row">
       <button type="button" id="menuBtn" class="menu-btn" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
-      <div class="front-stat"><span id="statNum" class="stat-num">0</span><span id="statLabel" class="stat-label">contacts</span></div>
+      <button id="startDrivingTop" class="btn btn-green" style="font-size:17px;padding:14px 20px">🚗 Start driving</button>
     </div>
     <div class="hero-strip">
       <div>
         <h1>Who’s around to visit?</h1>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
-      </div>
+      <div class="front-stat"><span id="statNum" class="stat-num">0</span><span id="statLabel" class="stat-label">contacts</span></div>
     </div>
 
     <div class="workspace">
@@ -402,6 +436,8 @@ input,select{ min-height:48px }
             <input id="searchInput" type="search" placeholder="Search name, phone, street, city…">
             <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
           </div>
+          <p class="muted" style="margin:8px 2px 0">Just start typing — matches appear below as you type, no Search button needed. Tap a person to open them.</p>
+          <div id="searchResults" class="search-results" aria-live="polite"></div>
           <div id="areaChips" class="chips" role="group" aria-label="Filter by area"></div>
         </div>
 
@@ -646,7 +682,7 @@ input,select{ min-height:48px }
       <button type="button" id="chatCloseBtn" class="btn" style="background:#fff;color:var(--green);padding:9px 14px;min-height:44px" aria-label="Close feedback chat">✕</button>
     </div>
     <div id="chatThread" class="chat-thread" aria-live="polite"></div>
-    <div id="chatRecordBar" class="chat-record-bar"><span class="chat-rec-dot" aria-hidden="true"></span><span id="chatRecordLabel">Recording… 0:00</span><span style="flex:1"></span><button type="button" id="chatCancelRecBtn" class="btn btn-outline btn-small">✕ Cancel</button></div>
+    <div id="chatRecordBar" class="chat-record-bar"><span class="chat-rec-dot" aria-hidden="true"></span><span id="chatRecordLabel">Recording… 0:00</span><span style="flex:1"></span><button type="button" id="chatPauseRecBtn" class="btn btn-outline btn-small" style="display:none">⏸ Pause</button><button type="button" id="chatCancelRecBtn" class="btn btn-outline btn-small">✕ Cancel</button></div>
     <p id="chatVoiceUnsupported" class="muted" style="display:none;margin:0;padding:8px 14px 0">Voice notes are not available in this browser — please type your message instead.</p>
     <div class="chat-input-row">
       <label for="chatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Type your feedback</label>
@@ -656,7 +692,7 @@ input,select{ min-height:48px }
       </div>
       <button type="button" id="chatSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
-    <p class="muted" style="margin:0;padding:0 14px 10px;background:var(--paper);font-size:13px">Type and tap ➤ — or tap 🎙️ once, talk, then tap ➤ to send it as a voice note, just like WhatsApp.</p>
+    <p class="muted" style="margin:0;padding:0 14px 10px;background:var(--paper);font-size:13px">Type and tap ➤ — or tap 🎙️ once and talk. While recording you can tap ⏸ Pause and ▶ Continue, then tap ➤ to send it as a voice note, just like WhatsApp.</p>
   </div>
 </section>
 
@@ -687,6 +723,30 @@ input,select{ min-height:48px }
   </div>
 </div>
 
+<!-- EDIT CONTACT SHEET — opens over the Contacts page; the edit form lives here while editing -->
+<div id="editOverlay" role="dialog" aria-label="Edit contact">
+  <div class="contacts-head">
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">✏️ Edit contact</div><div style="font-size:13px;opacity:.9;margin-top:2px">You stay in Contacts — saving brings you right back here</div></div>
+    <button id="closeEditSheetBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back to contacts</button>
+  </div>
+  <div style="max-width:760px;margin:0 auto;padding:14px">
+    <div id="editSheetBody"></div>
+    <p class="muted" style="margin-top:12px">Tap “Save contact” in the form to save your changes, or “Cancel edit” / “← Back to contacts” to go back without saving.</p>
+  </div>
+</div>
+
+<!-- FEEDBACK INBOX — only ever opened by the admin login; nobody else sees the entry -->
+<div id="inboxOverlay" role="dialog" aria-label="Feedback inbox">
+  <div class="contacts-head">
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📥 Feedback Inbox</div><div style="font-size:13px;opacity:.9;margin-top:2px">Everything people sent from Feedback — newest first</div></div>
+    <button id="closeInboxBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back</button>
+  </div>
+  <div style="max-width:760px;margin:0 auto;padding:14px">
+    <p id="inboxStatus" class="muted" style="margin-top:2px"></p>
+    <div id="inboxList"></div>
+  </div>
+</div>
+
 <!-- TRIP PLANNER PAGE -->
 <div id="tripOverlay" role="dialog" aria-label="Trip planner">
   <div class="contacts-head">
@@ -702,7 +762,7 @@ input,select{ min-height:48px }
     <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div><div style="font-size:13px;opacity:.9;margin-top:2px">Follow map • Alerts on • Screen stays awake</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
-  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
+  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
     <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -772,6 +832,27 @@ input,select{ min-height:48px }
   </div>
 </div>
 
+<!-- NOTES WINDOW — a contact's notes, newest first, with a + to add another -->
+<div id="notesModal" class="install-modal" role="dialog" aria-modal="true" aria-label="Contact notes">
+  <div class="install-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <h2 id="notesTitle">📝 Notes</h2>
+      <button type="button" id="closeNotes" class="btn btn-outline btn-small" aria-label="Close notes">✕</button>
+    </div>
+    <div id="notesList"></div>
+    <div id="notesAddWrap" style="display:none;margin-top:14px">
+      <label class="note-box-label" for="newNoteText">New note</label>
+      <textarea id="newNoteText" class="note-textarea" rows="3" placeholder="Write a note about this person…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button type="button" id="saveNoteBtn" class="btn btn-green" style="flex:1">Save note</button>
+        <button type="button" id="cancelNoteBtn" class="btn btn-outline" style="flex:1">Cancel</button>
+      </div>
+    </div>
+    <button type="button" id="addNoteBtn" class="btn btn-gold btn-large" style="margin-top:14px">＋ Add a note</button>
+    <button type="button" id="doneNotesBtn" class="btn btn-outline btn-large" style="margin-top:10px">Done</button>
+  </div>
+</div>
+
 <input id="quickPhotoInput" type="file" accept="image/*" style="display:none">
 <div id="toast" class="toast"></div>
 
@@ -785,6 +866,7 @@ let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
 let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,notifOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='',contactsSearchTerm='';
 let contactsSortMode='name';
+let fbInboxUnsub=null;
 let formReturnToContacts=false;
 let nearSortMode='distance';
 let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false,quickPhotoTargetId=null;
@@ -802,8 +884,8 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); }
-    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactsPage(); closeTripPage(); closeNearPage(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); }
+    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); updateInboxVisibility(); }
   });
 } else { $('firebaseError').classList.add('show'); }
 
@@ -908,7 +990,7 @@ function renderMarkers(){
   markers.forEach(m=>map.removeLayer(m)); markers=[];
   const list=filteredContacts().filter(c=>c.onMap!==false && c.lat!=null && c.lng!=null);
   list.forEach((c,i)=>{
-    const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(map).bindPopup(popupHtml(c));
+    const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(map).bindPopup(popupHtml(c)); m._cid=c.id;
     markers.push(m);
   });
   $('mapCount').textContent=list.length+' on map';
@@ -942,7 +1024,62 @@ function fullAddress(c){ return [c.street,c.city,c.state,c.zip].filter(Boolean).
 function directionsUrl(c){ const dest=(c.lat!=null&&c.lng!=null)?`${c.lat},${c.lng}`:fullAddress(c); return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}`; }
 function haversineMiles(a,b,c,d){ const R=3958.8, toRad=x=>x*Math.PI/180; const dLat=toRad(c-a), dLon=toRad(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 
-function renderAll(){ renderList(); renderMarkers(); renderDriveList(); renderTripPlanner(); }
+function renderAll(){ renderList(); renderMarkers(); renderDriveList(); renderTripPlanner(); renderSearchResults(); }
+/* FRONT-PAGE SEARCH — as the user types, matching contacts appear as a visible list under the search box.
+   Matches name, phone (digits or formatted), street, city, state and ZIP across ALL contacts,
+   regardless of the area chip, so a name search always finds the person. */
+function searchMatches(q){
+  const raw=(q||'').trim().toLowerCase(); if(!raw) return [];
+  const tokens=raw.split(/\s+/).filter(Boolean);
+  return contacts.filter(c=>{
+    const hay=((c.name||'')+' '+(c.phone||'')+' '+(c.street||'')+' '+(c.city||'')+' '+(c.state||'')+' '+(c.zip||'')).toLowerCase();
+    const phoneDigits=String(c.phone||'').replace(/\D/g,'');
+    return tokens.every(t=>{
+      if(hay.includes(t)) return true;
+      const td=t.replace(/\D/g,'');
+      return td.length>=3 && phoneDigits.includes(td);
+    });
+  });
+}
+function renderSearchResults(){
+  const box=$('searchResults'); if(!box) return;
+  const q=(searchTerm||'').trim();
+  if(!q){ box.className='search-results'; box.innerHTML=''; return; }
+  const list=searchMatches(q);
+  box.className='search-results show';
+  if(!list.length){
+    box.innerHTML='<div class="search-results-head">No contacts match “'+escapeHtml(q)+'”.</div><p class="muted" style="margin:4px 0 0">Check the spelling — or try part of the name, a street, or a city instead.</p>';
+    return;
+  }
+  box.innerHTML='<div class="search-results-head">'+list.length+(list.length===1?' contact found':' contacts found')+' for “'+escapeHtml(q)+'” — tap a person to open them:</div>';
+  list.forEach(c=>{
+    const row=document.createElement('button'); row.type='button'; row.className='search-result';
+    const addr=fullAddress(c);
+    const sub=[addr||'No address yet', c.phone?('☎️ '+c.phone):''].filter(Boolean).join('  •  ');
+    row.innerHTML=avatarHtml(c,true)+'<span class="search-result-main"><span class="search-result-name">'+escapeHtml(c.name||'No name')+'</span><span class="search-result-sub">'+escapeHtml(sub)+'</span></span><span class="search-result-open">Open ›</span>';
+    row.addEventListener('click',()=>showContactOnMap(c.id));
+    box.appendChild(row);
+  });
+}
+/* Tapping a search result: fly the map to the person and open their popup.
+   If they have no pin yet, open their contact card instead. */
+function showContactOnMap(id){
+  const c=contacts.find(x=>x.id===id); if(!c) return;
+  if(!map || c.lat==null || c.lng==null || c.onMap===false){ openContactFromMap(id); return; }
+  if(currentFilter!=='All' && getArea(c)!==currentFilter){
+    currentFilter='All';
+    document.querySelectorAll('#areaChips .chip').forEach(x=>x.classList.toggle('active',x.textContent==='All'));
+    renderMarkers();
+  }
+  const mapEl=document.getElementById('map'); if(mapEl) mapEl.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{
+    try{ map.flyTo([c.lat,c.lng],Math.max(map.getZoom(),15),{duration:0.7}); }catch(e){ try{ map.setView([c.lat,c.lng],15); }catch(e2){} }
+    setTimeout(()=>{
+      const m=markers.find(x=>x._cid===id);
+      if(m){ m.openPopup(); } else { openContactFromMap(id); }
+    },800);
+  },120);
+}
 function renderList(){
   /* The Contacts page shows everyone — its search box narrows it, and it can sort by name (default) or by distance from you right now */
   const q=contactsSearchTerm.trim().toLowerCase();
@@ -961,11 +1098,12 @@ function renderList(){
   const lc=$('listCount'); if(lc) lc.textContent=contacts.length+(contacts.length===1?' person':' people');
   const pc=$('contactsPageCount'); if(pc) pc.textContent=contacts.length+(contacts.length===1?' person':' people');
   const fsn=$('statNum'), fsl=$('statLabel');
-  if(fsn&&fsl){ const n=currentFilter==='All'?contacts.length:contacts.filter(c=>getArea(c)===currentFilter).length; fsn.textContent=n; fsl.textContent=(n===1?'contact':'contacts')+(currentFilter==='All'?'':' in '+currentFilter); }
+  if(fsn&&fsl){ const n=currentFilter==='All'?contacts.length:contacts.filter(c=>getArea(c)===currentFilter).length; fsn.textContent=n; fsl.textContent=(n===1?'contact':'contacts')+(currentFilter==='All'?' in total':' in '+currentFilter); }
   $('emptyState').style.display=contacts.length===0?'block':'none';
   const el=$('contactList'); el.innerHTML='';
   list.forEach((c,idx)=>{
     const card=document.createElement('div'); card.className='contact-card'; card.dataset.cid=c.id||'';
+    const nCount=contactNotes(c).length;
     const badge=c.geocodeStatus==='exact'?'<span class="badge badge-exact">Exact pin</span>':c.geocodeStatus==='approximate'?'<span class="badge badge-approx">Approximate — town</span>':(c.lat!=null?'<span class="badge badge-exact">On map</span>':'<span class="badge badge-nopin">No pin yet</span>');
     card.innerHTML=`
       <div class="contact-head"><div style="display:flex;gap:12px;align-items:flex-start">${avatarHtml(c)}<div><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${escapeHtml(fullAddress(c)||'No address yet')}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div>${badge}</div>
@@ -975,6 +1113,7 @@ function renderList(){
         <button class="btn btn-gold photo-btn">📷 ${hasPhoto(c)?'Change picture':'Add picture'}</button>
         <button class="btn btn-gold addr-btn">📍 ${fullAddress(c)?'Edit address':'Add address'}</button>
         <button class="btn btn-outline edit-btn">Edit</button>
+        <button class="btn btn-outline note-btn">📝 Notes${nCount?' ('+nCount+')':''}</button>
         <button class="btn btn-outline del-btn" style="color:var(--red)">Delete</button>
       </div>
       <div class="toggle-row"><span>On my map — include in driving alerts</span><label class="switch"><input type="checkbox" class="onmap-toggle" ${c.onMap!==false?'checked':''}><span class="switch-track"></span><span class="switch-thumb"></span></label></div>
@@ -982,8 +1121,9 @@ function renderList(){
     `;
     card.querySelector('.onmap-toggle').addEventListener('change', async e=>{ await updateContact(c.id,{onMap:e.target.checked}); toast(e.target.checked?'Added to your map':'Removed from map'); });
     card.querySelector('.photo-btn').addEventListener('click', ()=>{ quickPhotoTargetId=c.id; const qi=$('quickPhotoInput'); qi.value=''; qi.click(); });
-    card.querySelector('.addr-btn').addEventListener('click', ()=>{ formReturnToContacts=true; closeContactsPage(); startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); });
-    card.querySelector('.edit-btn').addEventListener('click', ()=>{ formReturnToContacts=true; closeContactsPage(); startEdit(c); });
+    card.querySelector('.addr-btn').addEventListener('click', ()=>{ startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); });
+    card.querySelector('.edit-btn').addEventListener('click', ()=>{ startEdit(c); });
+    card.querySelector('.note-btn').addEventListener('click', ()=>{ openNotes(c.id); });
     const dc=card.querySelector('.del-confirm');
     card.querySelector('.del-btn').addEventListener('click', ()=>{ dc.style.display='block'; });
     card.querySelector('.cancel-del').addEventListener('click', ()=>{ dc.style.display='none'; });
@@ -1112,19 +1252,144 @@ function setManualOpen(open){ const w=$('manualFormWrap'); const b=$('toggleManu
 function openContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderList(); }
 function closeContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open')) document.body.style.overflow=''; }
 (function(){ const mb=$('toggleManualBtn'); if(mb) mb.addEventListener('click',()=>setManualOpen($('manualFormWrap').style.display==='none')); const ob=$('openContactsBtn'); if(ob) ob.addEventListener('click', openContactsPage); const cb=$('closeContactsBtn'); if(cb) cb.addEventListener('click', closeContactsPage); const csi=$('contactsSearchInput'); if(csi) csi.addEventListener('input', e=>{ contactsSearchTerm=e.target.value; renderList(); }); const ccs=$('clearContactsSearch'); if(ccs) ccs.addEventListener('click', ()=>{ const inp=$('contactsSearchInput'); if(inp) inp.value=''; contactsSearchTerm=''; renderList(); }); })();
+/* EDIT SHEET — editing from My Contacts happens in a sheet over the Contacts page itself.
+   The by-hand form node moves into the sheet while editing and moves back when done, so the
+   side Settings panel is never opened and the Contacts page stays open underneath the whole time. */
+let editSheetOpen=false, formHomeParent=null, formHomeNext=null;
+function openEditSheet(){
+  const w=$('manualFormWrap'); if(!w) return;
+  if(!formHomeParent){ formHomeParent=w.parentNode; formHomeNext=w.nextSibling; }
+  const body=$('editSheetBody'); if(body) body.appendChild(w);
+  const o=$('editOverlay'); if(o){ o.classList.add('open'); o.scrollTop=0; }
+  editSheetOpen=true;
+}
+function closeEditSheet(){
+  const w=$('manualFormWrap');
+  if(w&&formHomeParent){ if(formHomeNext&&formHomeNext.parentNode===formHomeParent) formHomeParent.insertBefore(w,formHomeNext); else formHomeParent.appendChild(w); }
+  const o=$('editOverlay'); if(o) o.classList.remove('open');
+  editSheetOpen=false;
+}
+const _esb=$('closeEditSheetBtn'); if(_esb) _esb.addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
 function startEdit(c){
-  openSidePanel();
-  openMenuSection('contacts');
+  openEditSheet();
   setManualOpen(true);
   $('editId').value=c.id; $('formTitle').textContent='Edit contact';
   $('fName').value=c.name||''; $('fPhone').value=c.phone||''; $('fStreet').value=c.street||''; $('fCity').value=c.city||''; $('fState').value=c.state||''; $('fZip').value=c.zip||'';
   $('photoData').value=hasPhoto(c)?c.photo:''; renderPhotoPreview();
   $('exactLat').value=c.lat!=null?c.lat:''; $('exactLng').value=c.lng!=null?c.lng:''; $('exactStatus').value=c.geocodeStatus||'';
   $('cancelEdit').style.display='inline-flex';
-  document.getElementById('contactForm').scrollIntoView({behavior:'smooth',block:'center'});
+  const eo=$('editOverlay'); if(eo) eo.scrollTop=0;
 }
-/* If the edit form was opened from the My Contacts page, saving or cancelling returns there — so more addresses/pictures can be added to more contacts without reopening the page each time */
-function returnToContactsAfterForm(){ const back=formReturnToContacts; formReturnToContacts=false; if(back){ closeSidePanel(); openContactsPage(); } }
+/* Saving or cancelling the form: if the edit sheet is open, just close the sheet — the Contacts
+   page never closed, so the user is still right there. (Legacy path kept for safety.) */
+function returnToContactsAfterForm(){
+  if(editSheetOpen){ closeEditSheet(); return; }
+  const back=formReturnToContacts; formReturnToContacts=false; if(back){ closeSidePanel(); openContactsPage(); }
+}
+/* NOTES — several notes per contact, saved on the contact as a notes list, newest first.
+   Shown in a small window in the middle of the screen, with a ＋ to add another note. */
+let notesTargetId=null;
+function contactNotes(c){
+  if(!c) return [];
+  const arr=Array.isArray(c.notes)?c.notes.filter(n=>n&&String(n.t||'').trim()):[];
+  if(!arr.length && c.note && String(c.note).trim()) arr.push({t:String(c.note),ts:null});
+  return arr.slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+}
+function openNotes(id){ notesTargetId=id; hideNoteComposer(); renderNotesModal(); const m=$('notesModal'); if(m) m.classList.add('open'); }
+function closeNotes(){ const m=$('notesModal'); if(m) m.classList.remove('open'); notesTargetId=null; hideNoteComposer(); }
+function renderNotesModal(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  $('notesTitle').textContent='📝 Notes — '+(c.name||'Contact');
+  const list=contactNotes(c); const el=$('notesList'); if(!el) return; el.innerHTML='';
+  if(!list.length){ el.innerHTML='<p class="muted" style="margin-top:10px">No notes yet for this person. Tap “＋ Add a note” below to write the first one.</p>'; return; }
+  list.forEach(n=>{
+    const d=document.createElement('div'); d.className='note-entry';
+    const when=n.ts?new Date(n.ts).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'';
+    d.innerHTML=(when?'<div class="note-date">'+escapeHtml(when)+'</div>':'')+'<p class="note-text-view">'+escapeHtml(n.t||'')+'</p>';
+    el.appendChild(d);
+  });
+}
+function showNoteComposer(){ const w=$('notesAddWrap'); if(w) w.style.display='block'; const b=$('addNoteBtn'); if(b) b.style.display='none'; const ta=$('newNoteText'); if(ta){ ta.value=''; setTimeout(()=>{ try{ ta.focus({preventScroll:true}); }catch(e){} },80); } }
+function hideNoteComposer(){ const w=$('notesAddWrap'); if(w) w.style.display='none'; const b=$('addNoteBtn'); if(b) b.style.display=''; const ta=$('newNoteText'); if(ta) ta.value=''; }
+async function saveNewNote(){
+  const c=contacts.find(x=>x.id===notesTargetId); if(!c) return;
+  const ta=$('newNoteText'); const text=ta?ta.value.trim():'';
+  if(!text){ toast('Write the note first, then tap Save note'); return; }
+  const arr=contactNotes(c); arr.unshift({t:text,ts:Date.now()});
+  try{
+    await updateContact(c.id,{notes:arr,note:''});
+    c.notes=arr; c.note='';
+    toast('Note saved');
+    hideNoteComposer(); renderNotesModal(); renderList();
+  }catch(e){ toast('Could not save the note — check your connection and try again'); }
+}
+(function initNotes(){
+  const ab=$('addNoteBtn'); if(ab) ab.addEventListener('click', showNoteComposer);
+  const sb=$('saveNoteBtn'); if(sb) sb.addEventListener('click', saveNewNote);
+  const cb=$('cancelNoteBtn'); if(cb) cb.addEventListener('click', hideNoteComposer);
+  const cl=$('closeNotes'); if(cl) cl.addEventListener('click', closeNotes);
+  const dn=$('doneNotesBtn'); if(dn) dn.addEventListener('click', closeNotes);
+  const m=$('notesModal'); if(m) m.addEventListener('click', e=>{ if(e.target===m) closeNotes(); });
+})();
+/* FEEDBACK INBOX — visible ONLY to the admin login (the email the Firestore rules allow to
+   read /feedback). Lists every feedback document, newest first: sender, time, text, and
+   voice notes playable in place. Other users never see the menu entry or the page. */
+const ADMIN_EMAIL='mendelgoldstein85@gmail.com';
+function isAdmin(){ return !!(currentUser && (currentUser.email||'').toLowerCase()===ADMIN_EMAIL); }
+function updateInboxVisibility(){ const b=$('drawerInboxBtn'); if(b) b.style.display=isAdmin()?'':'none'; }
+function inboxTime(d){ if(d && typeof d.ts==='number') return d.ts; if(d && d.createdAt && typeof d.createdAt.toMillis==='function') return d.createdAt.toMillis(); return 0; }
+function openInboxPage(){
+  if(!isAdmin()) return;
+  const o=$('inboxOverlay'); if(!o) return;
+  o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0;
+  subscribeInbox();
+}
+function closeInboxPage(){
+  const o=$('inboxOverlay'); if(o) o.classList.remove('open');
+  if(fbInboxUnsub){ fbInboxUnsub(); fbInboxUnsub=null; }
+  if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow='';
+}
+function subscribeInbox(){
+  if(!db || !isAdmin()) return;
+  if(fbInboxUnsub) fbInboxUnsub();
+  const st=$('inboxStatus'); if(st) st.textContent='Loading feedback…';
+  fbInboxUnsub=db.collection('feedback').onSnapshot(snap=>{
+    const items=[]; snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    items.sort((a,b)=>inboxTime(b)-inboxTime(a));
+    renderInbox(items);
+  }, err=>{
+    console.error(err);
+    const st2=$('inboxStatus');
+    if(st2) st2.textContent=(err && err.code==='permission-denied') ? 'This login is not allowed to read the feedback inbox.' : 'Could not load the inbox — check your connection and reopen this page.';
+    const el=$('inboxList'); if(el) el.innerHTML='';
+  });
+}
+function renderInbox(items){
+  const st=$('inboxStatus'); if(st) st.textContent=items.length ? (items.length+(items.length===1?' message':' messages')+' — newest first.') : '';
+  const el=$('inboxList'); if(!el) return; el.innerHTML='';
+  if(!items.length){
+    el.innerHTML='<div class="empty" style="margin-top:12px"><div style="font-size:32px">📥</div><strong style="font-size:17px">No feedback yet</strong><p class="muted">When someone sends feedback from the app, it shows up here.</p></div>';
+    return;
+  }
+  items.forEach(d=>{
+    const div=document.createElement('div'); div.className='feedback-item';
+    const t=inboxTime(d);
+    const when=t ? new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+    let html='<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><strong style="font-size:16px">'+escapeHtml(d.fromEmail||'Unknown sender')+'</strong>'+(when?'<span class="muted" style="font-size:13px">'+escapeHtml(when)+'</span>':'')+'</div>';
+    if(d.text) html+='<p style="margin:8px 0 0;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word">'+escapeHtml(d.text)+'</p>';
+    if(!d.text && !(d.audio && typeof d.audio==='string')) html+='<p class="muted" style="margin:8px 0 0">(Empty message)</p>';
+    div.innerHTML=html;
+    if(d.audio && typeof d.audio==='string' && d.audio.indexOf('data:audio')===0){
+      const au=document.createElement('audio'); au.controls=true; au.preload='metadata'; au.src=d.audio; au.style.width='100%'; au.style.marginTop='10px';
+      div.appendChild(au);
+    }
+    el.appendChild(div);
+  });
+}
+(function initInbox(){
+  const ib=$('drawerInboxBtn'); if(ib) ib.addEventListener('click', ()=>{ closeSidePanel(); openInboxPage(); });
+  const cb=$('closeInboxBtn'); if(cb) cb.addEventListener('click', closeInboxPage);
+})();
 $('cancelEdit').addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
 function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If the exact address can’t be found, a clearly labeled approximate pin for the town is used — an address is never made up.'; setManualOpen(false); }
 
@@ -1354,12 +1619,43 @@ updateSoundUI();
 async function requestWakeLock(){ const status='Screen wake lock: '; try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); $('wakeStatus').textContent=status+'ON — screen will stay awake while driving.'; $('wakeStatusMain').textContent='Wake lock supported on this device.'; wakeLock.addEventListener('release',()=>{ $('wakeStatus').textContent=status+'released — tap Start driving again if needed.'; }); } else { $('wakeStatus').textContent=status+'not supported here — keep the phone plugged in / screen on.'; } }catch(e){ $('wakeStatus').textContent=status+'could not start.'; } }
 document.addEventListener('visibilitychange', async()=>{ if(document.visibilityState==='visible' && $('drivingOverlay').classList.contains('open')) requestWakeLock(); });
 
+const COPY_ICON_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+async function copyTextToClipboard(text,btn){
+  let ok=false;
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); ok=true; } }catch(e){}
+  if(!ok){
+    try{ const ta=document.createElement('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); document.body.removeChild(ta); }catch(e){}
+  }
+  if(ok){
+    toast('Address copied — paste it anywhere you like');
+    if(btn){ const old=btn.innerHTML; btn.innerHTML='<span style="font-size:20px;font-weight:800" aria-hidden="true">✓</span>'; setTimeout(()=>{ btn.innerHTML=old; },1500); }
+  } else {
+    toast('Could not copy automatically — press and hold the address to copy it');
+  }
+}
 function renderDriveList(){
   const el=$('driveList'); if(!el) return;
   if(!myLoc){ el.innerHTML='<p class="muted">Waiting for your location… once GPS is found, everyone nearby appears here closest first.</p>'; return; }
   const sorted=sortedByDistance();
   if(!sorted.length){ el.innerHTML='<p class="muted">No contacts on your map yet.</p>'; return; }
-  el.innerHTML=''; sorted.forEach(c=>{ const within=c._dist<=alertMiles; const div=document.createElement('div'); div.className='near-item'; if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px'; div.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(fullAddress(c))}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+  el.innerHTML=''; sorted.forEach(c=>{
+    const within=c._dist<=alertMiles;
+    const addr=fullAddress(c);
+    const div=document.createElement('div'); div.className='near-item';
+    div.style.flexDirection='column'; div.style.alignItems='stretch';
+    if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px';
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div style="display:flex;gap:12px;align-items:center;min-width:0">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(addr)}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline show-addr-btn" style="font-size:17px" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`;
+    const showBtn=div.querySelector('.show-addr-btn');
+    const panel=div.querySelector('.drive-addr-panel');
+    if(showBtn&&panel) showBtn.addEventListener('click',()=>{
+      const open=panel.classList.toggle('open');
+      showBtn.textContent=open?'📍 Hide address':'📍 Show address';
+      showBtn.setAttribute('aria-expanded', open?'true':'false');
+    });
+    const copyBtn=div.querySelector('.copy-addr-btn');
+    if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn));
+    el.appendChild(div);
+  });
 }
 function checkAlerts(){
   if(!myLoc) return;
@@ -1372,6 +1668,10 @@ function checkAlerts(){
       $('alertAvatar').innerHTML=avatarHtml(c);
       $('alertText').textContent=`${c.name} is ${c._dist.toFixed(1)} miles away — ${fullAddress(c)}`;
       $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
+      alertAddr=fullAddress(c);
+      $('alertAddrText').textContent=alertAddr||'No address saved for this person yet.';
+      $('alertCopyAddr').style.display=alertAddr?'inline-flex':'none';
+      resetAlertAddrPanel();
       $('alertBanner').classList.add('show');
       playAlertSound();
       if(notifOn && 'Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
@@ -1380,7 +1680,20 @@ function checkAlerts(){
   }
   insideSet=nowInside;
 }
-$('dismissAlert').addEventListener('click',()=>$('alertBanner').classList.remove('show'));
+$('dismissAlert').addEventListener('click',()=>{ $('alertBanner').classList.remove('show'); resetAlertAddrPanel(); });
+/* ALERT BANNER — Show address: reveals the person's address inside the banner, with the
+   same two-squares copy button as the driving list. */
+let alertAddr='';
+function resetAlertAddrPanel(){
+  const p=$('alertAddrPanel'); if(p) p.classList.remove('open');
+  const b=$('alertShowAddr'); if(b){ b.textContent='📍 Show address'; b.setAttribute('aria-expanded','false'); }
+}
+$('alertShowAddr').addEventListener('click',()=>{
+  const p=$('alertAddrPanel'); if(!p) return;
+  const open=p.classList.toggle('open');
+  const b=$('alertShowAddr'); b.textContent=open?'📍 Hide address':'📍 Show address'; b.setAttribute('aria-expanded', open?'true':'false');
+});
+$('alertCopyAddr').addEventListener('click',()=>{ if(alertAddr) copyTextToClipboard(alertAddr, $('alertCopyAddr')); });
 
 function initDriveMap(){
   if(driveMap){ setTimeout(()=>driveMap.invalidateSize(),100); return; }
@@ -1709,7 +2022,7 @@ async function sendFeedbackPayload(text, voiceBlob){
   if(sendBtn) sendBtn.disabled=false;
 }
 function sendChatText(){
-  if(mediaRecorder&&mediaRecorder.state==='recording'){ stopVoiceRecord('send'); return; }
+  if(mediaRecorder&&(mediaRecorder.state==='recording'||mediaRecorder.state==='paused')){ stopVoiceRecord('send'); return; }
   const inp=$('chatInput'); const text=inp?inp.value.trim():'';
   if(!text){ toast('Type a message — or tap 🎙️ to leave a voice note'); return; }
   sendFeedbackPayload(text,null);
@@ -1719,23 +2032,54 @@ const _cin=$('chatInput'); if(_cin){
   _cin.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChatText(); } });
   _cin.addEventListener('input', ()=>{ _cin.style.height='auto'; _cin.style.height=Math.min(_cin.scrollHeight,96)+'px'; });
 }
-/* Voice note — one tap to record, one tap on Send to send it. No studio, no extra steps. */
+/* Voice note — one tap to record, one tap on Send to send it. Pause and Continue while recording, where the browser supports it. */
+function recordIsActive(){ return !!(mediaRecorder&&(mediaRecorder.state==='recording'||mediaRecorder.state==='paused')); }
+function recordLabelText(){
+  const m=Math.floor(recordSecs/60), s=recordSecs%60, t=m+':'+(s<10?'0':'')+s;
+  if(mediaRecorder&&mediaRecorder.state==='paused') return 'Paused — '+t+' — tap ▶ Continue to keep recording, or ➤ to send';
+  return 'Recording… '+t+' — tap ➤ to send your voice note';
+}
+function startRecordTimer(){
+  clearInterval(recordTimerInt);
+  recordTimerInt=setInterval(()=>{ recordSecs++; const l=$('chatRecordLabel'); if(l) l.textContent=recordLabelText(); if(recordSecs>=120) stopVoiceRecord('send'); },1000);
+}
 function updateRecordUI(){
-  const rec=!!(mediaRecorder&&mediaRecorder.state==='recording');
-  const bar=$('chatRecordBar'); if(bar) bar.classList.toggle('show',rec);
+  const rec=recordIsActive();
+  const paused=!!(mediaRecorder&&mediaRecorder.state==='paused');
+  const bar=$('chatRecordBar'); if(bar){ bar.classList.toggle('show',rec); const dot=bar.querySelector('.chat-rec-dot'); if(dot) dot.classList.toggle('paused',paused); }
   const mic=$('chatMicBtn'); if(mic){ mic.classList.toggle('recording',rec); mic.textContent=rec?'⏹':'🎙️'; mic.setAttribute('aria-label', rec?'Stop recording without sending':'Record a voice note — tap once to start, then tap Send'); }
+  const pauseBtn=$('chatPauseRecBtn');
+  if(pauseBtn){
+    const canPause=!!(mediaRecorder&&typeof mediaRecorder.pause==='function'&&typeof mediaRecorder.resume==='function');
+    pauseBtn.style.display=(rec&&canPause)?'':'none';
+    pauseBtn.textContent=paused?'▶ Continue':'⏸ Pause';
+    pauseBtn.setAttribute('aria-label', paused?'Continue recording':'Pause recording');
+  }
+  if(rec){ const lbl=$('chatRecordLabel'); if(lbl) lbl.textContent=recordLabelText(); }
   const inp=$('chatInput'); if(inp) inp.disabled=rec;
+}
+function toggleRecordPause(){
+  if(!mediaRecorder) return;
+  if(mediaRecorder.state==='recording'&&typeof mediaRecorder.pause==='function'){
+    try{ mediaRecorder.pause(); }catch(e){ return; }
+    clearInterval(recordTimerInt); recordTimerInt=null;
+    updateRecordUI();
+  } else if(mediaRecorder.state==='paused'&&typeof mediaRecorder.resume==='function'){
+    try{ mediaRecorder.resume(); }catch(e){ return; }
+    startRecordTimer();
+    updateRecordUI();
+  }
 }
 function stopVoiceRecord(intent){
   recordIntent=intent;
-  if(mediaRecorder&&mediaRecorder.state==='recording'){ try{ mediaRecorder.stop(); }catch(e){} }
+  if(recordIsActive()){ try{ mediaRecorder.stop(); }catch(e){} }
 }
 const _mic=$('chatMicBtn');
 if(!('mediaDevices' in navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || typeof MediaRecorder==='undefined'){
   if(_mic) _mic.style.display='none';
   const vu=$('chatVoiceUnsupported'); if(vu) vu.style.display='block';
 } else if(_mic) _mic.addEventListener('click', async()=>{
-  if(mediaRecorder&&mediaRecorder.state==='recording'){ stopVoiceRecord('discard'); toast('Recording stopped — nothing was sent. Tap 🎙️ to start again, then ➤ to send.'); return; }
+  if(recordIsActive()){ stopVoiceRecord('discard'); toast('Recording stopped — nothing was sent. Tap 🎙️ to start again, then ➤ to send.'); return; }
   try{
     recordStream=await navigator.mediaDevices.getUserMedia({audio:true});
     recordChunks=[]; mediaRecorder=new MediaRecorder(recordStream);
@@ -1758,12 +2102,12 @@ if(!('mediaDevices' in navigator && navigator.mediaDevices && navigator.mediaDev
     chatCaptionBeforeRecord=($('chatInput')?$('chatInput').value.trim():'');
     mediaRecorder.start();
     recordSecs=0; updateRecordUI();
-    const lbl=$('chatRecordLabel'); if(lbl) lbl.textContent='Recording… 0:00 — tap ➤ to send your voice note';
-    recordTimerInt=setInterval(()=>{ recordSecs++; const m=Math.floor(recordSecs/60), s=recordSecs%60; const l=$('chatRecordLabel'); if(l) l.textContent=`Recording… ${m}:${s<10?'0':''}${s} — tap ➤ to send your voice note`; if(recordSecs>=120) stopVoiceRecord('send'); },1000);
+    startRecordTimer();
   }catch(e){ toast('Microphone not allowed — you can type your message instead'); }
 });
 let chatCaptionBeforeRecord='';
 const _crc=$('chatCancelRecBtn'); if(_crc) _crc.addEventListener('click',()=>{ stopVoiceRecord('discard'); toast('Voice note cancelled — nothing was sent'); });
+const _cpr=$('chatPauseRecBtn'); if(_cpr) _cpr.addEventListener('click', toggleRecordPause);
 renderChatThread();
 </script>
 </body>
