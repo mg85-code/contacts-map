@@ -46,6 +46,13 @@ input,select{ min-height:48px }
 @media(prefers-color-scheme:dark){.login-box{background:var(--card)}}
 .login-box label{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin:12px 0 6px}
 .login-box input{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink);font-size:16px}
+.pw-wrap{display:flex;gap:8px;align-items:stretch}
+.pw-wrap input{flex:1;min-width:0;width:auto}
+.pw-toggle{flex-shrink:0;display:inline-flex;align-items:center;gap:7px;padding:0 16px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:15px;cursor:pointer;min-height:48px}
+.pw-toggle svg{width:20px;height:20px;flex-shrink:0}
+.pw-toggle[aria-pressed="true"]{background:var(--gold-light);border-color:var(--gold);color:#5c430a}
+@media(prefers-color-scheme:dark){.pw-toggle[aria-pressed="true"]{color:#f3e6c8}}
+@media(prefers-color-scheme:dark){.del-confirm{background:#3d1d1d !important}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font-weight:700;border:1px solid transparent;cursor:pointer;text-decoration:none;font-size:16px;line-height:1;text-align:center}
 .btn-green{background:var(--green);color:#fff}
 .btn-gold{background:var(--gold);color:#1a1405}
@@ -65,7 +72,7 @@ input,select{ min-height:48px }
 .feat span{font-size:13px;color:var(--muted);line-height:1.4;display:block;margin-top:4px}
 /* APP */
 #appScreen{display:none}
-.topbar{position:sticky;top:0;z-index:50;background:var(--green);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.topbar{background:var(--green);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .topbar-title{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1}
 .topbar-sub{font-size:12px;opacity:.85;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
 .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -121,7 +128,7 @@ input,select{ min-height:48px }
 .check-item input{width:22px;height:22px;margin-top:2px;flex-shrink:0}
 .settings-grid{display:grid;gap:14px;margin-top:12px}
 .dist-btns{display:flex;flex-wrap:wrap;gap:8px}
-.dist-btn{padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer}
+.dist-btn{padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;cursor:pointer}
 .dist-btn.active{background:var(--gold);border-color:var(--gold);color:#1a1405}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:999;background:var(--green);color:#fff;padding:13px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;max-width:92vw;text-align:center}
 .toast.show{display:block}
@@ -178,7 +185,15 @@ input,select{ min-height:48px }
       <label for="emailInput">Email</label>
       <input id="emailInput" type="email" autocomplete="email" placeholder="you@example.com">
       <label for="passwordInput">Password</label>
-      <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Your password">
+      <div class="pw-wrap">
+        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Your password">
+        <button type="button" id="togglePassword" class="pw-toggle" aria-pressed="false" aria-label="Show password">
+          <svg id="pwEyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="pwEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M9.9 4.24A9.5 9.5 0 0 1 12 4c6.5 0 10 8 10 8a13.2 13.2 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3.5 8 10 8a9.7 9.7 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/></svg>
+          <span id="pwToggleText">Show</span>
+        </button>
+      </div>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">Tap <strong>Show</strong> to see the password as you type it; tap <strong>Hide</strong> to cover it with dots again.</p>
       <div id="authError" class="error-box" role="alert"></div>
       <div id="firebaseError" class="error-box" role="alert">The backup service could not be reached. Please check your internet connection and try again. Your contacts are not lost — they are saved under your login when the service is back.</div>
 
@@ -393,7 +408,7 @@ input,select{ min-height:48px }
   <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
       <strong>Alert within:</strong>
       <span id="driveDistLabel" style="font-weight:700"></span>
       <button class="btn btn-outline btn-small drive-dist" data-miles="1">1 mi</button>
@@ -401,7 +416,7 @@ input,select{ min-height:48px }
       <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
       <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px">
       <strong>Show around me:</strong>
       <span id="driveViewLabel" style="font-weight:700"></span>
       <button class="btn btn-outline btn-small drive-view" data-miles="1">1 mi</button>
@@ -471,6 +486,16 @@ $('forgotBtn').addEventListener('click', async()=>{
 });
 $('logoutBtn').addEventListener('click', async()=>{ if(auth) await auth.signOut(); toast('Logged out.'); });
 $('passwordInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('loginBtn').click(); });
+$('togglePassword').addEventListener('click', ()=>{
+  const inp=$('passwordInput'); const btn=$('togglePassword'); const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.setAttribute('aria-pressed', show?'true':'false');
+  btn.setAttribute('aria-label', show?'Hide password':'Show password');
+  $('pwToggleText').textContent=show?'Hide':'Show';
+  $('pwEyeOpen').style.display=show?'none':'block';
+  $('pwEyeOff').style.display=show?'block':'none';
+  inp.focus();
+});
 
 function contactsCol(){ return db.collection('users').doc(currentUser.uid).collection('contacts'); }
 function subscribeContacts(){
@@ -758,7 +783,7 @@ function updateViewUI(){
   const lbl=$('viewLabel'); if(lbl) lbl.textContent='Current view: '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you — the driving map fits exactly this area around your location.';
   const dl=$('driveViewLabel'); if(dl) dl.textContent=viewMiles+' miles';
   document.querySelectorAll('#viewBtns .view-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===viewMiles));
-  document.querySelectorAll('.drive-view').forEach(b=>{ b.style.background=parseFloat(b.dataset.miles)===viewMiles?'var(--gold)':''; });
+  document.querySelectorAll('.drive-view').forEach(b=>{ const on=parseFloat(b.dataset.miles)===viewMiles; b.style.background=on?'var(--gold)':''; b.style.color=on?'#1a1405':''; b.style.borderColor=on?'var(--gold)':''; });
   try{ localStorage.setItem('rg_view_miles', String(viewMiles)); }catch(e){}
   if(myLoc){ applyMainViewRadius(); if($('drivingOverlay').classList.contains('open')) updateDriveMap(); }
 }
@@ -768,7 +793,7 @@ function updateDistUI(){
   $('distLabel').textContent='Current alert distance: '+alertMiles+' mile'+(alertMiles===1?'':'s');
   $('driveDistLabel').textContent=alertMiles+' miles';
   document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===alertMiles));
-  document.querySelectorAll('.drive-dist').forEach(b=>{ b.style.background=parseFloat(b.dataset.miles)===alertMiles?'var(--gold)':''; });
+  document.querySelectorAll('.drive-dist').forEach(b=>{ const on=parseFloat(b.dataset.miles)===alertMiles; b.style.background=on?'var(--gold)':''; b.style.color=on?'#1a1405':''; b.style.borderColor=on?'var(--gold)':''; });
   try{ localStorage.setItem('rg_alert_miles', String(alertMiles)); }catch(e){}
   if(myLoc) renderNearList(); renderDriveList();
 }
