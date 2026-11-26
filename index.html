@@ -393,6 +393,16 @@ input,select{ min-height:48px }
         <div class="panel">
           <h2>📍 Who’s near me now?</h2>
           <button type="button" id="openNearBtn" class="btn btn-green btn-large" style="margin-top:10px">📍 Who’s near me?</button>
+          <div id="nearSheet" style="display:none;margin-top:12px">
+            <div class="sort-bar" role="group" aria-label="Sort people near me" style="margin-top:0">
+              <span style="font-weight:700">Sort by:</span>
+              <button type="button" id="nearSortDistBtn" class="dist-btn active">📍 Distance</button>
+              <button type="button" id="nearSortNameBtn" class="dist-btn">Name A–Z</button>
+            </div>
+            <div id="nearStatus" class="muted" style="margin-top:10px"></div>
+            <div id="nearList"></div>
+            <button type="button" id="closeNearBtn" class="btn btn-outline btn-large" style="margin-top:12px">✕ Close</button>
+          </div>
         </div>
 
         <div class="panel" id="alertsPanel">
@@ -661,19 +671,6 @@ input,select{ min-height:48px }
   </div>
 </div>
 
-<!-- NEAR ME PAGE -->
-<div id="nearOverlay" role="dialog" aria-label="Who's near me">
-  <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📍 Who’s Near Me</div><div style="font-size:13px;opacity:.9;margin-top:2px">Closest to you first</div></div>
-    <button id="closeNearBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back to map</button>
-  </div>
-  <div style="max-width:760px;margin:0 auto;padding:14px">
-    <button id="nearBtn" class="btn btn-green btn-large" style="margin-top:6px">📍 Find who’s near me</button>
-    <div id="nearStatus" class="muted" style="margin-top:10px"></div>
-    <div id="nearList"></div>
-  </div>
-</div>
-
 <!-- TRIP PLANNER PAGE -->
 <div id="tripOverlay" role="dialog" aria-label="Trip planner">
   <div class="contacts-head">
@@ -772,6 +769,8 @@ let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
 let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
 let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='',contactsSearchTerm='';
 let contactsSortMode='name';
+let formReturnToContacts=false;
+let nearSortMode='distance';
 let driveRadiusCircle=null,mainRadiusCircle=null,initialFitDone=false,quickPhotoTargetId=null;
 let alertSound='classic',customSoundData=null,customSoundName='',customAudioEl=null;
 try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const sv=localStorage.getItem('rg_view_miles'); if(sv) viewMiles=parseFloat(sv)||1; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; const as=localStorage.getItem('rg_alert_sound'); if(as) alertSound=as; const cn=localStorage.getItem('rg_custom_sound_name'); if(cn) customSoundName=cn; const cd=localStorage.getItem('rg_custom_sound_data'); if(cd && cd.indexOf('data:audio')===0) customSoundData=cd; if(alertSound==='custom' && !customSoundData) alertSound='classic'; }catch(e){}
@@ -951,8 +950,8 @@ function renderList(){
     `;
     card.querySelector('.onmap-toggle').addEventListener('change', async e=>{ await updateContact(c.id,{onMap:e.target.checked}); toast(e.target.checked?'Added to your map':'Removed from map'); });
     card.querySelector('.photo-btn').addEventListener('click', ()=>{ quickPhotoTargetId=c.id; const qi=$('quickPhotoInput'); qi.value=''; qi.click(); });
-    card.querySelector('.addr-btn').addEventListener('click', ()=>{ closeContactsPage(); startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); });
-    card.querySelector('.edit-btn').addEventListener('click', ()=>{ closeContactsPage(); startEdit(c); });
+    card.querySelector('.addr-btn').addEventListener('click', ()=>{ formReturnToContacts=true; closeContactsPage(); startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); });
+    card.querySelector('.edit-btn').addEventListener('click', ()=>{ formReturnToContacts=true; closeContactsPage(); startEdit(c); });
     const dc=card.querySelector('.del-confirm');
     card.querySelector('.del-btn').addEventListener('click', ()=>{ dc.style.display='block'; });
     card.querySelector('.cancel-del').addEventListener('click', ()=>{ dc.style.display='none'; });
@@ -1054,8 +1053,9 @@ function toggleSubSection(name){
 /* TRIP PLANNER & NEAR ME — each lives on its own page, opened by one calm button on the main page */
 function openTripPage(){ const o=$('tripOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderTripPlanner(); }
 function closeTripPage(){ const o=$('tripOverlay'); if(!o) return; o.classList.remove('open'); const co=$('contactsOverlay'), no=$('nearOverlay'); if(!$('drivingOverlay').classList.contains('open')&&!(co&&co.classList.contains('open'))&&!(no&&no.classList.contains('open'))) document.body.style.overflow=''; }
-function openNearPage(){ const o=$('nearOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; showNear(); }
-function closeNearPage(){ const o=$('nearOverlay'); if(!o) return; o.classList.remove('open'); const co=$('contactsOverlay'), to=$('tripOverlay'); if(!$('drivingOverlay').classList.contains('open')&&!(co&&co.classList.contains('open'))&&!(to&&to.classList.contains('open'))) document.body.style.overflow=''; }
+/* WHO'S NEAR ME — opens as a panel right on the main page, under the button; the map above stays on the page, no separate page */
+function openNearPage(){ const s=$('nearSheet'); if(!s) return; s.style.display='block'; showNear(); }
+function closeNearPage(){ const s=$('nearSheet'); if(s) s.style.display='none'; }
 (function initPages(){
   const tbody=$('tripOverlayBody'); const tp=$('tripPanel');
   if(tbody&&tp){ tbody.appendChild(tp); tp.style.marginTop='0'; }
@@ -1091,7 +1091,9 @@ function startEdit(c){
   $('cancelEdit').style.display='inline-flex';
   document.getElementById('contactForm').scrollIntoView({behavior:'smooth',block:'center'});
 }
-$('cancelEdit').addEventListener('click', resetForm);
+/* If the edit form was opened from the My Contacts page, saving or cancelling returns there — so more addresses/pictures can be added to more contacts without reopening the page each time */
+function returnToContactsAfterForm(){ const back=formReturnToContacts; formReturnToContacts=false; if(back){ closeSidePanel(); openContactsPage(); } }
+$('cancelEdit').addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
 function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If the exact address can’t be found, a clearly labeled approximate pin for the town is used — an address is never made up.'; setManualOpen(false); }
 
 $('contactForm').addEventListener('submit', async e=>{
@@ -1106,6 +1108,7 @@ $('contactForm').addEventListener('submit', async e=>{
     const editId=$('editId').value;
     if(editId){ await updateContact(editId,payload); toast('Contact updated'); } else { await addContactToFirestore(payload); toast(geocodeStatus==='approximate'?'Saved — approximate town pin (exact address not found)':'Contact saved'); }
     resetForm();
+    returnToContactsAfterForm();
   }catch(err){ toast('Could not save — check connection and try again'); }
 });
 
@@ -1181,16 +1184,21 @@ $('vcfInput').addEventListener('change', async e=>{
 function getLocationOnce(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) rej(new Error('No GPS')); else navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000}); }); }
 async function showNear(){
   $('nearStatus').textContent='Getting your location…';
-  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles, closest first. Map is showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
+  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles'+(nearSortMode==='name'?', in name order':', closest first')+'. Map is showing '+viewMiles+' mile'+(viewMiles===1?'':'s')+' around you.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
 }
 function sortedByDistance(){ if(!myLoc) return []; return contacts.filter(c=>c.onMap!==false&&c.lat!=null).map(c=>({...c,_dist:haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng)})).sort((a,b)=>a._dist-b._dist); }
 function renderNearList(){
-  const el=$('nearList'); const sorted=sortedByDistance().filter(c=>c._dist<=alertMiles);
+  const el=$('nearList'); if(!el) return;
+  const db=$('nearSortDistBtn'), nb2=$('nearSortNameBtn');
+  if(db) db.classList.toggle('active',nearSortMode==='distance');
+  if(nb2) nb2.classList.toggle('active',nearSortMode==='name');
+  let sorted=sortedByDistance().filter(c=>c._dist<=alertMiles);
+  if(nearSortMode==='name') sorted=sorted.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(!myLoc){ el.innerHTML=''; return; }
   if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody on your map is within '+alertMiles+' miles right now. Try a larger alert distance in settings.</p>'; return; }
   el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(fullAddress(c))}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
 }
-$('nearBtn').addEventListener('click', showNear);
+(function(){ const db=$('nearSortDistBtn'); if(db) db.addEventListener('click',()=>{ nearSortMode='distance'; renderNearList(); }); const nb=$('nearSortNameBtn'); if(nb) nb.addEventListener('click',()=>{ nearSortMode='name'; renderNearList(); }); })();
 
 /* VIEW RADIUS — how much map shows around you */
 function applyMainViewRadius(){
