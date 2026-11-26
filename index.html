@@ -188,6 +188,25 @@ input,select{ min-height:48px }
 .alert-banner b{font-size:20px}
 .near-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:10px}
 @media(prefers-color-scheme:dark){.near-item{background:var(--card)}}
+/* DOWNLOAD / INSTALL */
+.btn-download{background:var(--gold);color:#1a1405;font-size:17px;padding:15px 22px;box-shadow:0 4px 14px rgba(168,130,47,.35)}
+.install-modal{position:fixed;inset:0;z-index:300;background:rgba(10,25,18,.62);display:none;align-items:center;justify-content:center;padding:16px}
+.install-modal.open{display:flex}
+.install-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:480px;width:100%;padding:24px 22px;max-height:88dvh;overflow:auto}
+.install-card h2{margin:0;font-size:22px;font-family:"Playfair Display",Georgia,serif;color:var(--green)}
+@media(prefers-color-scheme:dark){.install-card h2{color:#f3e6c8}}
+.install-steps{margin:10px 0 0;padding-left:22px;line-height:1.65;font-size:15px}
+.install-steps li{margin-top:6px}
+/* TRIP PLANNER */
+.trip-stop{display:flex;gap:10px;align-items:flex-start;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
+.trip-stop input{width:22px;height:22px;margin-top:2px;flex-shrink:0}
+.trip-result-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-top:10px}
+.trip-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+/* FEEDBACK */
+.feedback-text{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.5;resize:vertical}
+.recording{background:var(--red) !important;color:#fff !important;border-color:var(--red) !important}
+.feedback-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);margin-top:10px}
+.feedback-item audio{width:100%;margin-top:8px}
 .footer{text-align:center;padding:28px 16px 36px;color:var(--muted);font-size:14px;line-height:1.6}
 .empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px;text-align:center;background:var(--cream)}
 </style>
@@ -235,6 +254,9 @@ input,select{ min-height:48px }
       <p id="authStatus" class="muted" style="margin-top:8px"></p>
     </div>
 
+    <button type="button" id="downloadBtnWelcome" class="btn btn-download btn-large" style="margin-top:18px">⬇️ Download the app</button>
+    <p class="muted" style="text-align:center;margin:8px 0 0">Put Contacts Map on your home screen — it opens full-screen, like a real app, with one tap.</p>
+
     <div class="welcome-feats">
       <div class="feat"><b>📍 On the map</b><span>Every contact shown by their photo — no photo yet? A silhouette figure holds their place</span></div>
       <div class="feat"><b>🚗 While driving</b><span>Big screen, stays awake, alerts nearby</span></div>
@@ -263,7 +285,10 @@ input,select{ min-height:48px }
         <h1>Who’s around to visit?</h1>
         <p>Your contacts on the map — shown by their faces. Tap a face or a card to call or drive there.</p>
       </div>
-      <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" id="downloadBtnMain" class="btn btn-download">⬇️ Download the app</button>
+        <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
+      </div>
     </div>
 
     <div class="workspace">
@@ -470,6 +495,67 @@ input,select{ min-height:48px }
       </div>
     </div>
 
+    <div class="panel" style="margin-top:18px">
+      <h2>🧭 Trip planner</h2>
+      <p class="muted">Leaving from home? Say where you’re starting and where you’re headed — the planner shows you who’s on the way, and works out the best order to visit everyone, with the total distance and time.</p>
+      <div class="settings-grid">
+        <div>
+          <div style="font-weight:700;margin-bottom:8px">1 · Where are you starting from?</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Use where I am now</button>
+            <span class="muted">or type an address, like your home:</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <input id="tripStartAddr" type="text" placeholder="Start address — e.g. your home" style="flex:1;min-width:200px;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
+            <button type="button" id="tripSetStartBtn" class="btn btn-gold">Set start</button>
+          </div>
+          <p id="tripStartLabel" class="muted" style="margin-top:8px">No start set yet — tap “Use where I am now” or type your home address.</p>
+        </div>
+        <div>
+          <label for="tripDestSelect" style="font-weight:700;display:block;margin-bottom:8px">2 · Where are you going? (your main destination)</label>
+          <select id="tripDestSelect" class="sound-select" style="width:100%"></select>
+          <p id="tripRouteInfo" class="muted" style="margin-top:8px"></p>
+        </div>
+        <div>
+          <div style="font-weight:700;margin-bottom:8px">3 · Who do you want to visit? Tick them</div>
+          <p class="muted" style="margin:0">People on the way to your destination are marked and ticked for you — untick anyone you want to skip, or tick anyone else on your map.</p>
+          <div id="tripStops" class="checklist" style="max-height:300px"></div>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+          <label style="display:flex;gap:8px;align-items:center;font-weight:600;cursor:pointer"><input id="tripReturn" type="checkbox" checked style="width:22px;height:22px"> Come back to the start at the end</label>
+          <label style="display:flex;gap:8px;align-items:center;font-weight:600">Minutes at each visit: <input id="tripVisitMins" type="number" min="0" max="120" step="5" value="15" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"></label>
+        </div>
+        <button type="button" id="planTripBtn" class="btn btn-green btn-large">🧭 Plan my trip — best order</button>
+        <div id="tripResult"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h2>💬 Feedback &amp; updates</h2>
+      <p class="muted">Have an idea, a correction, or news from a visit? Send it here — type it, or record a voice note. It goes straight to Mendel, and what you’ve sent is kept below on this device.</p>
+      <button type="button" id="toggleFeedbackBtn" class="btn btn-gold btn-large" style="margin-top:10px" aria-expanded="false" aria-controls="feedbackWrap">💬 Open feedback</button>
+      <div id="feedbackWrap" style="display:none;margin-top:14px">
+        <label for="feedbackText" style="font-weight:700;display:block;margin-bottom:6px">Your message</label>
+        <textarea id="feedbackText" class="feedback-text" rows="4" placeholder="Type your feedback, an idea, or an update…"></textarea>
+        <div style="margin-top:14px">
+          <div style="font-weight:700;margin-bottom:8px">…or say it in a voice note</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <button type="button" id="recordBtn" class="btn btn-outline">🎙️ Record a voice note</button>
+            <span id="recordStatus" class="muted"></span>
+          </div>
+          <audio id="feedbackAudio" controls style="display:none;width:100%;margin-top:10px"></audio>
+          <button type="button" id="discardVoiceBtn" class="btn btn-outline btn-small" style="display:none;margin-top:8px">Remove voice note</button>
+          <p id="voiceUnsupported" class="muted" style="display:none;margin-top:8px">Voice recording isn’t available in this browser — please type your message instead.</p>
+        </div>
+        <button type="button" id="sendFeedbackBtn" class="btn btn-green btn-large" style="margin-top:16px">Send feedback</button>
+        <div id="feedbackSentNote"></div>
+        <div style="margin-top:18px">
+          <h3>What you’ve sent</h3>
+          <div id="feedbackList"><p class="muted">Nothing sent yet.</p></div>
+        </div>
+      </div>
+    </div>
+
     <div class="footer">
       <strong style="color:var(--green)">Contacts Map for Rabbi Goldstein</strong><br>
       For Mivtzoim rounds — tefillin and Divrei Torah.<br>
@@ -529,6 +615,34 @@ input,select{ min-height:48px }
   </div>
 </div>
 
+<!-- INSTALL HELP -->
+<div id="installModal" class="install-modal" role="dialog" aria-modal="true" aria-label="Download the app">
+  <div class="install-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <h2>📲 Get the app on your phone</h2>
+      <button type="button" id="closeInstall" class="btn btn-outline btn-small" aria-label="Close">✕</button>
+    </div>
+    <p class="muted" style="margin-top:8px">Put Contacts Map on your home screen — it opens full-screen like a real app, one tap away.</p>
+    <div id="installAndroid">
+      <strong>On Android (in Chrome):</strong>
+      <ol class="install-steps">
+        <li>Tap the <strong>⋮ menu</strong> at the top-right of Chrome.</li>
+        <li>Tap <strong>“Install app”</strong> (on some phones it says “Add to Home screen”).</li>
+        <li>Tap <strong>Install</strong> — the app icon appears on your home screen.</li>
+      </ol>
+    </div>
+    <div id="installIos" style="margin-top:16px">
+      <strong>On iPhone (in Safari):</strong>
+      <ol class="install-steps">
+        <li>Tap the <strong>Share</strong> button — the square with an arrow pointing up.</li>
+        <li>Scroll down and tap <strong>“Add to Home Screen”</strong>.</li>
+        <li>Tap <strong>Add</strong> — the app icon appears on your home screen.</li>
+      </ol>
+    </div>
+    <button type="button" id="closeInstall2" class="btn btn-green btn-large" style="margin-top:18px">Got it</button>
+  </div>
+</div>
+
 <input id="quickPhotoInput" type="file" accept="image/*" style="display:none">
 <div id="toast" class="toast"></div>
 
@@ -556,8 +670,8 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); }
-    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} contacts=[]; stopDriving(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); }
+    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); }
   });
 } else { $('firebaseError').classList.add('show'); }
 
@@ -682,7 +796,7 @@ function fullAddress(c){ return [c.street,c.city,c.state,c.zip].filter(Boolean).
 function directionsUrl(c){ const dest=(c.lat!=null&&c.lng!=null)?`${c.lat},${c.lng}`:fullAddress(c); return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}`; }
 function haversineMiles(a,b,c,d){ const R=3958.8, toRad=x=>x*Math.PI/180; const dLat=toRad(c-a), dLon=toRad(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 
-function renderAll(){ renderList(); renderMarkers(); renderDriveList(); }
+function renderAll(){ renderList(); renderMarkers(); renderDriveList(); renderTripPlanner(); }
 function renderList(){
   const list=filteredContacts();
   $('listCount').textContent=contacts.length+(contacts.length===1?' person':' people');
@@ -1063,6 +1177,242 @@ function stopDriving(){
 $('startDrivingTop').addEventListener('click', startDriving);
 $('startDriving2').addEventListener('click', startDriving);
 $('stopDriving').addEventListener('click', stopDriving);
+
+/* DOWNLOAD THE APP — install prompt when the browser offers one, otherwise simple steps */
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredInstallPrompt=e; });
+window.addEventListener('appinstalled', ()=>{ deferredInstallPrompt=null; const m=$('installModal'); if(m) m.classList.remove('open'); toast('App installed — look for it on your home screen ✓'); });
+function isStandalone(){ try{ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true; }catch(e){ return false; } }
+function openInstall(){
+  if(isStandalone()){ toast('The app is already installed on this device ✓'); return; }
+  if(deferredInstallPrompt){
+    const p=deferredInstallPrompt; deferredInstallPrompt=null;
+    /* The browser's own app-install sheet (the BeforeInstallPrompt event's method) — not a text dialog */
+    const showInstallSheet=p.prompt;
+    try{
+      if(typeof showInstallSheet==='function'){
+        showInstallSheet.call(p);
+        if(p.userChoice) p.userChoice.then(c=>{ if(!c||c.outcome!=='accepted') $('installModal').classList.add('open'); }).catch(()=>{});
+      } else $('installModal').classList.add('open');
+    }catch(e){ $('installModal').classList.add('open'); }
+    return;
+  }
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent||'');
+  const aEl=$('installAndroid'), iEl=$('installIos');
+  if(aEl) aEl.style.display=ios?'none':'block';
+  if(iEl){ iEl.style.display=ios?'block':'none'; iEl.style.marginTop=ios?'0':'16px'; }
+  $('installModal').classList.add('open');
+}
+['downloadBtnWelcome','downloadBtnMain'].forEach(id=>{ const b=$(id); if(b) b.addEventListener('click', openInstall); });
+const _ci1=$('closeInstall'); if(_ci1) _ci1.addEventListener('click', ()=>$('installModal').classList.remove('open'));
+const _ci2=$('closeInstall2'); if(_ci2) _ci2.addEventListener('click', ()=>$('installModal').classList.remove('open'));
+const _im=$('installModal'); if(_im) _im.addEventListener('click', e=>{ if(e.target===_im) _im.classList.remove('open'); });
+
+/* TRIP PLANNER */
+let tripStart=null, tripDestId='', tripStopIds=new Set(), tripLine=null;
+function distToSegmentMiles(p,a,b){
+  const mpLng=69.0*Math.cos(a.lat*Math.PI/180), mpLat=69.0;
+  const bx=(b.lng-a.lng)*mpLng, by=(b.lat-a.lat)*mpLat, px=(p.lng-a.lng)*mpLng, py=(p.lat-a.lat)*mpLat;
+  const len2=bx*bx+by*by;
+  let t=len2?((px*bx)+(py*by))/len2:0; t=Math.max(0,Math.min(1,t));
+  return {dist:Math.hypot(px-t*bx,py-t*by), t};
+}
+function tripDestContact(){ return contacts.find(c=>c.id===tripDestId)||null; }
+function onTheWayInfo(c){
+  const dest=tripDestContact();
+  if(!tripStart||!dest||c.lat==null||dest.lat==null||c.id===dest.id) return null;
+  return distToSegmentMiles({lat:c.lat,lng:c.lng},{lat:tripStart.lat,lng:tripStart.lng},{lat:dest.lat,lng:dest.lng});
+}
+function autoTickOnWay(){
+  if(!tripStart||!tripDestId) return;
+  contacts.forEach(c=>{ const w=onTheWayInfo(c); if(w&&w.dist<=3) tripStopIds.add(c.id); });
+}
+function renderTripPlanner(){
+  const sel=$('tripDestSelect'); if(!sel) return;
+  const withPin=contacts.filter(c=>c.lat!=null&&c.lng!=null);
+  const prev=tripDestId;
+  sel.innerHTML='<option value="">— No fixed destination — just visit the people I tick —</option>'+withPin.map(c=>`<option value="${c.id}">${escapeHtml(c.name||'No name')}${c.city?' — '+escapeHtml(c.city):''}</option>`).join('');
+  if(withPin.some(c=>c.id===prev)) sel.value=prev; else { sel.value=''; tripDestId=''; }
+  const dest=tripDestContact();
+  const info=$('tripRouteInfo');
+  if(info){
+    if(tripStart&&dest){ const direct=haversineMiles(tripStart.lat,tripStart.lng,dest.lat,dest.lng); info.textContent=`From ${tripStart.label} to ${dest.name}: about ${direct.toFixed(1)} miles in a straight line. Anyone within 3 miles of that line is marked “On your way” below.`; }
+    else if(tripStart){ info.textContent='Start is set. Pick a destination above to see who is on your way there.'; }
+    else info.textContent='';
+  }
+  const box=$('tripStops'); if(!box) return;
+  box.innerHTML='';
+  if(!withPin.length){ box.innerHTML='<p class="muted" style="padding:12px">No contacts on the map yet — add people first, then plan a trip.</p>'; return; }
+  const rows=withPin.map(c=>({c, w:onTheWayInfo(c), fromStart:tripStart?haversineMiles(tripStart.lat,tripStart.lng,c.lat,c.lng):null}));
+  rows.sort((a,b)=>{
+    const ao=a.w&&a.w.dist<=3?0:1, bo=b.w&&b.w.dist<=3?0:1;
+    if(ao!==bo) return ao-bo;
+    if(a.w&&b.w&&a.w.dist<=3&&b.w.dist<=3) return a.w.t-b.w.t;
+    if(a.fromStart!=null&&b.fromStart!=null) return a.fromStart-b.fromStart;
+    return (a.c.name||'').localeCompare(b.c.name||'');
+  });
+  rows.forEach(({c,w,fromStart})=>{
+    const isDest=dest&&c.id===dest.id;
+    const onWay=!!(w&&w.dist<=3);
+    let note='';
+    if(isDest) note='🏁 Your destination — always the last stop';
+    else if(w) note=onWay?('🟢 On your way — '+(w.dist<0.1?'right on the road':w.dist.toFixed(1)+' miles off the road')):(w.dist.toFixed(1)+' miles off the direct line');
+    if(fromStart!=null) note+=(note?' • ':'')+fromStart.toFixed(1)+' miles from your start';
+    const label=document.createElement('label'); label.className='trip-stop';
+    label.innerHTML=`<input type="checkbox" ${tripStopIds.has(c.id)||isDest?'checked':''} ${isDest?'disabled':''}><span><strong>${escapeHtml(c.name||'No name')}</strong><br><span class="muted">${escapeHtml(fullAddress(c))}${note?'<br>'+escapeHtml(note):''}</span></span>`;
+    const chk=label.querySelector('input');
+    chk.addEventListener('change',()=>{ if(chk.checked) tripStopIds.add(c.id); else tripStopIds.delete(c.id); });
+    box.appendChild(label);
+  });
+}
+const _tds=$('tripDestSelect'); if(_tds) _tds.addEventListener('change', e=>{ tripDestId=e.target.value; autoTickOnWay(); renderTripPlanner(); if(tripDestId) toast('Destination set — people on your way are ticked below'); });
+const _tgb=$('tripGpsBtn'); if(_tgb) _tgb.addEventListener('click', async()=>{
+  $('tripStartLabel').textContent='Getting your location…';
+  try{ const loc=await getLocationOnce(); if(!myLoc) myLoc=loc; tripStart={lat:loc.lat,lng:loc.lng,label:'where you are now'}; $('tripStartLabel').textContent='✓ Starting from where you are now.'; autoTickOnWay(); renderTripPlanner(); }
+  catch(e){ $('tripStartLabel').textContent='Could not get your location — allow location for this site, or type your start address instead.'; }
+});
+const _tss=$('tripSetStartBtn'); if(_tss) _tss.addEventListener('click', async()=>{
+  const q=$('tripStartAddr').value.trim();
+  if(!q){ toast('Type a start address first'); return; }
+  $('tripStartLabel').textContent='Finding that address…';
+  try{ const res=await nominatimSearch(q,1);
+    if(res&&res[0]){ tripStart={lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),label:q}; $('tripStartLabel').textContent='✓ Starting from: '+res[0].display_name; autoTickOnWay(); renderTripPlanner(); }
+    else $('tripStartLabel').textContent='Could not find that address — check it and try again.';
+  }catch(e){ $('tripStartLabel').textContent='Could not look up that address right now — check your connection and try again.'; }
+});
+const _tsa=$('tripStartAddr'); if(_tsa) _tsa.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$('tripSetStartBtn'); if(b) b.click(); } });
+function fmtTime(mins){ mins=Math.round(mins); if(mins<60) return mins+' min'; const h=Math.floor(mins/60), m=mins%60; return h+' hr'+(m?' '+m+' min':''); }
+function drawTripLine(pts){
+  if(!map||typeof L==='undefined') return;
+  if(tripLine) map.removeLayer(tripLine);
+  tripLine=L.polyline(pts.map(p=>[p.lat,p.lng]),{color:'#c19a4b',weight:4,opacity:0.9}).addTo(map);
+  try{ map.flyToBounds(tripLine.getBounds().pad(0.15),{duration:0.7}); }catch(e){}
+  const mel=document.getElementById('map'); if(mel) mel.scrollIntoView({behavior:'smooth',block:'center'});
+}
+const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
+  const resEl=$('tripResult'); if(!resEl) return;
+  if(!tripStart){ resEl.innerHTML='<p class="muted" style="margin-top:10px">First set your starting point in step 1 above — where you are now, or an address like home.</p>'; toast('Set your start first'); return; }
+  const dest=tripDestContact();
+  const stops=contacts.filter(c=>tripStopIds.has(c.id)&&c.lat!=null&&c.id!==tripDestId);
+  if(!stops.length&&!dest){ resEl.innerHTML='<p class="muted" style="margin-top:10px">Tick at least one person to visit in step 3 — or pick a destination in step 2.</p>'; toast('Tick who to visit first'); return; }
+  /* Best order: always drive to the nearest next stop; the destination goes last */
+  const remaining=stops.slice(); const ordered=[]; let cur={lat:tripStart.lat,lng:tripStart.lng};
+  while(remaining.length){
+    let bi=0, bd=Infinity;
+    remaining.forEach((c,i)=>{ const d=haversineMiles(cur.lat,cur.lng,c.lat,c.lng); if(d<bd){ bd=d; bi=i; } });
+    const nxt=remaining.splice(bi,1)[0]; ordered.push(nxt); cur={lat:nxt.lat,lng:nxt.lng};
+  }
+  if(dest) ordered.push(dest);
+  const returnHome=$('tripReturn').checked;
+  const pts=[{name:'Start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng}].concat(ordered.map(c=>({name:c.name||'No name',lat:c.lat,lng:c.lng,contact:c})));
+  if(returnHome) pts.push({name:'Back to start — '+tripStart.label,lat:tripStart.lat,lng:tripStart.lng});
+  let total=0; const legs=[];
+  for(let i=1;i<pts.length;i++){ const d=haversineMiles(pts[i-1].lat,pts[i-1].lng,pts[i].lat,pts[i].lng); legs.push(d); total+=d; }
+  const visitMins=parseFloat($('tripVisitMins').value)||0;
+  const numVisits=ordered.length;
+  const driveMins=total/25*60;
+  const totalMins=driveMins+visitMins*numVisits;
+  let html='<h3 style="margin-top:16px">Your trip — best order</h3>';
+  html+=`<p class="muted">Starting at ${escapeHtml(tripStart.label)}, visit in this order:</p>`;
+  pts.forEach((p,i)=>{
+    if(i===0){ html+=`<div class="trip-result-item"><div class="trip-num">▶</div><div><strong>${escapeHtml(p.name)}</strong><div class="muted">Your starting point</div></div></div>`; return; }
+    const c=p.contact;
+    html+=`<div class="trip-result-item"><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}</div>`;
+  });
+  html+=`<div style="margin-top:14px;padding:14px;border:1px solid var(--gold);border-radius:12px;background:var(--cream)"><strong style="font-size:17px">Total: ${total.toFixed(1)} miles</strong><div class="muted" style="margin-top:4px">Driving about ${fmtTime(driveMins)} (a rough estimate at town speeds)${numVisits&&visitMins?` • plus ${numVisits} visit${numVisits===1?'':'s'} × ${visitMins} min = ${fmtTime(visitMins*numVisits)} of visiting`:''}<br><strong>Whole trip: about ${fmtTime(totalMins)}</strong>${returnHome?' • includes the drive back to your start':' • one-way — ends at your last stop'}</div></div>`;
+  const origin=tripStart.lat+','+tripStart.lng;
+  const stopPts=ordered.map(c=>c.lat+','+c.lng);
+  let destinationParam, waypoints=[];
+  if(returnHome){ destinationParam=origin; waypoints=stopPts; }
+  else if(stopPts.length){ destinationParam=stopPts[stopPts.length-1]; waypoints=stopPts.slice(0,-1); }
+  else destinationParam=origin;
+  let gUrl='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(origin)+'&destination='+encodeURIComponent(destinationParam)+'&travelmode=driving';
+  if(waypoints.length) gUrl+='&waypoints='+encodeURIComponent(waypoints.join('|'));
+  html+=`<a class="btn btn-gold btn-large" style="margin-top:12px" target="_blank" rel="noopener" href="${gUrl}">🧭 Open this route in Google Maps</a>`;
+  html+='<p class="muted" style="margin-top:8px">The gold line on your map shows this trip. Distances here are straight-line estimates — Google Maps gives the exact road route.</p>';
+  resEl.innerHTML=html;
+  drawTripLine(pts);
+});
+
+/* FEEDBACK — text or a voice note, saved under your login */
+let fbUnsub=null, voiceBlob=null, mediaRecorder=null, recordChunks=[], recordTimerInt=null, recordSecs=0;
+function setFeedbackOpen(open){
+  const w=$('feedbackWrap'), b=$('toggleFeedbackBtn'); if(!w||!b) return;
+  w.style.display=open?'block':'none';
+  b.setAttribute('aria-expanded',open?'true':'false');
+  b.textContent=open?'💬 Hide feedback':'💬 Open feedback';
+}
+const _tfb=$('toggleFeedbackBtn'); if(_tfb) _tfb.addEventListener('click',()=>setFeedbackOpen($('feedbackWrap').style.display==='none'));
+/* Sent feedback goes to the shared /feedback collection, which only Mendel's login can read.
+   A copy of what you sent is kept on this device so you can see it below. */
+function loadSentFeedback(){ try{ const raw=localStorage.getItem('rg_sent_feedback'); const arr=raw?JSON.parse(raw):[]; return Array.isArray(arr)?arr:[]; }catch(e){ return []; } }
+function renderSentFeedback(){
+  const el=$('feedbackList'); if(!el) return;
+  const items=loadSentFeedback();
+  if(!items.length){ el.innerHTML='<p class="muted">Nothing sent yet.</p>'; return; }
+  el.innerHTML='';
+  items.slice(0,10).forEach(f=>{
+    const div=document.createElement('div'); div.className='feedback-item';
+    const when=f.ts?new Date(f.ts).toLocaleString():'';
+    div.innerHTML=`<div class="muted" style="font-size:13px">${escapeHtml(when)}</div>`+(f.text?`<div style="margin-top:4px;line-height:1.55">${escapeHtml(f.text)}</div>`:'<div class="muted" style="margin-top:4px">(voice note)</div>');
+    if(f.audio){ const au=document.createElement('audio'); au.controls=true; au.src=f.audio; div.appendChild(au); }
+    el.appendChild(div);
+  });
+}
+function rememberSentFeedback(entry){
+  try{ const items=loadSentFeedback(); items.unshift(entry); localStorage.setItem('rg_sent_feedback', JSON.stringify(items.slice(0,10))); }catch(e){}
+  renderSentFeedback();
+}
+const _recBtn=$('recordBtn');
+if(!('mediaDevices' in navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || typeof MediaRecorder==='undefined'){
+  if(_recBtn) _recBtn.style.display='none';
+  const vu=$('voiceUnsupported'); if(vu) vu.style.display='block';
+} else if(_recBtn) _recBtn.addEventListener('click', async()=>{
+  if(mediaRecorder&&mediaRecorder.state==='recording'){ mediaRecorder.stop(); return; }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recordChunks=[]; mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=e=>{ if(e.data&&e.data.size) recordChunks.push(e.data); };
+    mediaRecorder.onstop=()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      clearInterval(recordTimerInt);
+      _recBtn.classList.remove('recording'); _recBtn.textContent='🎙️ Record a voice note';
+      $('recordStatus').textContent='Voice note ready — listen below, then tap Send feedback.';
+      voiceBlob=new Blob(recordChunks,{type:mediaRecorder.mimeType||'audio/webm'});
+      const au=$('feedbackAudio'); au.src=URL.createObjectURL(voiceBlob); au.style.display='block';
+      $('discardVoiceBtn').style.display='inline-flex';
+    };
+    mediaRecorder.start();
+    recordSecs=0; _recBtn.classList.add('recording'); _recBtn.textContent='⏹ Stop recording';
+    $('recordStatus').textContent='Recording… 0:00 — tap Stop when done (up to 2 minutes)';
+    recordTimerInt=setInterval(()=>{ recordSecs++; const m=Math.floor(recordSecs/60), s=recordSecs%60; $('recordStatus').textContent=`Recording… ${m}:${s<10?'0':''}${s} — tap Stop when done (up to 2 minutes)`; if(recordSecs>=120&&mediaRecorder&&mediaRecorder.state==='recording') mediaRecorder.stop(); },1000);
+  }catch(e){ toast('Microphone not allowed — you can type your message instead'); }
+});
+const _dvb=$('discardVoiceBtn'); if(_dvb) _dvb.addEventListener('click', ()=>{ voiceBlob=null; const au=$('feedbackAudio'); au.removeAttribute('src'); au.style.display='none'; _dvb.style.display='none'; $('recordStatus').textContent=''; toast('Voice note removed'); });
+function blobToDataUrl(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); }); }
+function clearVoiceNote(){ voiceBlob=null; const au=$('feedbackAudio'); if(au){ au.removeAttribute('src'); au.style.display='none'; } const d=$('discardVoiceBtn'); if(d) d.style.display='none'; const rs=$('recordStatus'); if(rs) rs.textContent=''; }
+const _sfb=$('sendFeedbackBtn'); if(_sfb) _sfb.addEventListener('click', async()=>{
+  const text=$('feedbackText').value.trim();
+  if(!text&&!voiceBlob){ toast('Type a message or record a voice note first'); return; }
+  if(!currentUser||!db){ toast('Please log in first'); return; }
+  _sfb.disabled=true; _sfb.textContent='Sending…';
+  try{
+    const doc={text:text, ts:Date.now(), createdAt: firebase.firestore.FieldValue.serverTimestamp(), fromEmail:(currentUser&&currentUser.email)||'', fromUid:(currentUser&&currentUser.uid)||''};
+    let tooBig=false;
+    if(voiceBlob){ const dataUrl=await blobToDataUrl(voiceBlob); if(typeof dataUrl==='string'&&dataUrl.length<=700000) doc.audio=dataUrl; else tooBig=true; }
+    await db.collection('feedback').add(doc);
+    rememberSentFeedback({text:doc.text, ts:doc.ts, audio:doc.audio||null});
+    $('feedbackText').value='';
+    const note=$('feedbackSentNote');
+    if(tooBig&&voiceBlob){
+      const url=URL.createObjectURL(voiceBlob);
+      note.innerHTML=`<p class="muted" style="margin-top:10px">Your message was sent ✓. That voice note was too long to attach — <a href="${url}" download="voice-note.webm"><strong>tap here to download it</strong></a> and send it to us in the chat instead.</p>`;
+    } else note.innerHTML='';
+    clearVoiceNote();
+    toast('Thank you! Your feedback was sent ✓');
+  }catch(e){ toast('Could not send — check your connection and try again'); }
+  _sfb.disabled=false; _sfb.textContent='Send feedback';
+});
 </script>
 </body>
 </html>
