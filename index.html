@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>Contacts Map for Rabbi Goldstein</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#0e3b2c; --green2:#14523d; --green-light:#e6efe9;
+  --gold:#c19a4b; --gold2:#a8822f; --gold-light:#f3e6c8;
+  --cream:#fdf8ec; --cream2:#faf3df; --paper:#fffdf7;
+  --ink:#1a241f; --muted:#5a6b62; --line:#e2d9c2; --card:#ffffff;
+  --red:#8b1e1e;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --cream:#121a16; --cream2:#16211b; --paper:#1a2620; --card:#1e2e26; --ink:#eef2ed; --muted:#a8b8ad; --line:#2e4238; --green-light:#1e352c; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--green2)}
+button,input,select,textarea{font:inherit}
+button,[role="button"]{min-height:48px}
+input,select{ min-height:48px }
+.serif{font-family:"Playfair Display",Georgia,serif}
+.gold-rule{height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border:0;margin:18px auto;width:180px}
+/* WELCOME */
+#welcomeScreen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:28px 18px 40px;background:radial-gradient(800px 400px at 50% -80px,#fff7d6 0,transparent 60%),var(--cream)}
+.welcome-card{width:100%;max-width:560px;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:36px 28px 28px;box-shadow:0 12px 40px rgba(14,59,44,.10);text-align:center;margin-top:18px}
+.medallion{width:92px;height:92px;margin:0 auto 14px;border-radius:50%;background:var(--green);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px var(--gold-light)}
+.medallion svg{width:46px;height:46px}
+.welcome-eyebrow{letter-spacing:.28em;font-size:12px;font-weight:700;color:var(--gold2)}
+.welcome-title{font-family:"Playfair Display",Georgia,serif;font-size:42px;line-height:.95;letter-spacing:-.02em;margin:10px 0 0;color:var(--green)}
+@media(max-width:480px){.welcome-title{font-size:36px}}
+.welcome-sub{font-size:17px;line-height:1.5;color:#33473c;margin:10px 6px 0}
+.login-box{text-align:left;margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+@media(prefers-color-scheme:dark){.login-box{background:var(--card)}}
+.login-box label{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin:12px 0 6px}
+.login-box input{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink);font-size:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font-weight:700;border:1px solid transparent;cursor:pointer;text-decoration:none;font-size:16px;line-height:1;text-align:center}
+.btn-green{background:var(--green);color:#fff}
+.btn-gold{background:var(--gold);color:#1a1405}
+.btn-outline{background:#fff;color:var(--green);border-color:var(--line)}
+@media(prefers-color-scheme:dark){.btn-outline{background:transparent;color:var(--ink)}}
+.btn-large{width:100%;padding:16px 20px;font-size:17px}
+.btn-small{min-height:40px;padding:9px 14px;font-size:14px}
+.auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+@media(max-width:420px){.auth-actions{grid-template-columns:1fr}}
+.privacy-line{font-size:14px;line-height:1.5;color:var(--muted);margin-top:16px}
+.error-box{display:none;background:#fff1f1;border:1px solid #e8b4b4;color:#7a1212;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.45;margin-top:14px;text-align:left}
+.error-box.show{display:block}
+.welcome-feats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:18px;text-align:center}
+@media(max-width:520px){.welcome-feats{grid-template-columns:1fr}}
+.feat{background:var(--cream2);border:1px solid var(--line);border-radius:12px;padding:14px 10px}
+.feat b{display:block;font-size:15px}
+.feat span{font-size:13px;color:var(--muted);line-height:1.4;display:block;margin-top:4px}
+/* APP */
+#appScreen{display:none}
+.topbar{position:sticky;top:0;z-index:50;background:var(--green);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.topbar-title{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1}
+.topbar-sub{font-size:12px;opacity:.85;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.user-email{font-size:13px;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:999px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{background:#fff;color:var(--green);border:0;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 14px 28px}
+.hero-strip{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.hero-strip h1{font-family:"Playfair Display",Georgia,serif;font-size:28px;margin:0;line-height:1;color:var(--green)}
+@media(prefers-color-scheme:dark){.hero-strip h1{color:#e9d8a6}}
+.hero-strip p{margin:6px 0 0;color:var(--muted);line-height:1.5}
+.workspace{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
+@media(min-width:980px){.workspace{grid-template-columns:1.08fr .92fr;align-items:start}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.panel h2{margin:0;font-size:18px;letter-spacing:-.01em}
+.panel h3{margin:0;font-size:16px}
+.muted{color:var(--muted);font-size:14px;line-height:1.55}
+#map,#driveMap{width:100%;height:360px;border-radius:12px;border:1px solid var(--line);z-index:1}
+@media(max-width:640px){#map{height:300px}}
+.search-row{display:flex;gap:8px;margin-top:12px}
+.search-row input{flex:1;padding:12px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream);font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:42px}
+@media(prefers-color-scheme:dark){.chip{background:transparent;color:var(--ink)}}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.contact-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.contact-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--paper)}
+.contact-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.contact-name{font-weight:700;font-size:17px;line-height:1.2}
+.contact-addr{font-size:14px;color:var(--muted);line-height:1.5;margin-top:4px}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.badge-exact{background:#dcfce7;color:#14532d}
+.badge-approx{background:#fef3c7;color:#92400e}
+.badge-nopin{background:#fee2e2;color:#991b1b}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions a,.actions button{flex:1;min-width:110px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px;font-weight:600}
+.switch{position:relative;width:52px;height:32px;flex-shrink:0}
+.switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer}
+.switch-track{position:absolute;inset:0;background:#cbd5e1;border-radius:999px;pointer-events:none}
+.switch-thumb{position:absolute;top:4px;left:4px;width:24px;height:24px;background:#fff;border-radius:50%;transition:.2s;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.switch input:checked ~ .switch-track{background:var(--green)}
+.switch input:checked ~ .switch-thumb{left:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+.field label{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.field input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:var(--cream);font-size:16px;color:var(--ink)}
+.autocomplete{position:relative}
+.suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:20;overflow:hidden;display:none}
+@media(prefers-color-scheme:dark){.suggest{background:#1e2e26}}
+.suggest button{display:block;width:100%;text-align:left;padding:12px;border:0;background:transparent;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;line-height:1.4}
+.checklist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.check-item{display:flex;gap:10px;align-items:flex-start;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
+.check-item input{width:22px;height:22px;margin-top:2px;flex-shrink:0}
+.settings-grid{display:grid;gap:14px;margin-top:12px}
+.dist-btns{display:flex;flex-wrap:wrap;gap:8px}
+.dist-btn{padding:11px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer}
+.dist-btn.active{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:999;background:var(--green);color:#fff;padding:13px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;max-width:92vw;text-align:center}
+.toast.show{display:block}
+.pin-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* DRIVING */
+#drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
+#drivingOverlay.open{display:block}
+.drive-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#driveMap{height:42vh;min-height:260px;border-radius:0;border:0}
+.alert-banner{display:none;margin:12px;padding:16px;border-radius:14px;background:#7c1d1d;color:#fff}
+.alert-banner.show{display:block}
+.alert-banner b{font-size:20px}
+.near-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:10px}
+@media(prefers-color-scheme:dark){.near-item{background:var(--card)}}
+.footer{text-align:center;padding:28px 16px 36px;color:var(--muted);font-size:14px;line-height:1.6}
+.empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px;text-align:center;background:var(--cream)}
+</style>
+</head>
+<body>
+
+<!-- WELCOME / LOGIN -->
+<section id="welcomeScreen">
+  <div class="welcome-card">
+    <div class="medallion" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" fill="#c19a4b"/><circle cx="12" cy="10" r="2.8" fill="#0e3b2c"/></svg>
+    </div>
+    <div class="welcome-eyebrow">WELCOME</div>
+    <h1 class="welcome-title">Contacts Map<br>for Rabbi Goldstein</h1>
+    <hr class="gold-rule">
+    <p class="welcome-sub">For Mivtzoim rounds — tefillin and Divrei Torah</p>
+    <p class="muted" style="text-align:center;max-width:420px;margin:10px auto 0">See everyone on a map, find who’s near you, and get a friendly alert while you drive — all in big, clear buttons.</p>
+
+    <div class="login-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong style="font-size:16px">Log in to your map</strong>
+        <span style="font-size:12px;font-weight:700;background:var(--gold-light);color:#7a5a12;padding:5px 8px;border-radius:999px">PRIVATE &amp; SAFE</span>
+      </div>
+      <label for="emailInput">Email</label>
+      <input id="emailInput" type="email" autocomplete="email" placeholder="you@example.com">
+      <label for="passwordInput">Password</label>
+      <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Your password">
+      <div id="authError" class="error-box" role="alert"></div>
+      <div id="firebaseError" class="error-box" role="alert">The backup service could not be reached. Please check your internet connection and try again. Your contacts are not lost — they are saved under your login when the service is back.</div>
+
+      <button id="loginBtn" class="btn btn-green btn-large" style="margin-top:16px">Log in → Open my map</button>
+      <div class="auth-actions">
+        <button id="createBtn" class="btn btn-gold">Create account</button>
+        <button id="forgotBtn" class="btn btn-outline">Forgot password?</button>
+      </div>
+      <p class="privacy-line">🔒 <strong>Your contacts are saved under your own login. Nobody else can see them.</strong> Log in on any phone or computer and your map is there, backed up online.</p>
+      <p id="authStatus" class="muted" style="margin-top:8px"></p>
+    </div>
+
+    <div class="welcome-feats">
+      <div class="feat"><b>📍 On the map</b><span>Every contact as a clear numbered pin</span></div>
+      <div class="feat"><b>🚗 While driving</b><span>Big screen, stays awake, alerts nearby</span></div>
+      <div class="feat"><b>☎️ One tap</b><span>Call or get directions instantly</span></div>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:16px;text-align:center">Contacts Map for Rabbi Goldstein<br>For Mivtzoim rounds — tefillin and Divrei Torah.</p>
+</section>
+
+<!-- APP -->
+<section id="appScreen">
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">Contacts Map</div>
+      <div class="topbar-sub">For Rabbi Goldstein • Mivtzoim</div>
+    </div>
+    <div class="userbar">
+      <span id="signedInEmail" class="user-email"></span>
+      <button id="logoutBtn" class="logout-btn">Log out</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero-strip">
+      <div>
+        <h1>Who’s around to visit?</h1>
+        <p>Your contacts on the map. Tap a pin or a card to call or drive there.</p>
+      </div>
+      <button id="startDrivingTop" class="btn btn-green" style="font-size:18px;padding:16px 22px">🚗 Start driving</button>
+    </div>
+
+    <div class="workspace">
+      <!-- LEFT -->
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <h2>🗺️ Your map</h2>
+            <span id="mapCount" class="muted"></span>
+          </div>
+          <div id="map" style="margin-top:12px"></div>
+          <div class="search-row">
+            <input id="searchInput" type="search" placeholder="Search name, phone, street, city…">
+            <button id="clearSearch" class="btn btn-outline btn-small">Clear</button>
+          </div>
+          <div id="areaChips" class="chips" role="group" aria-label="Filter by area"></div>
+          <p class="muted" style="margin-top:10px">Pins are numbered to match the list. Gold border = on your map.</p>
+        </div>
+
+        <div class="panel">
+          <h2>📍 Who’s near me now?</h2>
+          <p class="muted">Find on-map contacts near your current location, sorted closest first.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <button id="nearBtn" class="btn btn-green">Find who’s near me</button>
+            <button id="useLocationBtn" class="btn btn-outline">Use my location</button>
+          </div>
+          <div id="nearStatus" class="muted" style="margin-top:8px"></div>
+          <div id="nearList"></div>
+        </div>
+
+        <div class="panel">
+          <h2>🔔 Visit alerts while driving</h2>
+          <p class="muted">Tap <strong>Start driving</strong> and the app picks up your location automatically and alerts you near someone on your map. No extra taps while you drive.</p>
+          <div class="settings-grid">
+            <div>
+              <div style="font-weight:700;margin-bottom:8px">Alert distance</div>
+              <div class="dist-btns" id="distBtns">
+                <button class="dist-btn" data-miles="1">1 mile</button>
+                <button class="dist-btn" data-miles="2">2 miles</button>
+                <button class="dist-btn" data-miles="5">5 miles</button>
+                <button class="dist-btn" data-miles="10">10 miles</button>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+                <label for="customDist" style="font-weight:600;font-size:14px">Or type your own:</label>
+                <input id="customDist" type="number" min="0.5" max="50" step="0.5" placeholder="e.g. 3" style="width:110px;padding:10px;border-radius:10px;border:1.5px solid var(--line)">
+                <span class="muted">miles (up to 50)</span>
+                <button id="applyCustomDist" class="btn btn-gold btn-small">Use this</button>
+              </div>
+              <p id="distLabel" class="muted" style="margin-top:6px"></p>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px">
+              <div><strong>Alert sound</strong><div class="muted">Play a sound with the alert</div></div>
+              <label class="switch"><input id="soundToggle" type="checkbox" checked><span class="switch-track"></span><span class="switch-thumb"></span></label>
+            </div>
+            <div style="padding:12px;border:1px solid var(--line);border-radius:12px">
+              <strong>Phone notifications</strong>
+              <p id="notifState" class="muted" style="margin:6px 0"></p>
+              <button id="notifBtn" class="btn btn-outline">Turn on notifications</button>
+              <p class="muted" style="margin-top:8px">Honest note: alerts work <strong>while the app is open</strong> — especially in Driving mode. Keep this page open while you drive.</p>
+            </div>
+            <button id="startDriving2" class="btn btn-green btn-large">🚗 Start driving — full screen</button>
+            <p id="wakeStatusMain" class="muted" style="text-align:center"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="panel">
+          <h2>Add contacts</h2>
+          <p class="muted">Three easy ways — pick what’s easiest for you.</p>
+
+          <!-- A Phone contacts -->
+          <div id="phonePickWrap" style="margin-top:14px">
+            <button id="pickPhoneBtn" class="btn btn-gold btn-large">👤 Pick from my phone contacts</button>
+            <p class="muted" style="margin-top:6px;text-align:center">Best on Chrome on Android — pick many at once, review, then add.</p>
+            <div id="pickerReview"></div>
+          </div>
+          <div id="phonePickUnsupported" class="muted" style="display:none;margin-top:10px;padding:12px;background:var(--cream);border-radius:10px">Phone contact picking isn’t available in this browser. Use the file import below (best on a laptop) or add one by hand.</div>
+
+          <!-- B VCF -->
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
+            <h3>Import contacts file (.vcf)</h3>
+            <p class="muted">Laptop option: export contacts as a .vcf file, then import here and tick who to add.</p>
+            <label class="btn btn-outline btn-large" style="cursor:pointer;margin-top:8px">📁 Choose .vcf file <input id="vcfInput" type="file" accept=".vcf,text/vcard" style="display:none"></label>
+            <div id="vcfReview"></div>
+          </div>
+
+          <!-- C Manual -->
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
+            <h3 id="formTitle">Add one by hand</h3>
+            <form id="contactForm" style="margin-top:12px">
+              <input type="hidden" id="editId">
+              <input type="hidden" id="exactLat"><input type="hidden" id="exactLng"><input type="hidden" id="exactStatus">
+              <div class="form-grid">
+                <div class="field" style="grid-column:1/-1"><label for="fName">Full name *</label><input id="fName" required placeholder="e.g. David Cohen"></div>
+                <div class="field" style="grid-column:1/-1"><label for="fPhone">Phone</label><input id="fPhone" type="tel" placeholder="(718) 555-0123"></div>
+                <div class="field autocomplete" style="grid-column:1/-1"><label for="fStreet">Street address — start typing for suggestions</label><input id="fStreet" autocomplete="off" placeholder="123 Main St"><div id="suggestBox" class="suggest"></div></div>
+                <div class="field"><label for="fCity">City / Town</label><input id="fCity" placeholder="Brooklyn"></div>
+                <div class="field"><label for="fState">State</label><input id="fState" placeholder="NY"></div>
+                <div class="field"><label for="fZip">ZIP</label><input id="fZip" placeholder="11213"></div>
+              </div>
+              <p id="geoHint" class="muted" style="margin-top:8px">Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.</p>
+              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                <button type="submit" class="btn btn-green" style="flex:1">Save contact</button>
+                <button type="button" id="cancelEdit" class="btn btn-outline" style="display:none">Cancel edit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <h2>Your contacts</h2><span id="listCount" class="muted"></span>
+          </div>
+          <div id="emptyState" class="empty" style="display:none;margin-top:12px">
+            <div style="font-size:32px">📍</div>
+            <strong style="font-size:17px">No contacts yet</strong>
+            <p class="muted">Add your first person above — pick from your phone, import a file, or add one by hand. They’ll appear here and on the map.</p>
+          </div>
+          <div id="contactList" class="contact-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <strong style="color:var(--green)">Contacts Map for Rabbi Goldstein</strong><br>
+      For Mivtzoim rounds — tefillin and Divrei Torah.<br>
+      <span>Your contacts are private to your login and backed up online.</span>
+    </div>
+  </div>
+</section>
+
+<!-- DRIVING OVERLAY -->
+<div id="drivingOverlay" role="dialog" aria-label="Driving mode">
+  <div class="drive-head">
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div><div style="font-size:13px;opacity:.9;margin-top:2px">Follow map • Alerts on • Screen stays awake</div></div>
+    <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
+  </div>
+  <div id="alertBanner" class="alert-banner"><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button></div></div>
+  <div id="driveMap"></div>
+  <div style="padding:14px">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px">
+      <strong>Alert within:</strong>
+      <span id="driveDistLabel" style="font-weight:700"></span>
+      <button class="btn btn-outline btn-small drive-dist" data-miles="1">1 mi</button>
+      <button class="btn btn-outline btn-small drive-dist" data-miles="2">2 mi</button>
+      <button class="btn btn-outline btn-small drive-dist" data-miles="5">5 mi</button>
+      <button class="btn btn-outline btn-small drive-dist" data-miles="10">10 mi</button>
+    </div>
+    <p id="wakeStatus" class="muted" style="margin-top:8px"></p>
+    <p id="driveStatus" class="muted"></p>
+    <h2 style="font-family:Georgia,serif;font-size:24px;margin:16px 0 0">Who’s around to visit</h2>
+    <p class="muted">Closest first — big buttons, easy at a glance.</p>
+    <div id="driveList"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDrisvfPogoX_bpiyQO2tpJrLbw_Dy6P2s",authDomain:"map-for-rabbi-goldstein.firebaseapp.com",projectId:"map-for-rabbi-goldstein",storageBucket:"map-for-rabbi-goldstein.firebasestorage.app",messagingSenderId:"990836761457",appId:"1:990836761457:web:e7be3c8f150f2d8f24ccd0",measurementId:"G-LQ8G25J9D1"};
+let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
+let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
+let myLoc=null,alertMiles=2,soundOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='';
+try{ const saved=localStorage.getItem('rg_alert_miles'); if(saved) alertMiles=parseFloat(saved)||2; const s=localStorage.getItem('rg_sound'); if(s!==null) soundOn=s==='1'; }catch(e){}
+function $(id){return document.getElementById(id)}
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
+function showAuthError(msg){ const e=$('authError'); if(!msg){e.classList.remove('show');e.textContent='';} else {e.textContent=msg; e.classList.add('show');} }
+function friendlyAuthError(err){ const c=err&&err.code||''; if(c.includes('wrong-password')||c.includes('invalid-credential')) return 'That email or password didn’t match. Check it and try again, or tap Forgot password.'; if(c.includes('user-not-found')) return 'No account with that email yet. Tap Create account first.'; if(c.includes('email-already-in-use')) return 'That email already has an account. Tap Log in instead.'; if(c.includes('weak-password')) return 'Please use a stronger password — at least 6 characters.'; if(c.includes('invalid-email')) return 'That email doesn’t look right. Check it and try again.'; if(c.includes('network')) return 'No connection right now. Check your internet and try again.'; return (err&&err.message)||'Something went wrong. Please try again.'; }
+function initFirebase(){
+  if(typeof firebase==='undefined'){ $('firebaseError').classList.add('show'); return false; }
+  try{ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); auth=firebase.auth(); db=firebase.firestore(); return true; }catch(e){ $('firebaseError').classList.add('show'); return false; }
+}
+const firebaseOk=initFirebase();
+if(firebaseOk && auth){
+  auth.onAuthStateChanged(user=>{
+    currentUser=user;
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); }
+    else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} contacts=[]; stopDriving(); }
+  });
+} else { $('firebaseError').classList.add('show'); }
+
+$('loginBtn').addEventListener('click', async()=>{
+  showAuthError(''); if(!auth) return;
+  const email=$('emailInput').value.trim(), pw=$('passwordInput').value;
+  if(!email||!pw){ showAuthError('Please enter your email and password.'); return; }
+  $('authStatus').textContent='Logging in…';
+  try{ await auth.signInWithEmailAndPassword(email,pw); $('authStatus').textContent=''; }catch(e){ $('authStatus').textContent=''; showAuthError(friendlyAuthError(e)); }
+});
+$('createBtn').addEventListener('click', async()=>{
+  showAuthError(''); if(!auth) return;
+  const email=$('emailInput').value.trim(), pw=$('passwordInput').value;
+  if(!email||!pw){ showAuthError('Enter an email and a password (at least 6 characters), then tap Create account.'); return; }
+  $('authStatus').textContent='Creating your account…';
+  try{ await auth.createUserWithEmailAndPassword(email,pw); toast('Account created — welcome!'); $('authStatus').textContent=''; }catch(e){ $('authStatus').textContent=''; showAuthError(friendlyAuthError(e)); }
+});
+$('forgotBtn').addEventListener('click', async()=>{
+  showAuthError(''); if(!auth) return;
+  const email=$('emailInput').value.trim();
+  if(!email){ showAuthError('Type your email above first, then tap Forgot password — we’ll email you a reset link.'); return; }
+  try{ await auth.sendPasswordResetEmail(email); toast('Password reset email sent — check your inbox.'); }catch(e){ showAuthError(friendlyAuthError(e)); }
+});
+$('logoutBtn').addEventListener('click', async()=>{ if(auth) await auth.signOut(); toast('Logged out.'); });
+$('passwordInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('loginBtn').click(); });
+
+function contactsCol(){ return db.collection('users').doc(currentUser.uid).collection('contacts'); }
+function subscribeContacts(){
+  if(!db||!currentUser) return;
+  if(unsub) unsub();
+  unsub=contactsCol().onSnapshot(snap=>{
+    contacts=[]; snap.forEach(doc=>contacts.push({id:doc.id,...doc.data()}));
+    contacts.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    renderAll();
+  }, err=>{ console.error(err); toast('The backup service could not be reached.'); });
+}
+async function addContactToFirestore(data){ if(!currentUser) return; await contactsCol().add({...data, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
+async function updateContact(id,data){ await contactsCol().doc(id).update(data); }
+async function deleteContact(id){ await contactsCol().doc(id).delete(); }
+
+/* MAP */
+function initMap(){
+  if(map){ setTimeout(()=>map.invalidateSize(),100); renderMarkers(); return; }
+  if(typeof L==='undefined') return;
+  map=L.map('map').setView([40.68,-73.95],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
+  renderMarkers();
+}
+function pinIcon(n){ return L.divIcon({className:'', html:`<div class="pin-num">${n}</div>`, iconSize:[32,32], iconAnchor:[16,16]}); }
+function filteredContacts(){
+  return contacts.filter(c=>{
+    if(searchTerm){ const hay=((c.name||'')+' '+(c.phone||'')+' '+(c.street||'')+' '+(c.city||'')+' '+(c.state||'')+' '+(c.zip||'')).toLowerCase(); if(!hay.includes(searchTerm.toLowerCase())) return false; }
+    if(currentFilter!=='All' && getArea(c)!==currentFilter) return false;
+    return true;
+  });
+}
+function getArea(c){
+  const city=(c.city||'').toLowerCase(), state=(c.state||'').toUpperCase(), zip=(c.zip||'');
+  if(state==='NJ') return 'New Jersey';
+  if(city.includes('staten island')||zip.startsWith('103')) return 'Staten Island';
+  if(city.includes('bronx')||zip.startsWith('104')) return 'Bronx';
+  if(city.includes('brooklyn')||zip.startsWith('112')) return 'Brooklyn';
+  if(city.includes('queens')||city.includes('flushing')||city.includes('astoria')||city.includes('jamaica')||zip.startsWith('113')||zip.startsWith('111')||zip.startsWith('114')||zip.startsWith('116')) return 'Queens';
+  if(city.includes('manhattan')||city==='new york'||zip.startsWith('100')||zip.startsWith('101')||zip.startsWith('102')) return 'Manhattan';
+  if(zip.startsWith('115')||zip.startsWith('117')||zip.startsWith('118')||zip.startsWith('110')||city.includes('hempstead')||city.includes('huntington')||city.includes('babylon')||city.includes('smithtown')) return 'Long Island';
+  if(state==='NY') return 'Brooklyn';
+  return 'New Jersey';
+}
+function renderMarkers(){
+  if(!map) return;
+  markers.forEach(m=>map.removeLayer(m)); markers=[];
+  const list=filteredContacts().filter(c=>c.onMap!==false && c.lat!=null && c.lng!=null);
+  list.forEach((c,i)=>{
+    const m=L.marker([c.lat,c.lng],{icon:pinIcon(i+1)}).addTo(map).bindPopup(`<b>${escapeHtml(c.name||'')}</b><br>${escapeHtml(fullAddress(c))}<br><a href="tel:${c.phone||''}">Call</a> • <a target="_blank" href="${directionsUrl(c)}">Directions</a>`);
+    markers.push(m);
+  });
+  $('mapCount').textContent=list.length+' on map';
+  if(list.length && !myLoc){ try{ map.fitBounds(L.latLngBounds(list.map(c=>[c.lat,c.lng])).pad(0.2)); }catch(e){} }
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function fullAddress(c){ return [c.street,c.city,c.state,c.zip].filter(Boolean).join(', '); }
+function directionsUrl(c){ const dest=(c.lat!=null&&c.lng!=null)?`${c.lat},${c.lng}`:fullAddress(c); return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}`; }
+function haversineMiles(a,b,c,d){ const R=3958.8, toRad=x=>x*Math.PI/180; const dLat=toRad(c-a), dLon=toRad(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+
+function renderAll(){ renderList(); renderMarkers(); renderDriveList(); }
+function renderList(){
+  const list=filteredContacts();
+  $('listCount').textContent=contacts.length+(contacts.length===1?' person':' people');
+  $('emptyState').style.display=contacts.length===0?'block':'none';
+  const el=$('contactList'); el.innerHTML='';
+  list.forEach((c,idx)=>{
+    const card=document.createElement('div'); card.className='contact-card';
+    const badge=c.geocodeStatus==='exact'?'<span class="badge badge-exact">Exact pin</span>':c.geocodeStatus==='approximate'?'<span class="badge badge-approx">Approximate — town</span>':(c.lat!=null?'<span class="badge badge-exact">On map</span>':'<span class="badge badge-nopin">No pin yet</span>');
+    card.innerHTML=`
+      <div class="contact-head"><div><div class="contact-name">${idx+1}. ${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${escapeHtml(fullAddress(c)||'No address yet')}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}</div></div>${badge}</div>
+      <div class="actions">
+        ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
+        <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
+        <button class="btn btn-outline edit-btn">Edit</button>
+        <button class="btn btn-outline del-btn" style="color:var(--red)">Delete</button>
+      </div>
+      <div class="toggle-row"><span>On my map — include in driving alerts</span><label class="switch"><input type="checkbox" class="onmap-toggle" ${c.onMap!==false?'checked':''}><span class="switch-track"></span><span class="switch-thumb"></span></label></div>
+      <div class="del-confirm" style="display:none;margin-top:10px;padding:12px;background:#fff1f1;border-radius:10px"><strong>Delete ${escapeHtml(c.name||'this contact')}?</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-small" style="background:#8b1e1e;color:#fff;flex:1">Yes, delete</button><button class="btn btn-outline btn-small cancel-del" style="flex:1">Keep</button></div></div>
+    `;
+    card.querySelector('.onmap-toggle').addEventListener('change', async e=>{ await updateContact(c.id,{onMap:e.target.checked}); toast(e.target.checked?'Added to your map':'Removed from map'); });
+    card.querySelector('.edit-btn').addEventListener('click', ()=>startEdit(c));
+    const dc=card.querySelector('.del-confirm');
+    card.querySelector('.del-btn').addEventListener('click', ()=>{ dc.style.display='block'; });
+    card.querySelector('.cancel-del').addEventListener('click', ()=>{ dc.style.display='none'; });
+    dc.querySelector('button').addEventListener('click', async()=>{ await deleteContact(c.id); toast('Contact deleted'); });
+    el.appendChild(card);
+  });
+  if(list.length===0 && contacts.length>0) el.innerHTML='<p class="muted" style="text-align:center;padding:16px">No contacts match your search or filter.</p>';
+}
+
+/* FILTERS */
+const areas=['All','Brooklyn','Manhattan','Queens','Bronx','Staten Island','Long Island','New Jersey'];
+const chipsEl=$('areaChips');
+areas.forEach(a=>{ const b=document.createElement('button'); b.className='chip'+(a==='All'?' active':''); b.textContent=a; b.addEventListener('click',()=>{ currentFilter=a; chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderAll(); }); chipsEl.appendChild(b); });
+$('searchInput').addEventListener('input', e=>{ searchTerm=e.target.value; renderAll(); });
+$('clearSearch').addEventListener('click', ()=>{ $('searchInput').value=''; searchTerm=''; renderAll(); });
+
+/* GEOCODING */
+async function nominatimSearch(q,limit=5){ const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=${limit}&q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('geocode failed'); return await r.json(); }
+async function geocodeForSave(obj){
+  const full=fullAddress(obj); if(!full) return {lat:null,lng:null,geocodeStatus:'not_found'};
+  try{ const res=await nominatimSearch(full,1); if(res&&res[0]) return {lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),geocodeStatus:'exact'}; }catch(e){}
+  try{ const town=[obj.city,obj.state,obj.zip].filter(Boolean).join(', '); if(town){ const res2=await nominatimSearch(town,1); if(res2&&res2[0]) return {lat:parseFloat(res2[0].lat),lng:parseFloat(res2[0].lon),geocodeStatus:'approximate'}; } }catch(e){}
+  return {lat:null,lng:null,geocodeStatus:'not_found'};
+}
+/* Autocomplete */
+let acTimer=null;
+$('fStreet').addEventListener('input', ()=>{
+  const q=$('fStreet').value.trim(); const city=$('fCity').value.trim(); const box=$('suggestBox');
+  $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value='';
+  if(q.length<4){ box.style.display='none'; return; }
+  clearTimeout(acTimer);
+  acTimer=setTimeout(async()=>{
+    try{ const query=city?`${q}, ${city}`:q; const res=await nominatimSearch(query,5); if(!res.length){ box.style.display='none'; return; }
+      box.innerHTML=''; res.forEach(item=>{
+        const btn=document.createElement('button'); btn.type='button'; btn.textContent=item.display_name;
+        btn.addEventListener('click', ()=>{
+          const ad=item.address||{};
+          $('fStreet').value=[ad.house_number,ad.road].filter(Boolean).join(' ')||q;
+          $('fCity').value=ad.city||ad.town||ad.village||ad.borough||'';
+          $('fState').value=ad.state? stateAbbr(ad.state):'';
+          $('fZip').value=ad.postcode||'';
+          $('exactLat').value=item.lat; $('exactLng').value=item.lon; $('exactStatus').value='exact';
+          $('geoHint').textContent='✓ Exact location selected — this pin will be precise.';
+          box.style.display='none';
+        }); box.appendChild(btn);
+      }); box.style.display='block';
+    }catch(e){ box.style.display='none'; }
+  },350);
+});
+document.addEventListener('click', e=>{ if(!e.target.closest('.autocomplete')) $('suggestBox').style.display='none'; });
+function stateAbbr(name){ const map={'New York':'NY','New Jersey':'NJ','Pennsylvania':'PA','Connecticut':'CT','Florida':'FL'}; return map[name]||name; }
+
+function startEdit(c){
+  $('editId').value=c.id; $('formTitle').textContent='Edit contact';
+  $('fName').value=c.name||''; $('fPhone').value=c.phone||''; $('fStreet').value=c.street||''; $('fCity').value=c.city||''; $('fState').value=c.state||''; $('fZip').value=c.zip||'';
+  $('exactLat').value=c.lat!=null?c.lat:''; $('exactLng').value=c.lng!=null?c.lng:''; $('exactStatus').value=c.geocodeStatus||'';
+  $('cancelEdit').style.display='inline-flex';
+  document.getElementById('contactForm').scrollIntoView({behavior:'smooth',block:'center'});
+}
+$('cancelEdit').addEventListener('click', resetForm);
+function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; $('geoHint').textContent='Pick a suggestion for an exact pin. If we can’t find the exact address, we’ll place a clearly labeled approximate pin for the town — we never make up an address.'; }
+
+$('contactForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const obj={name:$('fName').value.trim(), phone:$('fPhone').value.trim(), street:$('fStreet').value.trim(), city:$('fCity').value.trim(), state:$('fState').value.trim(), zip:$('fZip').value.trim(), onMap:true};
+  if(!obj.name){ toast('Please add a name'); return; }
+  let lat=null,lng=null,geocodeStatus='not_found';
+  if($('exactLat').value){ lat=parseFloat($('exactLat').value); lng=parseFloat($('exactLng').value); geocodeStatus='exact'; }
+  else { toast('Finding address on the map…'); const g=await geocodeForSave(obj); lat=g.lat; lng=g.lng; geocodeStatus=g.geocodeStatus; }
+  const payload={...obj,lat,lng,geocodeStatus};
+  try{
+    const editId=$('editId').value;
+    if(editId){ await updateContact(editId,payload); toast('Contact updated'); } else { await addContactToFirestore(payload); toast(geocodeStatus==='approximate'?'Saved — approximate town pin (exact address not found)':'Contact saved'); }
+    resetForm();
+  }catch(err){ toast('Could not save — check connection and try again'); }
+});
+
+/* PHONE PICKER */
+const pickerSupported = 'contacts' in navigator && 'ContactsManager' in window;
+if(!pickerSupported){ $('phonePickWrap').style.display='none'; $('phonePickUnsupported').style.display='block'; }
+else {
+  $('pickPhoneBtn').addEventListener('click', async()=>{
+    try{
+      const picked=await navigator.contacts.select(['name','tel','email','address'],{multiple:true});
+      if(!picked||!picked.length) return;
+      const wrap=$('pickerReview'); wrap.innerHTML='<h3 style="margin-top:14px">Review — tick who to add</h3>';
+      const list=document.createElement('div'); list.className='checklist';
+      picked.forEach((p,i)=>{
+        const name=(p.name&&p.name[0])||'No name'; const tel=(p.tel&&p.tel[0])||''; let street='',city='',state='',zip='';
+        if(p.address&&p.address[0]){ const a=p.address[0]; street=(a.addressLine&&a.addressLine.join(' '))||''; city=a.city||''; state=a.region||''; zip=a.postalCode||''; }
+        const label=document.createElement('label'); label.className='check-item';
+        label.innerHTML=`<input type="checkbox" checked data-i="${i}"><span><strong>${escapeHtml(name)}</strong><br><span class="muted">${escapeHtml(tel)} ${escapeHtml([street,city,state,zip].filter(Boolean).join(', '))}</span></span>`;
+        label.dataset.payload=JSON.stringify({name,phone:tel,street,city,state,zip});
+        list.appendChild(label);
+      });
+      wrap.appendChild(list);
+      const addBtn=document.createElement('button'); addBtn.className='btn btn-green btn-large'; addBtn.style.marginTop='10px'; addBtn.textContent='Add ticked contacts';
+      addBtn.addEventListener('click', async()=>{
+        const checks=list.querySelectorAll('input:checked'); if(!checks.length){ toast('Tick at least one'); return; }
+        addBtn.textContent='Adding & finding on map…'; addBtn.disabled=true;
+        for(const chk of checks){ const item=chk.closest('.check-item'); const data=JSON.parse(item.dataset.payload); const g=await geocodeForSave(data); await addContactToFirestore({...data,lat:g.lat,lng:g.lng,geocodeStatus:g.geocodeStatus,onMap:true}); }
+        wrap.innerHTML=''; toast('Contacts added');
+      });
+      wrap.appendChild(addBtn);
+    }catch(err){ if(err.name!=='AbortError') toast('Could not open phone contacts'); }
+  });
+}
+
+/* VCF IMPORT */
+function parseVCF(text){
+  const cards=text.split(/BEGIN:VCARD/i).slice(1); const out=[];
+  cards.forEach(block=>{
+    const get=(key)=>{ const m=block.match(new RegExp('^'+key+'[^:\\n]*:([^\\n]+)','mi')); return m?m[1].trim().replace(/\\,/g,',').replace(/\\n/g,' '):''; };
+    const fn=get('FN'); let tel=''; const tm=block.match(/^TEL[^:\n]*:([^\n]+)/mi); if(tm) tel=tm[1].trim();
+    let street='',city='',state='',zip=''; const am=block.match(/^ADR[^:\n]*:([^\n]+)/mi); if(am){ const parts=am[1].split(';'); street=(parts[2]||'').trim(); city=(parts[3]||'').trim(); state=(parts[4]||'').trim(); zip=(parts[5]||'').trim(); }
+    if(fn||tel) out.push({name:fn,phone:tel,street,city,state,zip});
+  }); return out;
+}
+$('vcfInput').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const text=await file.text(); const parsed=parseVCF(text);
+  const wrap=$('vcfReview');
+  if(!parsed.length){ wrap.innerHTML='<p class="muted" style="margin-top:10px">No contacts found in that file. Try another .vcf export.</p>'; return; }
+  wrap.innerHTML=`<h3 style="margin-top:14px">Found ${parsed.length} — tick who to add</h3>`;
+  const list=document.createElement('div'); list.className='checklist';
+  parsed.forEach(p=>{ const label=document.createElement('label'); label.className='check-item'; label.innerHTML=`<input type="checkbox" checked><span><strong>${escapeHtml(p.name||'No name')}</strong><br><span class="muted">${escapeHtml(p.phone||'')} ${escapeHtml(fullAddress(p))}</span></span>`; label.dataset.payload=JSON.stringify(p); list.appendChild(label); });
+  wrap.appendChild(list);
+  const btn=document.createElement('button'); btn.className='btn btn-green btn-large'; btn.style.marginTop='10px'; btn.textContent='Add ticked contacts';
+  btn.addEventListener('click', async()=>{ const checks=list.querySelectorAll('input:checked'); if(!checks.length){toast('Tick at least one');return;} btn.textContent='Adding & finding on map…'; btn.disabled=true; for(const chk of checks){ const data=JSON.parse(chk.closest('.check-item').dataset.payload); const g=await geocodeForSave(data); await addContactToFirestore({...data,lat:g.lat,lng:g.lng,geocodeStatus:g.geocodeStatus,onMap:true}); } wrap.innerHTML=''; toast('Imported contacts added'); });
+  wrap.appendChild(btn);
+  e.target.value='';
+});
+
+/* NEAR ME */
+function getLocationOnce(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) rej(new Error('No GPS')); else navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000}); }); }
+async function showNear(){
+  $('nearStatus').textContent='Getting your location…';
+  try{ const loc=await getLocationOnce(); myLoc=loc; $('nearStatus').textContent='Showing on-map contacts within '+alertMiles+' miles, closest first.'; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); map.setView([loc.lat,loc.lng],12); } renderNearList(); renderMarkers(); }catch(e){ $('nearStatus').textContent='Could not get your location. Allow location for this site and try again.'; }
+}
+function sortedByDistance(){ if(!myLoc) return []; return contacts.filter(c=>c.onMap!==false&&c.lat!=null).map(c=>({...c,_dist:haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng)})).sort((a,b)=>a._dist-b._dist); }
+function renderNearList(){
+  const el=$('nearList'); const sorted=sortedByDistance().filter(c=>c._dist<=alertMiles);
+  if(!myLoc){ el.innerHTML=''; return; }
+  if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody on your map is within '+alertMiles+' miles right now. Try a larger alert distance in settings.</p>'; return; }
+  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.innerHTML=`<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(fullAddress(c))}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+}
+$('nearBtn').addEventListener('click', showNear);
+$('useLocationBtn').addEventListener('click', showNear);
+
+/* SETTINGS */
+function updateDistUI(){
+  $('distLabel').textContent='Current alert distance: '+alertMiles+' mile'+(alertMiles===1?'':'s');
+  $('driveDistLabel').textContent=alertMiles+' miles';
+  document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.miles)===alertMiles));
+  document.querySelectorAll('.drive-dist').forEach(b=>{ b.style.background=parseFloat(b.dataset.miles)===alertMiles?'var(--gold)':''; });
+  try{ localStorage.setItem('rg_alert_miles', String(alertMiles)); }catch(e){}
+  if(myLoc) renderNearList(); renderDriveList();
+}
+document.querySelectorAll('#distBtns .dist-btn').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); $('customDist').value=''; updateDistUI(); toast('Alert distance: '+alertMiles+' miles'); }));
+document.querySelectorAll('.drive-dist').forEach(b=>b.addEventListener('click',()=>{ alertMiles=parseFloat(b.dataset.miles); updateDistUI(); }));
+$('applyCustomDist').addEventListener('click',()=>{ const v=parseFloat($('customDist').value); if(isNaN(v)||v<=0||v>50){ toast('Type a distance between 0.5 and 50 miles'); return; } alertMiles=v; updateDistUI(); toast('Alert distance: '+v+' miles'); });
+$('soundToggle').checked=soundOn;
+$('soundToggle').addEventListener('change', e=>{ soundOn=e.target.checked; try{localStorage.setItem('rg_sound', soundOn?'1':'0')}catch(err){} });
+function updateNotifUI(){ const el=$('notifState'); if(!('Notification' in window)){ el.textContent='Notifications are not supported in this browser — you’ll still see and hear alerts inside the app.'; $('notifBtn').style.display='none'; return; } const p=Notification.permission; el.textContent=p==='granted'?'✓ Notifications are ON for this device.':p==='denied'?'Notifications are blocked in browser settings. In-app banner + sound will still alert you.':'Notifications are not on yet.'; $('notifBtn').textContent=p==='granted'?'Notifications on ✓':'Turn on notifications'; }
+$('notifBtn').addEventListener('click', async()=>{ if(!('Notification' in window)) return; try{ await Notification.requestPermission(); }catch(e){} updateNotifUI(); });
+updateDistUI(); updateNotifUI();
+
+/* SOUND */
+let audioCtx=null;
+function playAlertSound(){ if(!soundOn) return; try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=880; g.gain.setValueAtTime(0.001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.25,audioCtx.currentTime+0.05); o.start(); o.stop(audioCtx.currentTime+0.6); setTimeout(()=>{ try{ const o2=audioCtx.createOscillator(), g2=audioCtx.createGain(); o2.connect(g2); g2.connect(audioCtx.destination); o2.frequency.value=660; o2.start(); o2.stop(audioCtx.currentTime+0.5);}catch(e){} },650); }catch(e){} }
+
+/* DRIVING */
+async function requestWakeLock(){ const status='Screen wake lock: '; try{ if('wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); $('wakeStatus').textContent=status+'ON — screen will stay awake while driving.'; $('wakeStatusMain').textContent='Wake lock supported on this device.'; wakeLock.addEventListener('release',()=>{ $('wakeStatus').textContent=status+'released — tap Start driving again if needed.'; }); } else { $('wakeStatus').textContent=status+'not supported here — keep the phone plugged in / screen on.'; } }catch(e){ $('wakeStatus').textContent=status+'could not start.'; } }
+document.addEventListener('visibilitychange', async()=>{ if(document.visibilityState==='visible' && $('drivingOverlay').classList.contains('open')) requestWakeLock(); });
+
+function renderDriveList(){
+  const el=$('driveList'); if(!el) return;
+  if(!myLoc){ el.innerHTML='<p class="muted">Waiting for your location… once GPS is found, everyone nearby appears here closest first.</p>'; return; }
+  const sorted=sortedByDistance();
+  if(!sorted.length){ el.innerHTML='<p class="muted">No contacts on your map yet.</p>'; return; }
+  el.innerHTML=''; sorted.forEach(c=>{ const within=c._dist<=alertMiles; const div=document.createElement('div'); div.className='near-item'; if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px'; div.innerHTML=`<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(fullAddress(c))}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div>`; el.appendChild(div); });
+}
+function checkAlerts(){
+  if(!myLoc) return;
+  const sorted=sortedByDistance();
+  const nowInside=new Set();
+  sorted.forEach(c=>{ if(c._dist<=alertMiles) nowInside.add(c.id); });
+  for(const c of sorted){
+    if(nowInside.has(c.id) && !insideSet.has(c.id)){
+      // first entry
+      $('alertText').textContent=`${c.name} is ${c._dist.toFixed(1)} miles away — ${fullAddress(c)}`;
+      $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
+      $('alertBanner').classList.add('show');
+      playAlertSound();
+      if('Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  }
+  insideSet=nowInside;
+}
+$('dismissAlert').addEventListener('click',()=>$('alertBanner').classList.remove('show'));
+
+function initDriveMap(){
+  if(driveMap){ setTimeout(()=>driveMap.invalidateSize(),100); return; }
+  if(typeof L==='undefined') return;
+  driveMap=L.map('driveMap').setView([40.68,-73.95],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(driveMap);
+}
+function updateDriveMap(){
+  if(!driveMap||!myLoc) return;
+  driveMap.setView([myLoc.lat,myLoc.lng],13);
+  if(driveUserMarker) driveMap.removeLayer(driveUserMarker);
+  driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
+  driveMarkers.forEach(m=>driveMap.removeLayer(m)); driveMarkers=[];
+  contacts.filter(c=>c.onMap!==false&&c.lat!=null).forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:pinIcon(i+1)}).addTo(driveMap).bindPopup(`<b>${escapeHtml(c.name)}</b>`); driveMarkers.push(m); });
+}
+function startDriving(){
+  $('drivingOverlay').classList.add('open'); document.body.style.overflow='hidden';
+  initDriveMap(); requestWakeLock(); updateDistUI();
+  $('driveStatus').textContent='Getting your location…';
+  if(!navigator.geolocation){ $('driveStatus').textContent='GPS is not available on this device.'; return; }
+  if(watchId!=null) navigator.geolocation.clearWatch(watchId);
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    myLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    $('driveStatus').textContent='Location on • Updated '+new Date().toLocaleTimeString()+' • Alert within '+alertMiles+' miles';
+    updateDriveMap(); renderDriveList(); checkAlerts(); if(myLoc) renderNearList();
+  }, err=>{ $('driveStatus').textContent='Could not get location. Allow location for this site, then try again.'; }, {enableHighAccuracy:true, maximumAge:5000, timeout:15000});
+}
+function stopDriving(){
+  $('drivingOverlay').classList.remove('open'); document.body.style.overflow='';
+  if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+  if(wakeLock){ try{wakeLock.release()}catch(e){} wakeLock=null; }
+  insideSet=new Set(); $('alertBanner').classList.remove('show');
+}
+$('startDrivingTop').addEventListener('click', startDriving);
+$('startDriving2').addEventListener('click', startDriving);
+$('stopDriving').addEventListener('click', stopDriving);
+</script>
+</body>
+</html>
