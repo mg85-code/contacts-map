@@ -185,6 +185,7 @@ input,select{ min-height:48px }
 .badge-nopin{background:#fee2e2;color:#991b1b}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .actions a,.actions button{flex:1;min-width:110px}
+.actions .del-btn{flex:0 0 calc((100% - 16px)/3)}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px;font-weight:600}
 .switch{position:relative;width:52px;height:32px;flex-shrink:0}
 .switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer}
@@ -445,6 +446,7 @@ input,select{ min-height:48px }
     <div class="side-download">
       <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
     </div>
+    <div style="text-align:center;margin-top:18px"><span class="muted" style="font-size:14px;letter-spacing:.05em">Version 1.8</span></div>
   </aside>
 
   <div class="wrap">
@@ -761,6 +763,11 @@ input,select{ min-height:48px }
     <button id="closeContactsBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back to map</button>
   </div>
   <div style="max-width:760px;margin:0 auto;padding:14px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <button type="button" id="contactsAddBtn" class="btn btn-green" style="flex:1;min-width:150px">➕ Add a contact</button>
+      <button type="button" id="contactsPickPhoneBtn" class="btn btn-gold" style="flex:1;min-width:150px">👤 Pick from my phone contacts</button>
+      <button type="button" id="contactsImportBtn" class="btn btn-outline" style="flex:1;min-width:150px">📁 Import contacts file (.vcf)</button>
+    </div>
     <label for="contactsSearchInput" style="font-weight:700;display:block;margin-top:2px">🔍 Search contacts</label>
     <div class="search-row" style="margin-top:6px">
       <input id="contactsSearchInput" type="search" placeholder="Type a name, phone, street or city…">
@@ -940,7 +947,12 @@ input,select{ min-height:48px }
 <script>
 const firebaseConfig={apiKey:"AIzaSyDrisvfPogoX_bpiyQO2tpJrLbw_Dy6P2s",authDomain:"map-for-rabbi-goldstein.firebaseapp.com",projectId:"map-for-rabbi-goldstein",storageBucket:"map-for-rabbi-goldstein.firebasestorage.app",messagingSenderId:"990836761457",appId:"1:990836761457:web:e7be3c8f150f2d8f24ccd0",measurementId:"G-LQ8G25J9D1"};
 let auth=null,db=null,currentUser=null,contacts=[],unsub=null;
-let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null;
+let map=null,markers=[],driveMap=null,driveMarkers=[],userMarker=null,driveUserMarker=null,driveMarkersSig='';
+/* SHOW ADDRESS state: ids of contacts whose address panel the user has opened.
+   The near/drive lists are rebuilt on every GPS update, so the open state is kept
+   here — a rebuild restores it instead of closing the address by itself. Only
+   tapping Show/Hide address again changes it. */
+const openAddrIds=new Set();
 let myLoc=null,alertMiles=2,viewMiles=1,soundOn=true,notifOn=true,watchId=null,wakeLock=null,insideSet=new Set(),currentFilter='All',searchTerm='',contactsSearchTerm='';
 let contactsSortMode='name';
 let fbInboxUnsub=null;
@@ -1092,11 +1104,15 @@ function getArea(c){
 }
 function renderMarkers(){
   if(!map) return;
+  /* Remember whose address popup is open so rebuilding the pins never closes it */
+  let openCid=null;
+  markers.forEach(m=>{ try{ if(m.isPopupOpen()) openCid=m._cid; }catch(e){} });
   markers.forEach(m=>map.removeLayer(m)); markers=[];
   const list=filteredContacts().filter(c=>c.onMap!==false && c.lat!=null && c.lng!=null);
   list.forEach((c,i)=>{
     const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(map).bindPopup(popupHtml(c)); m._cid=c.id;
     markers.push(m);
+    if(openCid && c.id===openCid){ try{ m.openPopup(); }catch(e){} }
   });
   $('mapCount').textContent=list.length+' on map';
   if(list.length && !myLoc && !initialFitDone){ initialFitDone=true; try{ map.fitBounds(L.latLngBounds(list.map(c=>[c.lat,c.lng])).pad(0.2)); }catch(e){} }
@@ -1346,6 +1362,15 @@ function setManualOpen(open){ const w=$('manualFormWrap'); const b=$('toggleManu
 function openContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderList(); }
 function closeContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open')) document.body.style.overflow=''; }
 (function(){ const mb=$('toggleManualBtn'); if(mb) mb.addEventListener('click',()=>setManualOpen($('manualFormWrap').style.display==='none')); const ob=$('openContactsBtn'); if(ob) ob.addEventListener('click', openContactsPage); const cb=$('closeContactsBtn'); if(cb) cb.addEventListener('click', closeContactsPage); const csi=$('contactsSearchInput'); if(csi) csi.addEventListener('input', e=>{ contactsSearchTerm=e.target.value; renderList(); }); const ccs=$('clearContactsSearch'); if(ccs) ccs.addEventListener('click', ()=>{ const inp=$('contactsSearchInput'); if(inp) inp.value=''; contactsSearchTerm=''; renderList(); }); })();
+/* CONTACTS PAGE TOP — add-contact shortcuts at the top of My Contacts. Each one routes
+   into the SAME add flows that live in the side panel's Contacts section (by-hand form,
+   phone picker, .vcf import), so there is only one copy of each flow to keep working. */
+(function(){
+  function goToAddFlow(){ closeContactsPage(); openSidePanel(); openMenuSection('contacts'); }
+  const addB=$('contactsAddBtn'); if(addB) addB.addEventListener('click', ()=>{ goToAddFlow(); setManualOpen(true); setTimeout(()=>{ const p=$('addContactsPanel'); if(p) p.scrollIntoView({block:'start'}); const nf=$('fName'); if(nf){ try{ nf.focus({preventScroll:true}); }catch(e){} } },60); });
+  const pickB=$('contactsPickPhoneBtn'); if(pickB) pickB.addEventListener('click', ()=>{ goToAddFlow(); const pb=$('pickPhoneBtn'); if(pb) pb.click(); });
+  const impB=$('contactsImportBtn'); if(impB) impB.addEventListener('click', ()=>{ goToAddFlow(); const vi=$('vcfInput'); if(vi) vi.click(); });
+})();
 /* EDIT SHEET — editing from My Contacts happens in a sheet over the Contacts page itself.
    The by-hand form node moves into the sheet while editing and moves back when done, so the
    side Settings panel is never opened and the Contacts page stays open underneath the whole time. */
@@ -1658,7 +1683,7 @@ function renderNearList(){
   if(nearSortMode==='name') sorted=sorted.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(!myLoc){ el.innerHTML=''; return; }
   if(!sorted.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Nobody within '+alertMiles+' miles.</p>'; return; }
-  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.style.flexDirection='column'; div.style.alignItems='stretch'; const addr=fullAddress(c); div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div class="near-open" style="display:flex;gap:12px;align-items:center;min-width:0;cursor:pointer" title="Open contact">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(addr)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline btn-small show-addr-btn" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`; const openEl=div.querySelector('.near-open'); if(openEl) openEl.addEventListener('click',()=>openContactFromMap(c.id)); const showBtn=div.querySelector('.show-addr-btn'); const panel=div.querySelector('.drive-addr-panel'); if(showBtn&&panel) showBtn.addEventListener('click',()=>{ const open=panel.classList.toggle('open'); showBtn.textContent=open?'📍 Hide address':'📍 Show address'; showBtn.setAttribute('aria-expanded', open?'true':'false'); }); const copyBtn=div.querySelector('.copy-addr-btn'); if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn)); el.appendChild(div); });
+  el.innerHTML=''; sorted.forEach(c=>{ const div=document.createElement('div'); div.className='near-item'; div.style.flexDirection='column'; div.style.alignItems='stretch'; const addr=fullAddress(c); div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div class="near-open" style="display:flex;gap:12px;align-items:center;min-width:0;cursor:pointer" title="Open contact">${avatarHtml(c,true)}<div><strong style="font-size:17px">${escapeHtml(c.name)}</strong><div class="muted">${c._dist.toFixed(1)} miles away • ${escapeHtml(addr)}</div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone||'')}">Call</a><a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline btn-small show-addr-btn" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`; const openEl=div.querySelector('.near-open'); if(openEl) openEl.addEventListener('click',()=>openContactFromMap(c.id)); const showBtn=div.querySelector('.show-addr-btn'); const panel=div.querySelector('.drive-addr-panel'); if(showBtn&&panel){ if(openAddrIds.has(c.id)){ panel.classList.add('open'); showBtn.textContent='📍 Hide address'; showBtn.setAttribute('aria-expanded','true'); } showBtn.addEventListener('click',()=>{ const open=panel.classList.toggle('open'); if(open) openAddrIds.add(c.id); else openAddrIds.delete(c.id); showBtn.textContent=open?'📍 Hide address':'📍 Show address'; showBtn.setAttribute('aria-expanded', open?'true':'false'); }); } const copyBtn=div.querySelector('.copy-addr-btn'); if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn)); el.appendChild(div); });
 }
 (function(){ const db=$('nearSortDistBtn'); if(db) db.addEventListener('click',()=>{ nearSortMode='distance'; renderNearList(); }); const nb=$('nearSortNameBtn'); if(nb) nb.addEventListener('click',()=>{ nearSortMode='name'; renderNearList(); }); })();
 
@@ -1810,11 +1835,15 @@ function renderDriveList(){
     div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div style="display:flex;gap:12px;align-items:center;min-width:0">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(addr)}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline show-addr-btn" style="font-size:17px" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`;
     const showBtn=div.querySelector('.show-addr-btn');
     const panel=div.querySelector('.drive-addr-panel');
-    if(showBtn&&panel) showBtn.addEventListener('click',()=>{
-      const open=panel.classList.toggle('open');
-      showBtn.textContent=open?'📍 Hide address':'📍 Show address';
-      showBtn.setAttribute('aria-expanded', open?'true':'false');
-    });
+    if(showBtn&&panel){
+      if(openAddrIds.has(c.id)){ panel.classList.add('open'); showBtn.textContent='📍 Hide address'; showBtn.setAttribute('aria-expanded','true'); }
+      showBtn.addEventListener('click',()=>{
+        const open=panel.classList.toggle('open');
+        if(open) openAddrIds.add(c.id); else openAddrIds.delete(c.id);
+        showBtn.textContent=open?'📍 Hide address':'📍 Show address';
+        showBtn.setAttribute('aria-expanded', open?'true':'false');
+      });
+    }
     const copyBtn=div.querySelector('.copy-addr-btn');
     if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn));
     el.appendChild(div);
@@ -1834,7 +1863,10 @@ function checkAlerts(){
       alertAddr=fullAddress(c);
       $('alertAddrText').textContent=alertAddr||'No address saved for this person yet.';
       $('alertCopyAddr').style.display=alertAddr?'inline-flex':'none';
-      resetAlertAddrPanel();
+      /* Only start with the address closed when the alert is for a NEW person.
+         Re-firing for the same person must not slam an opened address shut. */
+      if(alertContactId!==c.id) resetAlertAddrPanel();
+      alertContactId=c.id;
       $('alertBanner').classList.add('show');
       playAlertSound();
       if(notifOn && 'Notification' in window && Notification.permission==='granted'){ try{ new Notification('Someone nearby to visit',{body:`${c.name} — ${c._dist.toFixed(1)} miles away. ${fullAddress(c)}`}); }catch(e){} }
@@ -1846,7 +1878,7 @@ function checkAlerts(){
 $('dismissAlert').addEventListener('click',()=>{ $('alertBanner').classList.remove('show'); resetAlertAddrPanel(); });
 /* ALERT BANNER — Show address: reveals the person's address inside the banner, with the
    same two-squares copy button as the driving list. */
-let alertAddr='';
+let alertAddr=''; let alertContactId=null;
 function resetAlertAddrPanel(){
   const p=$('alertAddrPanel'); if(p) p.classList.remove('open');
   const b=$('alertShowAddr'); if(b){ b.textContent='📍 Show address'; b.setAttribute('aria-expanded','false'); }
@@ -1866,10 +1898,19 @@ function initDriveMap(){
 }
 function updateDriveMap(){
   if(!driveMap||!myLoc) return;
-  if(driveUserMarker) driveMap.removeLayer(driveUserMarker);
-  driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
-  driveMarkers.forEach(m=>driveMap.removeLayer(m)); driveMarkers=[];
-  contacts.filter(c=>c.onMap!==false&&c.lat!=null).forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(driveMap).bindPopup(popupHtml(c)); driveMarkers.push(m); });
+  if(driveUserMarker) driveUserMarker.setLatLng([myLoc.lat,myLoc.lng]);
+  else driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
+  /* Pins are rebuilt ONLY when the contacts on the map actually change — not on
+     every GPS tick. Rebuilding them used to close any open address popup by itself. */
+  const driveListNow=contacts.filter(c=>c.onMap!==false&&c.lat!=null);
+  const sig=driveListNow.map(c=>c.id+'@'+c.lat+','+c.lng+'@'+(hasPhoto(c)?'p':'-')).join(';');
+  if(sig!==driveMarkersSig){
+    let openCid=null;
+    driveMarkers.forEach(m=>{ try{ if(m.isPopupOpen()) openCid=m._cid; }catch(e){} });
+    driveMarkers.forEach(m=>driveMap.removeLayer(m)); driveMarkers=[];
+    driveListNow.forEach((c,i)=>{ const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(driveMap).bindPopup(popupHtml(c)); m._cid=c.id; driveMarkers.push(m); if(openCid&&c.id===openCid){ try{ m.openPopup(); }catch(e){} } });
+    driveMarkersSig=sig;
+  }
   /* Zoomed in close: fit exactly the chosen radius around the driver */
   if(driveRadiusCircle) driveMap.removeLayer(driveRadiusCircle);
   driveRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(driveMap);
