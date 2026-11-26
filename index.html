@@ -153,9 +153,11 @@ input,select{ min-height:48px }
 .note-entry{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper);margin-top:10px}
 .note-date{font-size:12px;font-weight:700;color:var(--gold2);letter-spacing:.03em;margin-bottom:4px}
 @media(prefers-color-scheme:dark){.note-date{color:#e6c87a}}
-/* SIDE PANEL DOWNLOAD — a standout gold button pinned to the bottom of the panel, not a menu row */
-.side-download{position:sticky;bottom:0;margin-top:16px;padding:14px;background:var(--cream);border-top:1px solid var(--line);z-index:2}
+/* SIDE PANEL FOOTER — Download button + version line pinned to the very bottom of the panel, always visible */
+.side-footer{flex-shrink:0;background:var(--cream);border-top:1px solid var(--line);z-index:2}
+.side-download{padding:14px 14px 4px;background:var(--cream)}
 .side-download .btn-download{box-shadow:0 6px 18px rgba(168,130,47,.35)}
+.side-version{text-align:center;padding:4px 14px calc(12px + env(safe-area-inset-bottom,0px));font-size:14px;letter-spacing:.05em;color:var(--muted)}
 /* EDIT SHEET — the edit form opens over the Contacts page, never in the side panel */
 #editOverlay{display:none;position:fixed;inset:0;z-index:195;background:var(--cream);overflow:auto}
 #editOverlay.open{display:block}
@@ -309,6 +311,7 @@ input,select{ min-height:48px }
 .copy-addr-btn{width:48px;height:48px;min-height:48px;border-radius:10px;border:1.5px solid var(--gold);background:var(--gold-light);color:#5c430a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .copy-addr-btn svg{width:22px;height:22px;pointer-events:none}
 .copy-addr-btn:active{transform:scale(.95)}
+.edit-addr-btn{font-size:20px;line-height:1}
 @media(prefers-color-scheme:dark){.copy-addr-btn{color:#e6c87a;background:#2e2a18}}
 @media (prefers-reduced-motion: reduce){.chat-rec-dot{animation:none}}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:10px;border-top:1px solid var(--line);background:var(--paper);flex-shrink:0}
@@ -328,10 +331,11 @@ input,select{ min-height:48px }
 .hamburger-btn svg{width:26px;height:26px}
 .side-backdrop{position:fixed;inset:0;background:rgba(10,25,18,.55);z-index:240;opacity:0;pointer-events:none;transition:opacity .25s}
 .side-backdrop.open{opacity:1;pointer-events:auto}
-.side-panel{position:fixed;top:0;left:0;bottom:0;width:min(430px,94vw);max-width:94vw;background:var(--cream);z-index:250;transform:translateX(-105%);transition:transform .28s ease;overflow-y:auto;overflow-x:hidden;box-shadow:6px 0 30px rgba(0,0,0,.25);padding:0 0 28px}
+.side-panel{position:fixed;top:0;left:0;bottom:0;width:min(430px,94vw);max-width:94vw;background:var(--cream);z-index:250;transform:translateX(-105%);transition:transform .28s ease;overflow:hidden;box-shadow:6px 0 30px rgba(0,0,0,.25);padding:0;display:flex;flex-direction:column}
 .side-panel.open{transform:translateX(0)}
 .side-panel *{min-width:0}
-.side-head{position:sticky;top:0;background:var(--green);color:#fff;margin:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:5}
+.side-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding-bottom:16px}
+.side-head{flex-shrink:0;background:var(--green);color:#fff;margin:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:5}
 .menu-list{display:flex;flex-direction:column;gap:10px;padding:14px 14px 0}
 .menu-item{display:flex;flex-direction:column}
 .menu-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;font-weight:700;font-size:17px;color:var(--ink);cursor:pointer;min-height:56px}
@@ -424,6 +428,7 @@ input,select{ min-height:48px }
       <button type="button" id="sideTitleBtn" class="side-title-btn" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span>Settings</span></button>
       <button type="button" id="closeSideBtn" class="btn" style="background:#fff;color:var(--green);padding:10px 16px" aria-label="Close menu">✕ Close</button>
     </div>
+    <div class="side-scroll">
     <nav class="menu-list" aria-label="Menu">
       <button type="button" id="drawerOpenContacts" class="menu-row"><span>👥 Open my contacts</span></button>
       <div class="menu-item" data-menu="add">
@@ -443,10 +448,13 @@ input,select{ min-height:48px }
       <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📊 Feedback dashboard</span></button>
       <button type="button" id="drawerBonusesBtn" class="menu-row"><span>🎁 Bonuses — coming soon</span></button>
     </nav>
-    <div class="side-download">
-      <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
     </div>
-    <div style="text-align:center;margin-top:18px"><span class="muted" style="font-size:14px;letter-spacing:.05em">Version 1.9</span></div>
+    <div class="side-footer">
+      <div class="side-download">
+        <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
+      </div>
+      <div class="side-version">Version 2.0</div>
+    </div>
   </aside>
 
   <div class="wrap">
@@ -1212,17 +1220,37 @@ function renderList(){
         ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
         <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
         <button class="btn btn-gold photo-btn">📷 ${hasPhoto(c)?'Change picture':'Add picture'}</button>
-        <button class="btn btn-gold addr-btn">📍 ${fullAddress(c)?'Edit address':'Add address'}</button>
+        <button class="btn btn-gold addr-btn" aria-expanded="false">📍 ${fullAddress(c)?'View address':'Add address'}</button>
         <button class="btn btn-outline edit-btn">Edit</button>
         <button class="btn btn-outline note-btn">📝 Notes${nCount?' ('+nCount+')':''}</button>
         <button class="btn btn-outline del-btn" style="color:var(--red)">Delete</button>
       </div>
+      ${fullAddress(c)?`<div class="drive-addr-panel"><span class="drive-addr-text">${escapeHtml(fullAddress(c))}</span><button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button><button type="button" class="copy-addr-btn edit-addr-btn" aria-label="Edit address of ${escapeHtml(c.name||'contact')}" title="Edit address">✏️</button></div>`:''}
       <div class="toggle-row"><span>On my map — include in driving alerts</span><label class="switch"><input type="checkbox" class="onmap-toggle" ${c.onMap!==false?'checked':''}><span class="switch-track"></span><span class="switch-thumb"></span></label></div>
       <div class="del-confirm" style="display:none;margin-top:10px;padding:12px;background:#fff1f1;border-radius:10px"><strong>Delete ${escapeHtml(c.name||'this contact')}?</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-small" style="background:#8b1e1e;color:#fff;flex:1">Yes, delete</button><button class="btn btn-outline btn-small cancel-del" style="flex:1">Keep</button></div></div>
     `;
     card.querySelector('.onmap-toggle').addEventListener('change', async e=>{ await updateContact(c.id,{onMap:e.target.checked}); toast(e.target.checked?'Added to your map':'Removed from map'); });
     card.querySelector('.photo-btn').addEventListener('click', ()=>{ quickPhotoTargetId=c.id; const qi=$('quickPhotoInput'); qi.value=''; qi.click(); });
-    card.querySelector('.addr-btn').addEventListener('click', ()=>{ startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); });
+    const addrBtn=card.querySelector('.addr-btn');
+    const cardAddr=fullAddress(c);
+    const openEditAtAddress=()=>{ startEdit(c); const sf=$('fStreet'); if(sf) setTimeout(()=>{ try{ sf.focus({preventScroll:true}); }catch(e){} },400); };
+    if(cardAddr){
+      const addrPanel=card.querySelector('.drive-addr-panel');
+      if(addrPanel&&openAddrIds.has(c.id)){ addrPanel.classList.add('open'); addrBtn.textContent='📍 Hide address'; addrBtn.setAttribute('aria-expanded','true'); }
+      addrBtn.addEventListener('click', ()=>{
+        if(!addrPanel) return;
+        const open=addrPanel.classList.toggle('open');
+        if(open) openAddrIds.add(c.id); else openAddrIds.delete(c.id);
+        addrBtn.textContent=open?'📍 Hide address':'📍 View address';
+        addrBtn.setAttribute('aria-expanded', open?'true':'false');
+      });
+      const addrCopyBtn=card.querySelector('.copy-addr-btn');
+      if(addrCopyBtn) addrCopyBtn.addEventListener('click', ()=>copyTextToClipboard(cardAddr,addrCopyBtn));
+      const addrEditBtn=card.querySelector('.edit-addr-btn');
+      if(addrEditBtn) addrEditBtn.addEventListener('click', openEditAtAddress);
+    } else {
+      addrBtn.addEventListener('click', openEditAtAddress);
+    }
     card.querySelector('.edit-btn').addEventListener('click', ()=>{ startEdit(c); });
     card.querySelector('.note-btn').addEventListener('click', ()=>{ openNotes(c.id); });
     const dc=card.querySelector('.del-confirm');
