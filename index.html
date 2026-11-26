@@ -278,8 +278,8 @@ input,select{ min-height:48px }
 /* FEEDBACK CHAT WIDGET */
 .chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
 .menu-stat-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px}
-.menu-btn{position:static;width:44px;height:44px;min-height:44px;border-radius:10px;background:var(--cream);color:var(--green);border:1.5px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
-.menu-btn svg{width:22px;height:22px}
+.menu-btn{position:static;width:48px;height:48px;min-height:48px;border-radius:12px;background:var(--gold);color:#0e3b2c;border:2px solid var(--gold2);box-shadow:0 3px 10px rgba(168,130,47,.5);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.menu-btn svg{width:24px;height:24px}
 .map-wrap{margin-top:12px}
 .front-stat{display:flex;align-items:baseline;gap:8px}
 .stat-num{font-family:"Playfair Display",Georgia,serif;font-size:26px;font-weight:800;line-height:1;color:var(--gold2)}
@@ -450,7 +450,7 @@ input,select{ min-height:48px }
 
   <div class="wrap">
     <div class="menu-stat-row">
-      <button type="button" id="menuBtn" class="menu-btn" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+      <button type="button" id="menuBtn" class="menu-btn" aria-label="Open settings menu" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
       <button id="startDrivingTop" class="btn btn-green" style="font-size:17px;padding:14px 20px">🚗 Start driving</button>
     </div>
     <div class="hero-strip">
@@ -797,7 +797,7 @@ input,select{ min-height:48px }
 <!-- FEEDBACK DASHBOARD — only ever opened by the admin login; nobody else sees the entry -->
 <div id="inboxOverlay" role="dialog" aria-label="Feedback dashboard">
   <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📊 Feedback Dashboard</div><div style="font-size:13px;opacity:.9;margin-top:2px">Feedback &amp; messages people sent — only in your account</div></div>
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">📊 Feedback Dashboard</div><div style="font-size:13px;opacity:.9;margin-top:2px">Feedback, messages &amp; accounts — only in your account</div></div>
     <button id="closeInboxBtn" class="btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px">← Back</button>
   </div>
   <div style="max-width:760px;margin:0 auto;padding:14px">
@@ -806,6 +806,12 @@ input,select{ min-height:48px }
       <div class="dash-stat"><div class="dash-num" id="dashVoice">0</div><div class="dash-label">Voice notes</div></div>
       <div class="dash-stat"><div class="dash-num" id="dashText">0</div><div class="dash-label">Text messages</div></div>
       <div class="dash-stat dash-stat-new"><div class="dash-num" id="dashNew">0</div><div class="dash-label">New since your last visit</div></div>
+      <div class="dash-stat"><div class="dash-num" id="dashAccounts">–</div><div class="dash-label">Accounts</div></div>
+    </div>
+    <div id="accountsSection" style="display:none;margin-top:18px">
+      <div style="font-family:Georgia,serif;font-size:20px;font-weight:700">👥 Accounts — <span id="accountsCount">0</span> <span id="accountsCountWord">people have an account</span></div>
+      <p id="accountsStatus" class="muted" style="margin-top:6px"></p>
+      <div id="accountsList"></div>
     </div>
     <p id="inboxStatus" class="muted" style="margin-top:12px"></p>
     <div id="inboxList"></div>
@@ -949,7 +955,7 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); }
     else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; stopDriving(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); updateInboxVisibility(); }
   });
 } else { $('firebaseError').classList.add('show'); }
@@ -988,6 +994,23 @@ $('togglePassword').addEventListener('click', ()=>{
 });
 
 function contactsCol(){ return db.collection('users').doc(currentUser.uid).collection('contacts'); }
+/* ACCOUNT NOTE — on every sign-up and login, refresh this person's small doc in
+   the top-level /accounts collection ({email, firstSeen, lastSeen}) so the admin
+   dashboard can show how many people have accounts. firstSeen is written only
+   when the doc is first created; later logins refresh email + lastSeen only.
+   The Firestore rules for /accounts are published separately by the owner —
+   until they allow it, the write is denied, so every failure is swallowed
+   silently and never affects signing in. */
+async function noteAccountSeen(user){
+  if(!db||!user||!user.uid) return;
+  try{
+    const ref=db.collection('accounts').doc(user.uid);
+    const now=Date.now();
+    const snap=await ref.get();
+    if(snap.exists){ await ref.update({email:user.email||'', lastSeen:now}); }
+    else { await ref.set({email:user.email||'', firstSeen:now, lastSeen:now}); }
+  }catch(e){ /* rules may not allow this yet — fail silently */ }
+}
 function subscribeContacts(){
   if(!db||!currentUser) return;
   if(unsub) unsub();
@@ -1122,29 +1145,15 @@ function renderSearchResults(){
     const addr=fullAddress(c);
     const sub=[addr||'No address yet', c.phone?('☎️ '+c.phone):''].filter(Boolean).join('  •  ');
     row.innerHTML=avatarHtml(c,true)+'<span class="search-result-main"><span class="search-result-name">'+escapeHtml(c.name||'No name')+'</span><span class="search-result-sub">'+escapeHtml(sub)+'</span></span><span class="search-result-open">Open ›</span>';
-    row.addEventListener('click',()=>showContactOnMap(c.id));
+    row.addEventListener('click',()=>openContactFromMap(c.id));
     box.appendChild(row);
   });
 }
-/* Tapping a search result: fly the map to the person and open their popup.
-   If they have no pin yet, open their contact card instead. */
-function showContactOnMap(id){
-  const c=contacts.find(x=>x.id===id); if(!c) return;
-  if(!map || c.lat==null || c.lng==null || c.onMap===false){ openContactFromMap(id); return; }
-  if(currentFilter!=='All' && getArea(c)!==currentFilter){
-    currentFilter='All';
-    document.querySelectorAll('#areaChips .chip').forEach(x=>x.classList.toggle('active',x.textContent==='All'));
-    renderMarkers();
-  }
-  const mapEl=document.getElementById('map'); if(mapEl) mapEl.scrollIntoView({behavior:'smooth',block:'center'});
-  setTimeout(()=>{
-    try{ map.flyTo([c.lat,c.lng],Math.max(map.getZoom(),15),{duration:0.7}); }catch(e){ try{ map.setView([c.lat,c.lng],15); }catch(e2){} }
-    setTimeout(()=>{
-      const m=markers.find(x=>x._cid===id);
-      if(m){ m.openPopup(); } else { openContactFromMap(id); }
-    },800);
-  },120);
-}
+/* Tapping a search result (the gold "Open ›") opens the contact itself:
+   openContactFromMap opens the Contacts page scrolled to that person's card —
+   the same thing the map popup's "Open contact" button does. (An earlier
+   version only flew the map to the pin and tried to open its popup on a
+   timer; that race often left the tap doing nothing the user could see.) */
 function renderList(){
   /* The Contacts page shows everyone — its search box narrows it, and it can sort by name (default) or by distance from you right now */
   const q=contactsSearchTerm.trim().toLowerCase();
@@ -1206,7 +1215,13 @@ $('searchInput').addEventListener('input', e=>{ searchTerm=e.target.value; rende
 $('clearSearch').addEventListener('click', ()=>{ $('searchInput').value=''; searchTerm=''; renderAll(); });
 
 /* GEOCODING */
-async function nominatimSearch(q,limit=5){ const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=${limit}&q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('geocode failed'); return await r.json(); }
+/* Address search stays LOCAL: countrycodes=us keeps foreign suggestions out
+   entirely, and the NY / tri-state viewbox (bounded=0 = preference, not a hard
+   wall) ranks nearby results first, so the add-contact and trip-planner
+   suggestion lists lead with local addresses while still finding any US
+   address. Viewbox order: left,top,right,bottom (lon/lat). */
+const NOMINATIM_VIEWBOX='-75.6,42.1,-71.7,38.4';
+async function nominatimSearch(q,limit=5){ const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=us&viewbox=${NOMINATIM_VIEWBOX}&bounded=0&limit=${limit}&q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('geocode failed'); return await r.json(); }
 async function geocodeForSave(obj){
   const full=fullAddress(obj); if(!full) return {lat:null,lng:null,geocodeStatus:'not_found'};
   try{ const res=await nominatimSearch(full,1); if(res&&res[0]) return {lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),geocodeStatus:'exact'}; }catch(e){}
@@ -1415,10 +1430,12 @@ function openInboxPage(){
   try{ inboxPrevVisit=parseInt(localStorage.getItem(INBOX_VISIT_KEY)||'0',10)||0; localStorage.setItem(INBOX_VISIT_KEY,String(Date.now())); }catch(e){ inboxPrevVisit=0; }
   o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0;
   subscribeInbox();
+  subscribeAccounts();
 }
 function closeInboxPage(){
   const o=$('inboxOverlay'); if(o) o.classList.remove('open');
   if(fbInboxUnsub){ fbInboxUnsub(); fbInboxUnsub=null; }
+  if(accountsUnsub){ accountsUnsub(); accountsUnsub=null; }
   if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow='';
 }
 function subscribeInbox(){
@@ -1469,6 +1486,48 @@ function renderInbox(items){
       const au=document.createElement('audio'); au.controls=true; au.preload='metadata'; au.src=d.audio; au.style.width='100%'; au.style.marginTop='10px';
       div.appendChild(au);
     }
+    el.appendChild(div);
+  });
+}
+/* ACCOUNTS — admin-only list of everyone who made an account in the app.
+   Reads the top-level /accounts collection (one small doc per person, written
+   by noteAccountSeen at sign-up/login). The Firestore rules that allow the
+   admin to read it are published separately by the owner; until then the read
+   is denied — show a gentle note and leave the rest of the dashboard working. */
+let accountsUnsub=null;
+function acctTime(v){ if(typeof v==='number') return v; if(v && typeof v.toMillis==='function') return v.toMillis(); if(v && typeof v.seconds==='number') return v.seconds*1000; return 0; }
+function subscribeAccounts(){
+  if(!db || !isAdmin()) return;
+  if(accountsUnsub) accountsUnsub();
+  const sec=$('accountsSection'); if(sec) sec.style.display='';
+  const st=$('accountsStatus'); if(st) st.textContent='Loading accounts…';
+  accountsUnsub=db.collection('accounts').onSnapshot(snap=>{
+    const list=[]; snap.forEach(d=>list.push({id:d.id,...d.data()}));
+    list.sort((a,b)=>acctTime(a.firstSeen)-acctTime(b.firstSeen));
+    renderAccounts(list);
+  }, err=>{
+    console.error(err);
+    const st2=$('accountsStatus'); if(st2) st2.textContent='The accounts list is not available yet — it will appear once the app permissions are updated.';
+    const el=$('accountsList'); if(el) el.innerHTML='';
+  });
+}
+function renderAccounts(list){
+  const dc=$('dashAccounts'); if(dc) dc.textContent=list.length;
+  const cnt=$('accountsCount'); if(cnt) cnt.textContent=list.length;
+  const cw=$('accountsCountWord'); if(cw) cw.textContent=(list.length===1?'person has an account':'people have an account');
+  const st=$('accountsStatus'); if(st) st.textContent=list.length?'Everyone who made an account in the app, in the order they joined. “Last seen” is their most recent login.':'';
+  const el=$('accountsList'); if(!el) return; el.innerHTML='';
+  if(!list.length){
+    el.innerHTML='<p class="muted">No accounts recorded yet. An account is noted the next time each person signs up or logs in.</p>';
+    return;
+  }
+  list.forEach(a=>{
+    const div=document.createElement('div'); div.className='feedback-item';
+    const joined=acctTime(a.firstSeen), seen=acctTime(a.lastSeen);
+    const joinedTxt=joined?new Date(joined).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'';
+    const seenTxt=seen?new Date(seen).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+    div.innerHTML='<strong style="font-size:16px">'+escapeHtml(a.email||'Unknown email')+'</strong>'
+      +((joinedTxt||seenTxt)?'<div class="muted" style="font-size:13px;margin-top:2px">'+(joinedTxt?'Joined '+escapeHtml(joinedTxt):'')+(joinedTxt&&seenTxt?' • ':'')+(seenTxt?'Last seen '+escapeHtml(seenTxt):'')+'</div>':'');
     el.appendChild(div);
   });
 }
