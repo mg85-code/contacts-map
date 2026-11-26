@@ -51,15 +51,17 @@ input,select{ min-height:48px }
 .welcome-title{font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Helvetica Rounded","Segoe UI Rounded","Arial Rounded MT",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:42px;font-weight:800;line-height:1.02;letter-spacing:-.015em;margin:10px 0 0;color:var(--green)}
 .welcome-title .waze-word{letter-spacing:-.03em}
 /* HEBREW LINE — centred under the English name (never pushed to the right by
-   RTL), in a Hebrew display-serif stack. The title and the Hebrew line sit in
-   a shrink-to-fit wrapper whose width is the English title line itself, and
-   the Hebrew letters are per-letter spans in a flex row with
-   justify-content:space-between, so they visibly span that full width in
-   every renderer — no letter-spacing tricks, no script. */
+   RTL), in a WIDE, heavy Hebrew stack (Noto Sans Hebrew / Arial Hebrew first):
+   the letters themselves are broad and full, and each letter is also widened
+   a touch (scaleX), so the line reads full rather than spaced-out. The title
+   and the Hebrew line sit in a shrink-to-fit wrapper whose width is the
+   English title line itself, and the Hebrew letters are per-letter spans in a
+   flex row with justify-content:space-between, so they visibly span that full
+   width in every renderer — no letter-spacing tricks, no script. */
 .welcome-title-wrap{display:inline-block;max-width:100%;vertical-align:top}
-.welcome-title-he{font-family:"Frank Ruhl Libre","David Libre","Noto Serif Hebrew","FrankRuehl CLM","David CLM",David,Georgia,serif;font-weight:800;font-size:30px;line-height:1.15;margin:2px 0 0;color:#7a5a12;width:100%;display:flex;justify-content:space-between}
-.welcome-title-he>span{flex:0 0 auto}
-@media(max-width:480px){.welcome-title{font-size:36px}.welcome-title-he{font-size:24px}}
+.welcome-title-he{font-family:"Noto Sans Hebrew","Arial Hebrew","Noto Serif Hebrew","Frank Ruhl Libre","David Libre",David,Arial,sans-serif;font-weight:900;font-size:34px;line-height:1.15;margin:2px 0 0;color:#7a5a12;width:100%;display:flex;justify-content:space-between}
+.welcome-title-he>span{flex:0 0 auto;transform:scaleX(1.15)}
+@media(max-width:480px){.welcome-title{font-size:36px}.welcome-title-he{font-size:27px}}
 .welcome-sub{font-size:17px;line-height:1.5;color:#33473c;margin:10px 6px 0}
 
 .login-box{text-align:left;margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
@@ -117,10 +119,11 @@ input,select{ min-height:48px }
 .topbar-title{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1}
 /* HEADER HEBREW — same treatment as the welcome page: per-letter spans in a
    flex row spread across the full width of the English name above it, sitting
-   close under it, in the local Hebrew display-serif stack (no downloads). */
+   close under it, in the local wide, heavy Hebrew stack (no downloads), each
+   letter widened a touch so the line reads full, not spaced-out. */
 .topbar-title-wrap{display:inline-block;max-width:100%;vertical-align:top}
-.topbar-title-he{font-family:"Frank Ruhl Libre","David Libre","Noto Serif Hebrew","FrankRuehl CLM","David CLM",David,Georgia,serif;font-weight:800;font-size:17px;line-height:1.15;margin-top:1px;color:#e6c87a;width:100%;display:flex;justify-content:space-between}
-.topbar-title-he>span{flex:0 0 auto}
+.topbar-title-he{font-family:"Noto Sans Hebrew","Arial Hebrew","Noto Serif Hebrew","Frank Ruhl Libre","David Libre",David,Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.15;margin-top:1px;color:#e6c87a;width:100%;display:flex;justify-content:space-between}
+.topbar-title-he>span{flex:0 0 auto;transform:scaleX(1.15)}
 .topbar-sub{font-size:12px;opacity:.85;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
 .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;flex:1 1 auto;justify-content:flex-end}
 .user-email{font-size:13px;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:999px;max-width:min(220px,58vw);min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -429,7 +432,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .topbar{background:var(--sand);color:var(--ink);border-bottom:2px solid var(--gold);padding:12px 16px 14px}
 .topbar-logo{border-radius:50%;border:2.5px solid var(--gold);box-shadow:0 2px 8px rgba(90,70,20,.25)}
 .topbar-title{color:var(--green);font-size:24px;font-weight:700}
-.topbar-title-he{color:#8a6a1f;font-size:17px}
+.topbar-title-he{color:#8a6a1f;font-size:19px}
 .topbar-sub{color:var(--muted);opacity:1}
 .user-email{background:#fff;color:var(--green);border:1px solid var(--line)}
 .logout-btn{border:1.5px solid var(--green)}
@@ -499,6 +502,13 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .tab-btn svg{width:23px;height:23px;flex-shrink:0}
 .tab-btn.active{color:var(--gold);background:rgba(255,255,255,.09)}
 .tab-btn:active{transform:scale(.97)}
+/* FRONT-PAGE HEADINGS — back to a clean, normal, strong sans (the plain
+   pre-redesign feel) for "Who's around to visit?" and the front-page panel
+   headings like "Who's near me now?"; the serif display face stays only on
+   inner pages. Scoped to the front page: panels moved into the Menu drawer
+   or the Trip page no longer sit under .workspace, so they are untouched. */
+.hero-strip h1{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em}
+.workspace .panel h2{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em}
 </style>
 </head>
 <body>
@@ -620,11 +630,14 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.1</div>
+      <div class="side-version">Version 3.2</div>
     </div>
   </aside>
 
   <div class="wrap">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <button type="button" id="menuBtnTop" class="menu-btn" aria-label="Open the menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><span class="menu-word">Menu</span></button>
+    </div>
     <div class="hero-strip">
       <div>
         <h1>Who’s around to visit?</h1>
@@ -787,7 +800,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
             <button type="button" id="toggleManualBtn" class="btn btn-outline btn-large" aria-expanded="false" aria-controls="manualFormWrap">✏️ Add by hand</button>
           </div>
           <div id="manualFormWrap" style="display:none">
-            <h3 id="formTitle" style="margin-top:14px">Add one by hand</h3>
+            <h3 id="formTitle" style="margin-top:14px">Add by hand</h3>
             <form id="contactForm" style="margin-top:12px">
               <input type="hidden" id="editId">
               <input type="hidden" id="exactLat"><input type="hidden" id="exactLng"><input type="hidden" id="exactStatus">
@@ -2037,7 +2050,7 @@ function closeBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.class
   const cb=$('closeBonusesBtn'); if(cb) cb.addEventListener('click', closeBonusesPage);
 })();
 $('cancelEdit').addEventListener('click', ()=>{ resetForm(); returnToContactsAfterForm(); });
-function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('profilePhotoData').value=''; setProfileMode('same'); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add one by hand'; $('cancelEdit').style.display='none'; setManualOpen(false); }
+function resetForm(){ $('contactForm').reset(); $('editId').value=''; $('photoData').value=''; renderPhotoPreview(); $('profilePhotoData').value=''; setProfileMode('same'); $('exactLat').value=''; $('exactLng').value=''; $('exactStatus').value=''; $('formTitle').textContent='Add by hand'; $('cancelEdit').style.display='none'; setManualOpen(false); }
 
 $('contactForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -3084,7 +3097,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
 '- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.1.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.2.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
