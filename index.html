@@ -499,7 +499,7 @@ input,select{ min-height:48px }
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 2.3</div>
+      <div class="side-version">Version 2.5</div>
     </div>
   </aside>
 
@@ -755,6 +755,20 @@ input,select{ min-height:48px }
         </div>
         <div>
           <div style="font-weight:700;margin-bottom:8px">3 · Who do you want to visit? Tick them</div>
+          <div id="tripShowRow" style="display:none;margin-bottom:10px">
+            <label for="tripShowSelect" style="font-weight:600;display:block;margin-bottom:6px">Show — how far out of the way?</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <select id="tripShowSelect" class="sound-select" style="flex:1;min-width:210px">
+                <option value="onway">On the way — right on the road</option>
+                <option value="1">Within 1 mile of the road</option>
+                <option value="2">Within 2 miles of the road</option>
+                <option value="custom">Custom distance…</option>
+                <option value="all" selected>Everyone</option>
+              </select>
+              <span id="tripShowCustomWrap" style="display:none;align-items:center;gap:6px;font-weight:600">Within <input id="tripShowCustom" type="number" min="0" step="0.5" value="3" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"> miles</span>
+            </div>
+            <p id="tripShowNote" class="muted" style="margin-top:6px"></p>
+          </div>
           <div id="tripStops" class="checklist" style="max-height:300px"></div>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
@@ -2273,6 +2287,14 @@ const _im=$('installModal'); if(_im) _im.addEventListener('click', e=>{ if(e.tar
 
 /* TRIP PLANNER */
 let tripStart=null, tripDestId='', tripDestCustom=null, tripStopIds=new Set(), tripLine=null;
+let tripShowMode='all', tripShowCustomMiles=3;
+function tripShowLimit(){
+  if(tripShowMode==='onway') return 0.1;
+  if(tripShowMode==='1') return 1;
+  if(tripShowMode==='2') return 2;
+  if(tripShowMode==='custom') return isNaN(tripShowCustomMiles)?Infinity:Math.max(0,tripShowCustomMiles);
+  return Infinity;
+}
 function distToSegmentMiles(p,a,b){
   const mpLng=69.0*Math.cos(a.lat*Math.PI/180), mpLat=69.0;
   const bx=(b.lng-a.lng)*mpLng, by=(b.lat-a.lat)*mpLat, px=(p.lng-a.lng)*mpLng, py=(p.lat-a.lat)*mpLat;
@@ -2325,14 +2347,36 @@ function renderTripPlanner(){
   box.innerHTML='';
   if(!withPin.length){ box.innerHTML='<p class="muted" style="padding:12px">No contacts on the map yet.</p>'; return; }
   const rows=withPin.map(c=>({c, w:onTheWayInfo(c), fromStart:tripStart?haversineMiles(tripStart.lat,tripStart.lng,c.lat,c.lng):null}));
-  rows.sort((a,b)=>{
-    const ao=a.w&&a.w.dist<=3?0:1, bo=b.w&&b.w.dist<=3?0:1;
-    if(ao!==bo) return ao-bo;
-    if(a.w&&b.w&&a.w.dist<=3&&b.w.dist<=3) return a.w.t-b.w.t;
+  /* "Show — how far out of the way?" filter: only once a start AND a destination exist.
+     Before that, everyone shows, as before. The destination itself and anyone already
+     ticked always stay visible, so a chosen stop can never vanish from the list. */
+  const hasRoute=!!(tripStart&&destPt);
+  const showRow=$('tripShowRow');
+  if(showRow) showRow.style.display=hasRoute?'block':'none';
+  const showSel=$('tripShowSelect'); if(showSel) showSel.value=tripShowMode;
+  const showWrap=$('tripShowCustomWrap'); if(showWrap) showWrap.style.display=tripShowMode==='custom'?'inline-flex':'none';
+  const limit=tripShowLimit();
+  let hiddenCount=0;
+  const visible=rows.filter(r=>{
+    if(!hasRoute||limit===Infinity) return true;
+    if(dest&&r.c.id===dest.id) return true;
+    if(tripStopIds.has(r.c.id)) return true;
+    if(r.w&&r.w.dist<=limit) return true;
+    hiddenCount++; return false;
+  });
+  const showNote=$('tripShowNote');
+  if(showNote) showNote.textContent=(hasRoute&&hiddenCount>0)?(hiddenCount+(hiddenCount===1?' person is':' people are')+' further off the road — choose "Everyone" above to see them.'):'';
+  visible.sort((a,b)=>{
+    const ad=dest&&a.c.id===dest.id?1:0, bd=dest&&b.c.id===dest.id?1:0;
+    if(ad!==bd) return ad-bd;
+    if(a.w&&b.w) return a.w.dist-b.w.dist;
+    if(a.w&&!b.w) return -1;
+    if(!a.w&&b.w) return 1;
     if(a.fromStart!=null&&b.fromStart!=null) return a.fromStart-b.fromStart;
     return (a.c.name||'').localeCompare(b.c.name||'');
   });
-  rows.forEach(({c,w,fromStart})=>{
+  if(!visible.length) box.innerHTML='<p class="muted" style="padding:12px">Nobody is that close to the road — widen the "Show" choice above to see more people.</p>';
+  visible.forEach(({c,w,fromStart})=>{
     const isDest=dest&&c.id===dest.id;
     const onWay=!!(w&&w.dist<=3);
     let note='';
@@ -2347,6 +2391,8 @@ function renderTripPlanner(){
   });
 }
 const _tds=$('tripDestSelect'); if(_tds) _tds.addEventListener('change', e=>{ tripDestId=e.target.value; if(tripDestId) clearTripDestCustom(true); autoTickOnWay(); renderTripPlanner(); if(tripDestId) toast('Destination set'); });
+const _tShowSel=$('tripShowSelect'); if(_tShowSel) _tShowSel.addEventListener('change', e=>{ tripShowMode=e.target.value; renderTripPlanner(); });
+const _tShowCustom=$('tripShowCustom'); if(_tShowCustom) _tShowCustom.addEventListener('input', e=>{ const v=parseFloat(e.target.value); tripShowCustomMiles=isNaN(v)?0:v; renderTripPlanner(); });
 /* Destination address autocomplete — same live suggestions as the add-contact form */
 let tripAcTimer=null;
 const _tda=$('tripDestAddr'); if(_tda) _tda.addEventListener('input', ()=>{
