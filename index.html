@@ -1029,7 +1029,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.9</div>
+      <div class="side-version">Version 4.0</div>
     </div>
   </aside>
 
@@ -1371,10 +1371,12 @@ input,select{min-height:42px}
       <button type="button" id="helpCloseBtn" class="btn" style="background:#fff;color:var(--green);padding:9px 14px;min-height:44px" aria-label="Close help chat">✕</button>
     </div>
     <div id="helpThread" class="chat-thread" aria-live="polite"></div>
+    <div id="helpRecordBar" class="chat-record-bar"><span class="chat-rec-dot" aria-hidden="true"></span><span id="helpRecordLabel">Recording… 0:00</span><span style="flex:1"></span><button type="button" id="helpPauseRecBtn" class="btn btn-outline btn-small" style="display:none">⏸ Pause</button><button type="button" id="helpCancelRecBtn" class="btn btn-outline btn-small">✕ Cancel</button></div>
     <div class="chat-input-row">
       <label for="helpInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Ask a question about the app</label>
       <div class="chat-input-wrap">
         <textarea id="helpInput" class="chat-input" rows="1" placeholder="Ask how to do something…"></textarea>
+        <button type="button" id="helpMicBtn" class="chat-mic-in" aria-label="Record a voice note — tap once to start, then tap Send" title="Voice note: tap once to record, then tap Send and the AI will listen and answer">🎙️</button>
       </div>
       <button type="button" id="helpSendBtn" class="chat-round-btn chat-send" aria-label="Send" title="Send">➤</button>
     </div>
@@ -4032,7 +4034,8 @@ const HELP_SYSTEM_PROMPT=[
 '- Feedback: Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.9.',
+'- Ask AI voice notes: in this Ask AI chat the person can tap the 🎙️ microphone button, record a voice note, and tap Send — the AI listens to the recording and answers in the chat, the same as a typed question. The voice note itself stays in the chat so it can be played back.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 4.0.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
@@ -4041,18 +4044,23 @@ function renderHelpThread(){
   const el=$('helpThread'); if(!el) return;
   el.innerHTML='';
   const greet=document.createElement('div'); greet.className='chat-msg chat-app';
-  greet.textContent=appKeys.gemini ? 'Hello! 👋 Ask me anything about using this app — for example: "How do I add a contact?" or "How does the trip planner work?"' : HELP_NO_KEY_TEXT;
+  greet.textContent=appKeys.gemini ? 'Hello! 👋 Ask me anything about using this app — for example: "How do I add a contact?" or "How does the trip planner work?" You can type, or tap 🎙️ and leave a voice note — I will listen and answer here.' : HELP_NO_KEY_TEXT;
   el.appendChild(greet);
   helpMsgs.forEach(m=>{
     const div=document.createElement('div'); div.className='chat-msg '+(m.from==='me'?'chat-me':'chat-app');
-    div.innerHTML=escapeHtml(m.text).replace(/\n/g,'<br>');
+    let html='';
+    if(m.text) html+=escapeHtml(m.text).replace(/\n/g,'<br>');
+    else if(m.audio) html+='🎙️ Voice note';
+    div.innerHTML=html;
+    if(m.audio){ const au=document.createElement('audio'); au.controls=true; au.preload='metadata'; au.src=m.audio; div.appendChild(au); }
     el.appendChild(div);
   });
   el.scrollTop=el.scrollHeight;
 }
-function appendHelpMsg(from,text){ helpMsgs.push({from:from,text:text}); if(helpMsgs.length>40) helpMsgs=helpMsgs.slice(-40); renderHelpThread(); }
+function appendHelpMsg(from,text,audio){ helpMsgs.push({from:from,text:text||'',audio:audio||null}); if(helpMsgs.length>40) helpMsgs=helpMsgs.slice(-40); renderHelpThread(); }
 function setHelpOpen(open){
   const w=$('helpWindow'); if(!w) return;
+  if(!open && typeof helpRecordIsActive==='function' && helpRecordIsActive()){ try{ stopHelpVoiceRecord('discard'); }catch(e){} }
   w.classList.toggle('open',open);
   if(open){ if(typeof setChatOpen==='function') setChatOpen(false); renderHelpThread(); const inp=$('helpInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
 }
@@ -4118,7 +4126,7 @@ async function askGemini(userText){
      ends with this question), cleaned so it always starts with the person
      and the two sides take turns — a long chat used to break that rule and
      Google refused the whole request. */
-  const raw=helpMsgs.slice(0,-1).map(m=>({role:m.from==='me'?'user':'model', text:m.text}));
+  const raw=helpMsgs.slice(0,-1).map(m=>({role:m.from==='me'?'user':'model', text:m.text||(m.audio?'[Voice note]':'')}));
   const contents=[];
   raw.forEach(t=>{
     if(!contents.length && t.role!=='user') return;
@@ -4131,7 +4139,53 @@ async function askGemini(userText){
   else contents.push({role:'user', parts:[{text:userText}]});
   return geminiGenerate(contents, true);
 }
+/* VOICE NOTE TO GEMINI — the same conversation as a typed question, but the
+   person's latest turn carries the recording itself as inline audio data,
+   so Gemini listens to it and answers in text. Earlier turns go as text
+   (a past voice note is noted as "[Voice note]" — its audio is not resent). */
+async function askGeminiAudio(audioBlob){
+  const dataUrl=await blobToDataUrl(audioBlob);
+  if(typeof dataUrl!=='string'||dataUrl.indexOf(',')<0) throw new Error('Could not read that recording');
+  const base64=dataUrl.slice(dataUrl.indexOf(',')+1);
+  let mime=((audioBlob&&audioBlob.type)||'audio/webm').split(';')[0].trim()||'audio/webm';
+  const raw=helpMsgs.slice(0,-1).map(m=>({role:m.from==='me'?'user':'model', text:m.text||(m.audio?'[Voice note]':'')}));
+  const contents=[];
+  raw.forEach(t=>{
+    if(!contents.length && t.role!=='user') return;
+    if(!t.text) return;
+    const last=contents[contents.length-1];
+    if(last && last.role===t.role && last.parts.length===1 && last.parts[0].text) last.parts[0].text+='\n'+t.text;
+    else contents.push({role:t.role, parts:[{text:t.text}]});
+  });
+  contents.push({role:'user', parts:[{text:'Please listen to my voice note and answer the question in it about using this app.'},{inline_data:{mime_type:mime,data:base64}}]});
+  return geminiGenerate(contents, true);
+}
+async function sendHelpVoice(audioBlob){
+  if(helpSending) return;
+  if(!audioBlob||!audioBlob.size){ toast('That recording was empty — tap 🎙️ and try again'); return; }
+  let audioUrl='';
+  try{ audioUrl=URL.createObjectURL(audioBlob); }catch(e){ audioUrl=''; }
+  if(!appKeys.gemini){ appendHelpMsg('me','',audioUrl||null); appendHelpMsg('app',HELP_NO_KEY_TEXT); return; }
+  appendHelpMsg('me','',audioUrl||null);
+  helpSending=true;
+  const sendBtn=$('helpSendBtn'); if(sendBtn) sendBtn.disabled=true;
+  const micBtn=$('helpMicBtn'); if(micBtn) micBtn.disabled=true;
+  const thinking=document.createElement('div'); thinking.className='chat-msg chat-app'; thinking.textContent='Listening…';
+  const threadEl=$('helpThread'); if(threadEl){ threadEl.appendChild(thinking); threadEl.scrollTop=threadEl.scrollHeight; }
+  try{
+    const reply=await askGeminiAudio(audioBlob);
+    if(thinking.parentNode) thinking.parentNode.removeChild(thinking);
+    appendHelpMsg('app',reply);
+  }catch(e){
+    if(thinking.parentNode) thinking.parentNode.removeChild(thinking);
+    appendHelpMsg('app',helpErrorMessage(e));
+  }
+  helpSending=false;
+  if(sendBtn) sendBtn.disabled=false;
+  if(micBtn) micBtn.disabled=false;
+}
 async function sendHelpText(){
+  if(typeof helpRecordIsActive==='function' && helpRecordIsActive()){ stopHelpVoiceRecord('send'); return; }
   if(helpSending) return;
   const inp=$('helpInput'); const text=inp?inp.value.trim():'';
   if(!text){ toast('Type your question first'); return; }
@@ -4153,10 +4207,97 @@ async function sendHelpText(){
   helpSending=false;
   if(sendBtn) sendBtn.disabled=false;
 }
+/* ASK AI VOICE NOTES — a 🎙️ button in the Ask AI chat records a voice note
+   (same one-tap pattern as the Feedback chat: tap 🎙️ to start, tap ➤ Send
+   to send it to the AI, ✕ Cancel or a second 🎙️ tap throws it away, Pause /
+   Continue where the browser supports it, and it auto-sends at 2 minutes).
+   Its recorder state is separate from the Feedback chat's, so the two never
+   interfere. If the browser cannot record at all, the button is hidden. */
+let helpRecorder=null, helpRecordChunks=[], helpRecordTimerInt=null, helpRecordSecs=0, helpRecordStream=null, helpRecordIntent='discard';
+function helpRecordIsActive(){ return !!(helpRecorder&&(helpRecorder.state==='recording'||helpRecorder.state==='paused')); }
+function helpRecordLabelText(){
+  const m=Math.floor(helpRecordSecs/60), s=helpRecordSecs%60, t=m+':'+(s<10?'0':'')+s;
+  if(helpRecorder&&helpRecorder.state==='paused') return 'Paused — '+t;
+  return 'Recording… '+t;
+}
+function startHelpRecordTimer(){
+  clearInterval(helpRecordTimerInt);
+  helpRecordTimerInt=setInterval(()=>{ helpRecordSecs++; const l=$('helpRecordLabel'); if(l) l.textContent=helpRecordLabelText(); if(helpRecordSecs>=120) stopHelpVoiceRecord('send'); },1000);
+}
+function updateHelpRecordUI(){
+  const rec=helpRecordIsActive();
+  const paused=!!(helpRecorder&&helpRecorder.state==='paused');
+  const bar=$('helpRecordBar'); if(bar){ bar.classList.toggle('show',rec); const dot=bar.querySelector('.chat-rec-dot'); if(dot) dot.classList.toggle('paused',paused); }
+  const mic=$('helpMicBtn'); if(mic){ mic.classList.toggle('recording',rec); mic.textContent=rec?'⏹':'🎙️'; mic.setAttribute('aria-label', rec?'Stop recording without sending':'Record a voice note — tap once to start, then tap Send'); }
+  const pauseBtn=$('helpPauseRecBtn');
+  if(pauseBtn){
+    const canPause=!!(helpRecorder&&typeof helpRecorder.pause==='function'&&typeof helpRecorder.resume==='function');
+    pauseBtn.style.display=(rec&&canPause)?'':'none';
+    pauseBtn.textContent=paused?'▶ Continue':'⏸ Pause';
+    pauseBtn.setAttribute('aria-label', paused?'Continue recording':'Pause recording');
+  }
+  if(rec){ const lbl=$('helpRecordLabel'); if(lbl) lbl.textContent=helpRecordLabelText(); }
+  const inp=$('helpInput'); if(inp) inp.disabled=rec;
+}
+function toggleHelpRecordPause(){
+  if(!helpRecorder) return;
+  if(helpRecorder.state==='recording'&&typeof helpRecorder.pause==='function'){
+    try{ helpRecorder.pause(); }catch(e){ return; }
+    clearInterval(helpRecordTimerInt); helpRecordTimerInt=null;
+    updateHelpRecordUI();
+  } else if(helpRecorder.state==='paused'&&typeof helpRecorder.resume==='function'){
+    try{ helpRecorder.resume(); }catch(e){ return; }
+    startHelpRecordTimer();
+    updateHelpRecordUI();
+  }
+}
+function stopHelpVoiceRecord(intent){
+  helpRecordIntent=intent;
+  if(helpRecordIsActive()){ try{ helpRecorder.stop(); }catch(e){} }
+}
+async function startHelpVoiceRecord(){
+  if(helpSending) return;
+  if(helpRecordIsActive()){ stopHelpVoiceRecord('discard'); toast('Recording stopped — nothing was sent. Tap 🎙️ to start again, then ➤ to send.'); return; }
+  try{
+    helpRecordStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    helpRecordChunks=[];
+    /* Prefer a type Gemini can listen to and this browser can record */
+    const candidates=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus','audio/ogg',''];
+    let chosen='';
+    if(typeof MediaRecorder!=='undefined'&&typeof MediaRecorder.isTypeSupported==='function'){
+      for(let i=0;i<candidates.length;i++){ if(!candidates[i]||MediaRecorder.isTypeSupported(candidates[i])){ chosen=candidates[i]; break; } }
+    }
+    try{ helpRecorder=chosen?new MediaRecorder(helpRecordStream,{mimeType:chosen}):new MediaRecorder(helpRecordStream); }
+    catch(e2){ helpRecorder=new MediaRecorder(helpRecordStream); }
+    helpRecorder.ondataavailable=e=>{ if(e.data&&e.data.size) helpRecordChunks.push(e.data); };
+    helpRecorder.onstop=()=>{
+      if(helpRecordStream){ helpRecordStream.getTracks().forEach(t=>t.stop()); helpRecordStream=null; }
+      clearInterval(helpRecordTimerInt); helpRecordTimerInt=null;
+      const intent=helpRecordIntent; helpRecordIntent='discard';
+      const mime=(helpRecorder&&helpRecorder.mimeType)||chosen||'audio/webm';
+      const chunks=helpRecordChunks; helpRecordChunks=[];
+      helpRecorder=null;
+      updateHelpRecordUI();
+      if(intent==='send'){
+        const blob=new Blob(chunks,{type:mime});
+        sendHelpVoice(blob);
+      }
+    };
+    helpRecorder.start();
+    helpRecordSecs=0; updateHelpRecordUI();
+    startHelpRecordTimer();
+  }catch(e){ toast('Microphone not allowed — you can type your question instead'); }
+}
 (function initHelp(){
   const hb=$('drawerHelpBtn'); if(hb) hb.addEventListener('click', ()=>{ closeSidePanel(); setHelpOpen(true); });
   const cb=$('helpCloseBtn'); if(cb) cb.addEventListener('click', ()=>setHelpOpen(false));
   const sb=$('helpSendBtn'); if(sb) sb.addEventListener('click', sendHelpText);
+  const hMic=$('helpMicBtn');
+  if(!('mediaDevices' in navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || typeof MediaRecorder==='undefined'){
+    if(hMic) hMic.style.display='none';
+  } else if(hMic) hMic.addEventListener('click', startHelpVoiceRecord);
+  const hCancel=$('helpCancelRecBtn'); if(hCancel) hCancel.addEventListener('click',()=>{ stopHelpVoiceRecord('discard'); toast('Voice note cancelled — nothing was sent'); });
+  const hPause=$('helpPauseRecBtn'); if(hPause) hPause.addEventListener('click', toggleHelpRecordPause);
   const inp=$('helpInput'); if(inp){
     inp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendHelpText(); } });
     inp.addEventListener('input', ()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,96)+'px'; });
