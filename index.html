@@ -943,6 +943,92 @@ input,select{min-height:42px}
 .contact-addr{margin-top:2px}
 .contact-card .copy-inline{width:23px;height:23px;min-height:23px;border-radius:6px;vertical-align:-6px;margin-left:3px}
 .contact-card .copy-inline svg{width:12.5px;height:12.5px}
+/* ============================================================
+   ROUND 4.3 — ONE header treatment for all four screens.
+   The tops all looked different and sat jammed against the
+   top edge: the front/map bar started at 20px, Contacts at
+   7px, Trip and Driving at 26px, each in its own style.
+   Now every screen's top is the SAME thing: a deep-green
+   bubble in its own colour (distinct from the sand page),
+   with a gold edge, rounded corners and a soft shadow,
+   floating lower with real breathing room above it — a
+   clear gap of page colour shows above the bubble, and the
+   bubble's own top padding gives the title room inside too.
+   The sticky page heads (Contacts, Trip, Driving) stick
+   with that same gap (top:14px), so the bubble never hugs
+   the top edge even while scrolling. Titles everywhere are
+   the same Playfair serif, white on the green; subtitles
+   and counts sit under them in pale gold. Back / Stop
+   buttons stay white pills, readable on the green.
+   Last layer on purpose: it wins.
+   ============================================================ */
+.topbar,.contacts-head,.drive-head{
+  background:var(--green);
+  color:#fff;
+  border:1.5px solid var(--gold);
+  border-radius:18px;
+  box-shadow:0 8px 22px rgba(14,59,44,.28);
+  width:calc(100% - 20px);
+  max-width:460px;
+  margin:14px auto 0;
+  padding:15px 14px 13px;
+  gap:10px;
+  flex-wrap:nowrap;
+  align-items:center;
+}
+/* Sticky heads keep the breathing gap when they stick */
+.contacts-head,.drive-head{top:14px}
+/* Front/map title block on the green bubble */
+.topbar .topbar-title{color:#fff;font-size:18px;font-weight:700}
+.topbar .topbar-title-he{color:#e6c87a;font-size:13px}
+.topbar .topbar-sub{color:rgba(255,255,255,.85);opacity:1}
+.topbar-logo{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+/* Page titles (Contacts, Trip, Driving and the other pages
+   that share .contacts-head) — one clean serif, white */
+.contacts-head>div>div:first-child,.drive-head>div>div:first-child{
+  font-family:"Playfair Display",Georgia,serif !important;
+  font-weight:700;
+  font-size:18px !important;
+  letter-spacing:.01em;
+  color:#fff;
+  line-height:1.15 !important;
+}
+#tripOverlay .trip-page-title{color:#fff !important;font-family:"Playfair Display",Georgia,serif !important;font-weight:700 !important;font-size:18px !important}
+#contactsPageCount{color:#e6c87a !important;opacity:1}
+/* The Trip / Driving one-off top padding from round 3.9 is
+   replaced by the shared bubble spacing above */
+#tripOverlay .contacts-head{padding-top:15px}
+#drivingOverlay .drive-head{padding-top:15px}
+/* Buttons on the bubble: white pills with a gold edge */
+.contacts-head .btn,.drive-head .btn{border:1.5px solid var(--gold) !important;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+/* A little air between a floating head and the page below it */
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#settingsOverlay>div:nth-child(2){margin-top:2px}
+#tripOverlayBody{margin-top:2px}
+#drivingOverlay #driveMap{margin-top:10px}
+.wrap{padding-top:12px}
+/* — Map popup refinement (same round): the second button is
+   now just "View" (the old "Open contact" wrapped and
+   clipped in the small card), both popup buttons are
+   SHORTER — one line each, so they don't need the tall
+   pill — and never wrap, and the copy icon beside the
+   address steps down a little smaller. With the shorter
+   buttons the whole card fits with no scrolling. — */
+.leaflet-popup-content .popup-btns .btn,.gm-popup .popup-btns .btn,
+.leaflet-popup-content .btn-small,.gm-popup .btn-small{
+  min-height:28px;height:28px;padding:3px 8px;font-size:12.5px;line-height:1;white-space:nowrap}
+.leaflet-popup-content .copy-inline,.gm-popup .copy-inline{width:22px;height:22px;min-height:22px;border-radius:6px;vertical-align:-6px}
+.leaflet-popup-content .copy-inline svg,.gm-popup .copy-inline svg{width:11.5px;height:11.5px}
+/* — Contacts-card copy icon, raised (same round): the icon
+   used to flow inline AFTER the address text, so on a
+   two-line address it landed at the end of the LAST line —
+   low in the card, with empty space above it. It now sits
+   at the TOP of the address block, level with its first
+   line (right under the name), in that formerly empty
+   space; the address keeps a right-hand gutter so its text
+   never runs underneath the icon, and the card does not
+   grow. — */
+.contact-card .contact-addr{position:relative;padding-right:29px}
+.contact-card .copy-inline{position:absolute;top:0;right:0;margin-left:0;vertical-align:top}
 </style>
 </head>
 <body>
@@ -1059,7 +1145,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 4.2</div>
+      <div class="side-version">Version 4.3</div>
     </div>
   </aside>
 
@@ -1922,12 +2008,12 @@ function popupHtml(c){
   const addr=fullAddress(c);
   /* Compact card: photo, name, the address with the small copy icon right
      beside it (the same icon used beside addresses everywhere else — no
-     separate Copy button), then just two buttons: Call and Open contact.
+     separate Copy button), then just two buttons: Call and View.
      WhatsApp and Directions live in the contact view, not here, so the card
      stays short enough to fit the map without clipping. */
   const addrHtml=addr?`<br>${escapeHtml(addr)} <button type="button" class="copy-addr-btn copy-inline" onclick="copyPopupAddress('${escapeHtml(c.id||'')}')" aria-label="Copy address" title="Copy address">${COPY_ICON_SVG}</button>`:'';
   const callBtn=c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'';
-  const openBtn=wide=>`<button type="button" class="btn btn-green btn-small"${wide?' style="width:100%"':''} onclick="openContactFromMap('${escapeHtml(c.id||'')}')">👤 Open contact</button>`;
+  const openBtn=wide=>`<button type="button" class="btn btn-green btn-small"${wide?' style="width:100%"':''} onclick="openContactFromMap('${escapeHtml(c.id||'')}')">View</button>`;
   const btns=callBtn?`<div class="popup-btns">${callBtn}${openBtn(false)}</div>`:`<div style="margin-top:9px">${openBtn(true)}</div>`;
   return `${photo}<div style="text-align:center"><b>${escapeHtml(c.name||'')}</b>${addrHtml}${btns}</div>`;
 }
@@ -4065,7 +4151,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
 '- Ask AI voice notes: in this Ask AI chat the person can tap the 🎙️ microphone button, record a voice note, and tap Send — the AI listens to the recording and answers in the chat, the same as a typed question. The voice note itself stays in the chat so it can be played back.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 4.2.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 4.3.',
 '- Hear an answer out loud: every answer in this Ask AI chat has a small round speaker button at the bottom-right of its bubble. Tap it and the phone reads the answer aloud; tap it again to stop.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
