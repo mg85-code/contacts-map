@@ -51,15 +51,17 @@ input,select{ min-height:48px }
 .welcome-title{font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Helvetica Rounded","Segoe UI Rounded","Arial Rounded MT",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:42px;font-weight:800;line-height:1.02;letter-spacing:-.015em;margin:10px 0 0;color:var(--green)}
 .welcome-title .waze-word{letter-spacing:-.03em}
 /* HEBREW LINE — centred under the English name (never pushed to the right by
-   RTL), in a WIDE, heavy Hebrew stack (Noto Sans Hebrew / Arial Hebrew first):
-   the letters themselves are broad and full, and each letter is also widened
-   a touch (scaleX), so the line reads full rather than spaced-out. The title
+   RTL), in an elegant Hebrew SERIF stack (Frank Ruhl Libre / Noto Serif
+   Hebrew class, from local system fonts only — nothing downloaded), at a
+   strong weight: the letters themselves are broad and full, and each letter
+   is also widened a touch (scaleX), so the line reads full rather than
+   spaced-out. The title
    and the Hebrew line sit in a shrink-to-fit wrapper whose width is the
    English title line itself, and the Hebrew letters are per-letter spans in a
    flex row with justify-content:space-between, so they visibly span that full
    width in every renderer — no letter-spacing tricks, no script. */
 .welcome-title-wrap{display:inline-block;max-width:100%;vertical-align:top}
-.welcome-title-he{font-family:"Noto Sans Hebrew","Arial Hebrew","Noto Serif Hebrew","Frank Ruhl Libre","David Libre",David,Arial,sans-serif;font-weight:900;font-size:34px;line-height:1.15;margin:2px 0 0;color:#7a5a12;width:100%;display:flex;justify-content:space-between}
+.welcome-title-he{font-family:"Frank Ruhl Libre","Noto Serif Hebrew","David Libre","New Peninim MT","Corsiva Hebrew",David,"Times New Roman",serif;font-weight:700;font-size:34px;line-height:1.15;margin:2px 0 0;color:#7a5a12;width:100%;display:flex;justify-content:space-between}
 .welcome-title-he>span{flex:0 0 auto;transform:scaleX(1.15)}
 @media(max-width:480px){.welcome-title{font-size:36px}.welcome-title-he{font-size:27px}}
 .welcome-sub{font-size:17px;line-height:1.5;color:#33473c;margin:10px 6px 0}
@@ -119,10 +121,11 @@ input,select{ min-height:48px }
 .topbar-title{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1}
 /* HEADER HEBREW — same treatment as the welcome page: per-letter spans in a
    flex row spread across the full width of the English name above it, sitting
-   close under it, in the local wide, heavy Hebrew stack (no downloads), each
-   letter widened a touch so the line reads full, not spaced-out. */
+   close under it, in the same elegant local Hebrew serif stack (no
+   downloads), each letter widened a touch so the line reads full, not
+   spaced-out. */
 .topbar-title-wrap{display:inline-block;max-width:100%;vertical-align:top}
-.topbar-title-he{font-family:"Noto Sans Hebrew","Arial Hebrew","Noto Serif Hebrew","Frank Ruhl Libre","David Libre",David,Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.15;margin-top:1px;color:#e6c87a;width:100%;display:flex;justify-content:space-between}
+.topbar-title-he{font-family:"Frank Ruhl Libre","Noto Serif Hebrew","David Libre","New Peninim MT","Corsiva Hebrew",David,"Times New Roman",serif;font-weight:700;font-size:19px;line-height:1.15;margin-top:1px;color:#e6c87a;width:100%;display:flex;justify-content:space-between}
 .topbar-title-he>span{flex:0 0 auto;transform:scaleX(1.15)}
 .topbar-sub{font-size:12px;opacity:.85;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
 .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;flex:1 1 auto;justify-content:flex-end}
@@ -257,7 +260,12 @@ input,select{ min-height:48px }
 .photo-preview{width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);background:var(--green);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
 .photo-preview svg{width:40px;height:40px}
-.leaflet-popup-content .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
+.leaflet-popup-content .popup-photo{width:48px;height:48px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 6px;background:var(--green)}
+/* The small copy icon that sits right beside an address inside a map popup
+   or a driving-mode row — same two-pages icon as everywhere else, sized to
+   sit on the text line instead of in its own panel */
+.copy-addr-btn.copy-inline{width:30px;height:30px;min-height:30px;border-radius:8px;vertical-align:-9px;margin-left:2px}
+.copy-addr-btn.copy-inline svg{width:15px;height:15px}
 /* CONTACTS PAGE */
 #contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay,#bonusesOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
 #contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open,#bonusesOverlay.open{display:block}
@@ -293,8 +301,8 @@ input,select{ min-height:48px }
 /* GOOGLE MAPS POPUPS — the same popup card as the Leaflet one: same buttons in
    the same 2-column grid, same readable colours (white on green, dark on gold,
    green on the white outline button) */
-.gm-popup{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.45;color:var(--ink);max-width:236px}
-.gm-popup .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
+.gm-popup{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.4;color:var(--ink);max-width:240px;max-height:248px;overflow-y:auto}
+.gm-popup .popup-photo{width:48px;height:48px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 6px;background:var(--green)}
 .gm-popup .popup-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
 .gm-popup .popup-btns .btn{min-height:42px;padding:8px 6px;font-size:13px}
 .gm-popup .btn-green{color:#fff !important}
@@ -336,9 +344,20 @@ input,select{ min-height:48px }
 @media (prefers-reduced-motion: reduce){.ai-spark{animation:none}}
 /* PLANNED TRIP LIST — swipe a stop sideways to remove it; press & hold, then
    drag, to move it up or down. Vertical page scroll still works (pan-y). */
-.trip-result-item[data-cid]{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.trip-result-item[data-cid],.trip-result-item[data-destcid],.trip-result-item[data-destcustom]{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .trip-result-item.dragging{box-shadow:0 16px 36px rgba(0,0,0,.30);border-color:var(--gold);position:relative;z-index:6}
 .trip-result-item.swipe-remove{background:#fbe9e7;border-color:#c02727}
+/* SWIPE REVEAL — a swipeable stop row sits in a wrap with a big red Delete
+   layer behind it; as the row slides sideways the red shows at the edge it
+   uncovers (a Delete label at each end, so either swipe direction reads).
+   The row itself stays fully opaque, so the red is hidden until the swipe. */
+.trip-row-wrap{position:relative;margin-top:10px}
+.trip-row-wrap .trip-result-item{margin-top:0;position:relative;z-index:1}
+.trip-swipe-delete{position:absolute;inset:0;border-radius:12px;background:#c02727;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:21px;font-weight:800;letter-spacing:.02em;z-index:0}
+/* ICON HINTS on planned stops (no words): a dotted grip = hold & drag to
+   reorder; twin chevrons = swipe sideways to remove */
+.trip-grip{flex-shrink:0;align-self:center;color:#b09a5e;opacity:.8;display:inline-flex;padding:2px}
+.trip-swipe-hint{flex-shrink:0;align-self:center;color:#b09a5e;opacity:.8;display:inline-flex;padding:2px}
 .trip-num{background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
 /* FEEDBACK */
 .feedback-text{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.5;resize:vertical}
@@ -534,6 +553,39 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
    or the Trip page no longer sit under .workspace, so they are untouched. */
 .hero-strip h1{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em}
 .workspace .panel h2{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em}
+/* ============================================================
+   PHONE LAYOUT ON EVERY SCREEN — on a tablet the app must look
+   exactly as it does on a phone: the regular phone layout and
+   phone sizes, presented as one centred phone-width column.
+   Nothing stretches to the tablet's width, nothing balloons,
+   nothing hugs the left or gets cut off on the right — the
+   page colour simply fills the screen around the column.
+   This block is last in the stylesheet on purpose: it wins
+   over the wide-screen rules above it (the 1180px wrap, the
+   two-column workspace at 980px+, the 760/820px page bodies).
+   ============================================================ */
+.wrap{max-width:480px}
+.workspace{grid-template-columns:1fr}
+.topbar{max-width:480px;margin:0 auto}
+.welcome-card{max-width:480px}
+.dash-grid{grid-template-columns:1fr 1fr}
+/* Inner pages keep the same phone column (their body divs carry a wider
+   inline max-width, so these two need !important to hold) */
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2){max-width:480px !important}
+#tripOverlayBody{max-width:480px !important}
+.contacts-head,.drive-head{max-width:480px;margin:0 auto}
+/* Driving mode: banner, map and list all stay inside the column */
+#alertBanner{max-width:480px;margin-left:auto;margin-right:auto}
+#driveMap{max-width:480px;margin-left:auto;margin-right:auto}
+#drivingOverlay>div:last-child{max-width:480px;margin-left:auto;margin-right:auto}
+/* The tab bar becomes a phone-width bar centred under the column, and the
+   feedback bubble / chat window hug the column's right edge, not the
+   tablet screen's edge */
+.tab-bar{left:50%;right:auto;width:100%;max-width:480px;transform:translateX(-50%)}
+@media(min-width:520px){
+  .chat-fab{right:calc(50% - 224px)}
+  .chat-window{right:calc(50% - 228px)}
+}
 </style>
 </head>
 <body>
@@ -655,7 +707,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.4</div>
+      <div class="side-version">Version 3.5</div>
     </div>
   </aside>
 
@@ -1496,10 +1548,16 @@ function whatsappUrl(c){ const d=String((c&&c.phone)||'').replace(/\D/g,''); if(
 function popupHtml(c){
   const photo=hasPhoto(c)?`<img class="popup-photo" src="${c.photo}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:'';
   const addr=fullAddress(c);
+  /* Compact card: photo, name, the address with the small copy icon right
+     beside it (the same icon used beside addresses everywhere else — no
+     separate Copy button), then just two buttons: Call and Open contact.
+     WhatsApp and Directions live in the contact view, not here, so the card
+     stays short enough to fit the map without clipping. */
+  const addrHtml=addr?`<br>${escapeHtml(addr)} <button type="button" class="copy-addr-btn copy-inline" onclick="copyPopupAddress('${escapeHtml(c.id||'')}')" aria-label="Copy address" title="Copy address">${COPY_ICON_SVG}</button>`:'';
   const callBtn=c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'';
-  const waBtn=c.phone?`<a class="btn btn-green btn-small" target="_blank" rel="noopener" href="${whatsappUrl(c)}">💬 WhatsApp</a>`:'';
-  const copyBtn=addr?`<button type="button" class="btn btn-outline btn-small" onclick="copyPopupAddress('${escapeHtml(c.id||'')}')">📋 Copy address</button>`:'';
-  return `${photo}<div style="text-align:center"><b>${escapeHtml(c.name||'')}</b><br>${escapeHtml(addr)}<div class="popup-btns">${callBtn}${waBtn}<a class="btn btn-gold btn-small" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>${copyBtn}</div><button type="button" class="btn btn-green btn-small" style="margin-top:8px;width:100%" onclick="openContactFromMap('${escapeHtml(c.id||'')}')">👤 Open contact</button></div>`;
+  const openBtn=wide=>`<button type="button" class="btn btn-green btn-small"${wide?' style="width:100%"':''} onclick="openContactFromMap('${escapeHtml(c.id||'')}')">👤 Open contact</button>`;
+  const btns=callBtn?`<div class="popup-btns">${callBtn}${openBtn(false)}</div>`:`<div style="margin-top:9px">${openBtn(true)}</div>`;
+  return `${photo}<div style="text-align:center"><b>${escapeHtml(c.name||'')}</b>${addrHtml}${btns}</div>`;
 }
 /* The map popup's Copy address button — copies that person's saved address */
 function copyPopupAddress(id){ const c=contacts.find(x=>x.id===id); if(c && fullAddress(c)) copyTextToClipboard(fullAddress(c),null); }
@@ -1872,7 +1930,20 @@ function toggleSubSection(name){
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSidePanel(); });
 })();
 /* TRIP PLANNER & NEAR ME — each lives on its own page, opened by one calm button on the main page */
-function openTripPage(){ const o=$('tripOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderTripPlanner(); }
+/* PAGE NAVIGATION — only one full page (Trip Planner, My Contacts, Feedback
+   dashboard, Bonuses) is ever open at a time. All four pages share the same
+   stacking level and the Trip Planner sits last in the page order, so opening
+   another page while in the Trip Planner left the new page hidden underneath
+   it — from the Menu, Contacts / Dashboard / Bonuses looked completely dead.
+   Every page open now closes its sibling pages first, whichever button, tab
+   or menu row asked for it. */
+function closeSiblingPages(except){
+  if(except!=='trip') closeTripPage();
+  if(except!=='contacts') closeContactsPage();
+  if(except!=='inbox') closeInboxPage();
+  if(except!=='bonuses') closeBonusesPage();
+}
+function openTripPage(){ const o=$('tripOverlay'); if(!o) return; closeSiblingPages('trip'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderTripPlanner(); }
 function closeTripPage(){ const o=$('tripOverlay'); if(!o) return; o.classList.remove('open'); const co=$('contactsOverlay'), no=$('nearOverlay'); if(!$('drivingOverlay').classList.contains('open')&&!(co&&co.classList.contains('open'))&&!(no&&no.classList.contains('open'))) document.body.style.overflow=''; }
 /* WHO'S NEAR ME — opens as a panel right on the main page, under the button; the map above stays on the page, no separate page */
 function openNearPage(){ const s=$('nearSheet'); if(!s) return; s.style.display='block'; showNear(); }
@@ -1897,7 +1968,7 @@ async function setContactsSort(mode){
 (function(){ const nb=$('sortNameBtn'); if(nb) nb.addEventListener('click',()=>setContactsSort('name')); const db2=$('sortDistBtn'); if(db2) db2.addEventListener('click',()=>setContactsSort('distance')); })();
 function setManualOpen(open){ const w=$('manualFormWrap'); const b=$('toggleManualBtn'); if(!w||!b) return; w.style.display=open?'block':'none'; b.setAttribute('aria-expanded',open?'true':'false'); b.textContent=open?'✏️ Hide form':'✏️ Add by hand'; }
 /* CONTACTS PAGE — opens like its own page, not a list on the main page */
-function openContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderList(); }
+function openContactsPage(){ const o=$('contactsOverlay'); if(!o) return; closeSiblingPages('contacts'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderList(); }
 function closeContactsPage(){ const o=$('contactsOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open')) document.body.style.overflow=''; }
 (function(){ const mb=$('toggleManualBtn'); if(mb) mb.addEventListener('click',()=>setManualOpen($('manualFormWrap').style.display==='none')); const ob=$('openContactsBtn'); if(ob) ob.addEventListener('click', openContactsPage); const cb=$('closeContactsBtn'); if(cb) cb.addEventListener('click', closeContactsPage); const csi=$('contactsSearchInput'); if(csi) csi.addEventListener('input', e=>{ contactsSearchTerm=e.target.value; renderList(); }); const ccs=$('clearContactsSearch'); if(ccs) ccs.addEventListener('click', ()=>{ const inp=$('contactsSearchInput'); if(inp) inp.value=''; contactsSearchTerm=''; renderList(); }); })();
 /* ADD SHEET — every add started from My Contacts happens right here, in a sheet over
@@ -2111,6 +2182,7 @@ let inboxPrevVisit=0; /* when he last opened the dashboard — captured at open,
 function openInboxPage(){
   if(!isAdmin()) return;
   const o=$('inboxOverlay'); if(!o) return;
+  closeSiblingPages('inbox');
   try{ inboxPrevVisit=parseInt(localStorage.getItem(INBOX_VISIT_KEY)||'0',10)||0; localStorage.setItem(INBOX_VISIT_KEY,String(Date.now())); }catch(e){ inboxPrevVisit=0; }
   o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0;
   subscribeInbox();
@@ -2220,7 +2292,7 @@ function renderAccounts(list){
   const cb=$('closeInboxBtn'); if(cb) cb.addEventListener('click', closeInboxPage);
 })();
 /* BONUSES — coming-soon page only, no features yet */
-function openBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; }
+function openBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; closeSiblingPages('bonuses'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; }
 function closeBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow=''; }
 (function initBonuses(){
   const bb=$('drawerBonusesBtn'); if(bb) bb.addEventListener('click', ()=>{ closeSidePanel(); openBonusesPage(); });
@@ -2484,18 +2556,10 @@ function renderDriveList(){
     const div=document.createElement('div'); div.className='near-item';
     div.style.flexDirection='column'; div.style.alignItems='stretch';
     if(within) div.style.borderColor='var(--gold)'; div.style.borderWidth=within?'2px':'1px';
-    div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div style="display:flex;gap:12px;align-items:center;min-width:0">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${escapeHtml(addr)}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a><button type="button" class="btn btn-outline show-addr-btn" style="font-size:17px" aria-expanded="false">📍 Show address</button></div></div><div class="drive-addr-panel"><span class="drive-addr-text">${addr?escapeHtml(addr):'No address saved for this person yet.'}</span>${addr?`<button type="button" class="copy-addr-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}</div>`;
-    const showBtn=div.querySelector('.show-addr-btn');
-    const panel=div.querySelector('.drive-addr-panel');
-    if(showBtn&&panel){
-      if(openAddrIds.has(c.id)){ panel.classList.add('open'); showBtn.textContent='📍 Hide address'; showBtn.setAttribute('aria-expanded','true'); }
-      showBtn.addEventListener('click',()=>{
-        const open=panel.classList.toggle('open');
-        if(open) openAddrIds.add(c.id); else openAddrIds.delete(c.id);
-        showBtn.textContent=open?'📍 Hide address':'📍 Show address';
-        showBtn.setAttribute('aria-expanded', open?'true':'false');
-      });
-    }
+    /* The address is already printed in the row, so there is no "Show
+       address" button here — the small copy icon sits right beside the
+       address text instead. Call and Directions stay. */
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div style="display:flex;gap:12px;align-items:center;min-width:0">${avatarHtml(c)}<div><strong style="font-size:20px">${escapeHtml(c.name)}</strong><div class="muted" style="font-size:15px">${c._dist.toFixed(1)} miles • ${addr?escapeHtml(addr):'No address saved yet'}${addr?` <button type="button" class="copy-addr-btn copy-inline" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:''}${within?' • <b style="color:#92400e">Nearby!</b>':''}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-green" style="font-size:17px" href="tel:${escapeHtml(c.phone||'')}">☎️ Call</a><a class="btn btn-gold" style="font-size:17px" target="_blank" rel="noopener" href="${directionsUrl(c)}">Directions</a></div></div>`;
     const copyBtn=div.querySelector('.copy-addr-btn');
     if(copyBtn) copyBtn.addEventListener('click',()=>copyTextToClipboard(addr,copyBtn));
     el.appendChild(div);
@@ -2905,7 +2969,26 @@ const _tdsb=$('tripDestSetBtn'); if(_tdsb) _tdsb.addEventListener('click', async
 const _tdcb=$('tripDestClearBtn'); if(_tdcb) _tdcb.addEventListener('click', ()=>{ clearTripDestCustom(false); toast('Address destination cleared'); });
 const _tgb=$('tripGpsBtn'); if(_tgb) _tgb.addEventListener('click', async()=>{
   $('tripStartLabel').textContent='Getting your location…';
-  try{ const loc=await getLocationOnce(); if(!myLoc) myLoc=loc; tripStart={lat:loc.lat,lng:loc.lng,label:'Current location'}; tripPlanOrder=null; const _sa=$('tripStartAddr'); if(_sa) _sa.value='Current location'; $('tripStartLabel').textContent=''; autoTickOnWay(); renderTripPlanner(); }
+  try{
+    const loc=await getLocationOnce(); if(!myLoc) myLoc=loc;
+    tripStart={lat:loc.lat,lng:loc.lng,label:'Current location'}; tripPlanOrder=null;
+    const _sa=$('tripStartAddr'); if(_sa) _sa.value='Current location';
+    $('tripStartLabel').textContent='Finding your street address…';
+    autoTickOnWay(); renderTripPlanner();
+    /* The box should name where he actually is: reverse-look-up the GPS
+       position (Google first, Nominatim fallback) and put the real street
+       address in the box. Only when no lookup can name the spot does the
+       box keep the words "Current location". */
+    const addrText=await reverseGeocodeAddress(loc.lat,loc.lng);
+    if(addrText){
+      tripStart={lat:loc.lat,lng:loc.lng,label:addrText};
+      if(_sa) _sa.value=addrText;
+      $('tripStartLabel').textContent='✓ Starting from: '+addrText;
+      renderTripPlanner();
+    } else {
+      $('tripStartLabel').textContent='';
+    }
+  }
   catch(e){ $('tripStartLabel').textContent='Could not get your location — allow location for this site, or type your start address instead.'; }
 });
 const _tss=$('tripSetStartBtn'); if(_tss) _tss.addEventListener('click', async()=>{
@@ -3058,7 +3141,9 @@ const _tpmb=$('tripPreviewMainBtn'); if(_tpmb) _tpmb.addEventListener('click', (
    list from buildTripPts(), so the automatic order, a hand-arranged order
    and the map preview all show the same trip. A stop row carries data-cid
    when it is a visit the person can swipe away or drag into a new place;
-   the start, the destination and the drive home stay fixed. */
+   the destination row (data-destcid / data-destcustom) can be swiped away
+   too — it is the last stop in the list — but never drags; only the start
+   and the drive home stay fixed. */
 function renderTripResult(){
   const resEl=$('tripResult'); if(!resEl) return;
   const pts=buildTripPts();
@@ -3074,11 +3159,23 @@ function renderTripResult(){
   const driveMins=total/25*60;
   const totalMins=driveMins+visitMins*numVisits;
   let html='<h3 style="margin-top:16px">Your trip — best order</h3>';
-  html+='<p class="muted" style="margin:4px 0 2px">Swipe a person sideways to take them off the trip. Press &amp; hold a person, then drag, to change the order — the route and times follow your order.</p>';
+  /* No instruction words under the heading — the rows speak in icons: a
+     dotted grip on a stop means hold & drag to reorder, twin chevrons on
+     the destination mean swipe sideways to remove it. */
+  const gripHtml='<span class="trip-grip" aria-hidden="true"><svg viewBox="0 0 10 16" width="11" height="17" fill="currentColor" aria-hidden="true"><circle cx="2.6" cy="2.6" r="1.7"/><circle cx="7.4" cy="2.6" r="1.7"/><circle cx="2.6" cy="8" r="1.7"/><circle cx="7.4" cy="8" r="1.7"/><circle cx="2.6" cy="13.4" r="1.7"/><circle cx="7.4" cy="13.4" r="1.7"/></svg></span>';
+  const swipeHintHtml='<span class="trip-swipe-hint" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-4.5 6L8 18"/><path d="M16 6l4.5 6L16 18"/></svg></span>';
   pts.forEach((p,i)=>{
     if(i===0){ html+=`<div class="trip-result-item"><div class="trip-num">▶</div><div><strong>${escapeHtml(p.name)}</strong><div class="muted">Your starting point</div></div></div>`; return; }
     const c=p.contact;
-    html+=`<div class="trip-result-item"${c&&c.id!==tripDestId?` data-cid="${c.id}"`:''}><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&(c.phone||fullAddress(c))?`<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}${fullAddress(c)?`<button type="button" class="btn btn-gold btn-small trip-copy-btn" data-addr="${escapeHtml(fullAddress(c))}">📋 Copy address</button>`:''}</div>`:''}</div>`;
+    const isDestContact=!!(c&&c.id===tripDestId);
+    const isDestCustom=!c&&!!destPt&&!dest&&p.name===('🏁 Destination — '+destPt.label);
+    const rowAttrs=isDestContact?` data-destcid="${c.id}"`:(isDestCustom?' data-destcustom="1"':(c?` data-cid="${c.id}"`:''));
+    const hint=(isDestContact||isDestCustom)?swipeHintHtml:(c?gripHtml:'');
+    const rowHtml=`<div class="trip-result-item"${rowAttrs}><div class="trip-num">${i}</div><div style="flex:1;min-width:0"><strong>${escapeHtml(p.name)}</strong><div class="muted">${legs[i-1].toFixed(1)} miles from the stop before${c?'<br>'+escapeHtml(fullAddress(c)):''}</div></div>${c&&(c.phone||fullAddress(c))?`<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">${c.phone?`<a class="btn btn-green btn-small" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:''}${fullAddress(c)?`<button type="button" class="btn btn-gold btn-small trip-copy-btn" data-addr="${escapeHtml(fullAddress(c))}">📋 Copy address</button>`:''}</div>`:''}${hint}</div>`;
+    /* Every stop that can be swiped away — visits AND the destination, which
+       is the last stop in the list — sits in a wrap over the red Delete
+       layer, so the reveal shows on every stop, the last one included. */
+    html+=(isDestContact||isDestCustom||c)?`<div class="trip-row-wrap"><div class="trip-swipe-delete" aria-hidden="true"><span>Delete</span><span>Delete</span></div>${rowHtml}</div>`:rowHtml;
   });
   html+=`<div style="margin-top:14px;padding:14px;border:1px solid var(--gold);border-radius:12px;background:var(--cream)"><strong style="font-size:17px">Total: ${total.toFixed(1)} miles</strong><div class="muted" style="margin-top:4px">Driving about ${fmtTime(driveMins)}${numVisits&&visitMins?` • plus ${numVisits} visit${numVisits===1?'':'s'} × ${visitMins} min = ${fmtTime(visitMins*numVisits)} of visiting`:''}<br><strong>Whole trip: about ${fmtTime(totalMins)}</strong>${returnHome?' • includes the drive back to your start':' • one-way — ends at your last stop'}</div></div>`;
   const origin=tripStart.lat+','+tripStart.lng;
@@ -3097,6 +3194,8 @@ function renderTripResult(){
   resEl.innerHTML=html;
   resEl.querySelectorAll('.trip-copy-btn').forEach(b=>b.addEventListener('click',()=>copyTextToClipboard(b.getAttribute('data-addr'),b)));
   resEl.querySelectorAll('.trip-result-item[data-cid]').forEach(row=>attachTripRowGestures(row));
+  resEl.querySelectorAll('.trip-result-item[data-destcid]').forEach(row=>attachTripDestSwipe(row,'contact'));
+  resEl.querySelectorAll('.trip-result-item[data-destcustom]').forEach(row=>attachTripDestSwipe(row,'custom'));
   lastTripPts=pts;
   const _pv2=$('tripPreviewBtn2'); if(_pv2) _pv2.addEventListener('click', showTripPreview);
   const _ed2=$('tripEditBtn2'); if(_ed2) _ed2.addEventListener('click', editFromPreview);
@@ -3113,12 +3212,56 @@ const _ptb=$('planTripBtn'); if(_ptb) _ptb.addEventListener('click', ()=>{
   tripPlanOrder=null;
   tripPlanOrder=orderTripStops(stops).map(c=>c.id);
   renderTripResult();
+  /* The results land below the fold — bring them into view so it's obvious
+     the trip was planned */
+  const _res=$('tripResult'); if(_res) setTimeout(()=>{ try{ _res.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){} },80);
 });
 /* Take one person off the planned trip (the swipe): untick them in step 4 as
    well, so the plan and the tick list never disagree. */
 function removeTripStop(cid){
   tripStopIds.delete(cid);
   if(tripPlanOrder) tripPlanOrder=tripPlanOrder.filter(id=>id!==cid);
+  renderTripPlanner();
+  renderTripResult();
+  toast('Removed from the trip');
+}
+/* THE DESTINATION ROW — the last stop in the list. It used to carry no
+   gesture hook at all (the destination was "fixed"), which is exactly why
+   the last stop would not swipe. It now takes the same sideways swipe as
+   every other stop (no hold-drag — it stays the final stop while it is
+   there): swiping it away clears the destination and replans without it. */
+function attachTripDestSwipe(row,kind){
+  let sx=0, sy=0, active=false, swiping=false;
+  row.addEventListener('click', e=>{ if(row._suppress){ e.preventDefault(); e.stopPropagation(); row._suppress=false; } }, true);
+  row.addEventListener('pointerdown', e=>{
+    if(e.target.closest('a,button')) return;
+    sx=e.clientX; sy=e.clientY; active=true; swiping=false;
+  });
+  row.addEventListener('pointermove', e=>{
+    if(!active) return;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(swiping||(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy))){
+      if(!swiping){ swiping=true; try{ row.setPointerCapture(e.pointerId); }catch(err){} }
+      row.style.transform='translateX('+dx+'px)';
+      row.classList.toggle('swipe-remove', Math.abs(dx)>84);
+    } else if(Math.abs(dy)>12){ active=false; }
+  });
+  const finish=e=>{
+    if(!active) return; active=false;
+    if(swiping){
+      const dx=e.clientX-sx;
+      row.style.transform=''; row.classList.remove('swipe-remove');
+      row._suppress=true; setTimeout(()=>{ row._suppress=false; },350);
+      if(Math.abs(dx)>84) removeTripDest(kind);
+    }
+    swiping=false;
+  };
+  row.addEventListener('pointerup', finish);
+  row.addEventListener('pointercancel', ()=>{ active=false; swiping=false; row.style.transform=''; row.classList.remove('swipe-remove'); });
+}
+function removeTripDest(kind){
+  if(kind==='contact'){ tripDestId=''; tripPlanOrder=null; const ds=$('tripDestSearch'); if(ds) ds.value=''; }
+  else clearTripDestCustom(true);
   renderTripPlanner();
   renderTripResult();
   toast('Removed from the trip');
@@ -3130,6 +3273,11 @@ function removeTripStop(cid){
    vertical scroll is left alone — the hold must come first. */
 function attachTripRowGestures(row){
   const cid=row.getAttribute('data-cid'); if(!cid) return;
+  /* The row sits in a .trip-row-wrap (the red Delete layer lives there).
+     A swipe slides the ROW inside its wrap; a hold-drag moves the whole
+     WRAP, so the row and its Delete layer travel together. */
+  const wrap=row.closest('.trip-row-wrap');
+  const moveEl=wrap||row;
   let sx=0, sy=0, mode=null, holdTimer=null, active=false;
   /* While a drag is live, stop the page itself from scrolling away with the
      finger — added only at drag start (after the hold), removed at the end */
@@ -3140,19 +3288,19 @@ function attachTripRowGestures(row){
     if(e.target.closest('a,button')) return;
     sx=e.clientX; sy=e.clientY; mode=null; active=true;
     if(holdTimer) clearTimeout(holdTimer);
-    holdTimer=setTimeout(()=>{ if(!active) return; mode='drag'; row.classList.add('dragging'); document.addEventListener('touchmove', blockTouch, {passive:false}); try{ row.setPointerCapture(e.pointerId); }catch(err){} if(navigator.vibrate) navigator.vibrate(30); },380);
+    holdTimer=setTimeout(()=>{ if(!active) return; mode='drag'; row.classList.add('dragging'); if(wrap) wrap.style.zIndex='6'; document.addEventListener('touchmove', blockTouch, {passive:false}); try{ row.setPointerCapture(e.pointerId); }catch(err){} if(navigator.vibrate) navigator.vibrate(30); },380);
   });
   row.addEventListener('pointermove', e=>{
     if(!active) return;
     const dx=e.clientX-sx, dy=e.clientY-sy;
     if(mode==='drag'){
       e.preventDefault();
-      row.style.transform='translateY('+dy+'px)';
-      const siblings=Array.prototype.slice.call(row.parentNode.querySelectorAll('.trip-result-item[data-cid]'));
-      const idx=siblings.indexOf(row); if(idx<0) return;
-      const rect=row.getBoundingClientRect(); const centre=rect.top+rect.height/2;
-      if(dy<0&&idx>0){ const prev=siblings[idx-1]; const pr=prev.getBoundingClientRect(); if(centre<pr.top+pr.height/2){ row.parentNode.insertBefore(row,prev); sy-=(pr.height+10); row.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
-      else if(dy>0&&idx<siblings.length-1){ const nxt=siblings[idx+1]; const nr=nxt.getBoundingClientRect(); if(centre>nr.top+nr.height/2){ row.parentNode.insertBefore(nxt,row); sy+=(nr.height+10); row.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
+      moveEl.style.transform='translateY('+dy+'px)';
+      const siblings=Array.prototype.slice.call(moveEl.parentNode.querySelectorAll('.trip-row-wrap')).filter(w=>w.querySelector('.trip-result-item[data-cid]'));
+      const idx=siblings.indexOf(moveEl); if(idx<0) return;
+      const rect=moveEl.getBoundingClientRect(); const centre=rect.top+rect.height/2;
+      if(dy<0&&idx>0){ const prev=siblings[idx-1]; const pr=prev.getBoundingClientRect(); if(centre<pr.top+pr.height/2){ moveEl.parentNode.insertBefore(moveEl,prev); sy-=(pr.height+10); moveEl.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
+      else if(dy>0&&idx<siblings.length-1){ const nxt=siblings[idx+1]; const nr=nxt.getBoundingClientRect(); if(centre>nr.top+nr.height/2){ moveEl.parentNode.insertBefore(nxt,moveEl); sy+=(nr.height+10); moveEl.style.transform='translateY('+(e.clientY-sy)+'px)'; } }
     } else if(mode==='swipe'||(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy))){
       if(mode!=='swipe'){ mode='swipe'; if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } try{ row.setPointerCapture(e.pointerId); }catch(err){} }
       row.style.transform='translateX('+dx+'px)';
@@ -3174,16 +3322,16 @@ function attachTripRowGestures(row){
       row._suppress=true; setTimeout(()=>{ row._suppress=false; },350);
       if(Math.abs(dx)>84) removeTripStop(cid);
     } else if(mode==='drag'){
-      row.style.transform=''; row.classList.remove('dragging');
+      moveEl.style.transform=''; row.style.transform=''; row.classList.remove('dragging'); if(wrap) wrap.style.zIndex='';
       row._suppress=true; setTimeout(()=>{ row._suppress=false; },350);
-      tripPlanOrder=Array.prototype.slice.call(row.parentNode.querySelectorAll('.trip-result-item[data-cid]')).map(r=>r.getAttribute('data-cid'));
+      tripPlanOrder=Array.prototype.slice.call(moveEl.parentNode.querySelectorAll('.trip-result-item[data-cid]')).map(r=>r.getAttribute('data-cid'));
       renderTripResult();
       toast('Order saved — the route and times follow your order');
     }
     mode=null;
   };
   row.addEventListener('pointerup', finish);
-  row.addEventListener('pointercancel', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } stopBlock(); active=false; mode=null; row.style.transform=''; row.classList.remove('dragging'); row.classList.remove('swipe-remove'); });
+  row.addEventListener('pointercancel', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } stopBlock(); active=false; mode=null; row.style.transform=''; moveEl.style.transform=''; if(wrap) wrap.style.zIndex=''; row.classList.remove('dragging'); row.classList.remove('swipe-remove'); });
 }
 
 /* FEEDBACK CHAT — a chat bubble, bottom-right. Type, or leave a WhatsApp-style voice note.
@@ -3461,6 +3609,30 @@ async function googlePlaceDetails(placeId){
     return {street:street, city:city, state:state, zip:zip, lat:d.location.latitude, lng:d.location.longitude, formatted:d.formattedAddress||''};
   }catch(e){ return null; }
 }
+/* Reverse lookup — the street address for a GPS position, Google first
+   (Geocoding API with the saved Maps key), Nominatim as the fallback.
+   Returns null when neither service can name the spot. */
+async function reverseGeocodeAddress(lat,lng){
+  if(appKeys.maps){
+    try{
+      const r=await fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lng+'&key='+encodeURIComponent(appKeys.maps));
+      if(r.ok){ const d=await r.json(); if(d&&d.status==='OK'&&d.results&&d.results[0]&&d.results[0].formatted_address) return d.results[0].formatted_address; }
+    }catch(e){}
+  }
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat='+lat+'&lon='+lng,{headers:{'Accept':'application/json'}});
+    if(r.ok){
+      const d=await r.json(); const a=(d&&d.address)||{};
+      const street=[a.house_number||'',a.road||''].filter(Boolean).join(' ');
+      const city=a.city||a.town||a.village||a.borough||a.suburb||a.neighbourhood||'';
+      const stateZip=[a.state||'',a.postcode||''].filter(Boolean).join(' ');
+      const parts=[street,city,stateZip].filter(Boolean);
+      if(parts.length) return parts.join(', ');
+      if(d&&d.display_name) return d.display_name;
+    }
+  }catch(e){}
+  return null;
+}
 /* Resolve one typed address through Google first (top suggestion → its
    details). Used by the "Set start" / "Use this address" buttons and by
    save-time geocoding, so a typed address is found by Google whenever the
@@ -3527,12 +3699,12 @@ const HELP_SYSTEM_PROMPT=[
 '- Who\'s near me now?: the big button under the map on the main page. It uses the phone\'s location and lists the closest contacts first; it can be sorted by distance or by name.',
 '- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. If several people are near, their alerts come one at a time — Dismiss shows the next person, and "Dismiss all" clears the whole line at once. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
 '- Settings live in the Menu (the gold Menu button at the top) → "Alerts, sounds & notifications": Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
-'- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now (the start box then reads "Current location"), or type a start address (suggestions appear; or "Set start"), or search your contacts by name under "or start from one of your contacts" and tap the person. Step 2: the main destination — type a name in the search box and tap the contact (the chosen destination is named under the box, with a Clear button), or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, "My own number" with your own number of miles typed in right next to it, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit — there is a search box above the list, type a name to find someone fast; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. In the planned list ("Your trip — best order") you can change the plan by hand: swipe a person sideways to take them off the trip, or press and hold a person and drag them up or down — your own order wins and the route and times update to match. There is one map button, "Show trip on map", which draws the trip on a map right there in the planner (Hide map closes it and the page stays where it is); "Edit trip" changes the plan and "Exit trip — reset map" clears it.',
+'- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now (the start box then shows the street address of where you are now; it keeps the words "Current location" only if no address can be found), or type a start address (suggestions appear; or "Set start"), or search your contacts by name under "or start from one of your contacts" and tap the person. Step 2: the main destination — type a name in the search box and tap the contact (the chosen destination is named under the box, with a Clear button), or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, "My own number" with your own number of miles typed in right next to it, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit — there is a search box above the list, type a name to find someone fast; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. In the planned list ("Your trip — best order") you can change the plan by hand: swipe a person sideways to take them off the trip, or press and hold a person and drag them up or down — your own order wins and the route and times update to match. There is one map button, "Show trip on map", which draws the trip on a map right there in the planner (Hide map closes it and the page stays where it is); "Edit trip" changes the plan and "Exit trip — reset map" clears it.',
 '- Notes: every contact has a Notes button (on their card and on their page). Write a note and save it. Tapping an older note opens it, with Edit and Delete inside.',
 '- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
 '- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.4.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.5.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
