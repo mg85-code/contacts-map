@@ -820,6 +820,38 @@ input,select{min-height:42px}
 #tripResult h3,#tripPreviewWrap h3{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em;color:var(--green)}
 .trip-result-item strong{font-weight:700}
 .trip-num{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+/* ============================================================
+   ROUND 3.8 — the map popup (tapping a person's picture on the
+   map) shrinks to a small, neat box. The empty strip at the top
+   where the ✕ sat is gone: on Google Maps the close-button row
+   (.gm-style-iw-chr) no longer takes its own band of height —
+   it floats in the top corner over the card — and on Leaflet
+   the content margin and close button are tightened the same
+   way. Photo, name, address and the Call / Open contact buttons
+   all step down a size, and the card never scrolls. Last layer
+   on purpose: it wins.
+   ============================================================ */
+/* — Shared popup content: smaller photo, tighter text, smaller
+   Call / Open contact buttons — */
+.leaflet-popup-content .popup-photo,.gm-popup .popup-photo{width:36px;height:36px;border-width:2px;margin-bottom:4px}
+.leaflet-popup-content .popup-btns,.gm-popup .popup-btns{gap:5px;margin-top:7px}
+.leaflet-popup-content .popup-btns .btn,.gm-popup .popup-btns .btn{min-height:34px;padding:6px 4px;font-size:12.5px;border-radius:999px}
+.leaflet-popup-content .copy-inline,.gm-popup .copy-inline{width:26px;height:26px;min-height:26px;vertical-align:-7px}
+.leaflet-popup-content .copy-inline svg,.gm-popup .copy-inline svg{width:13px;height:13px}
+/* — Leaflet popup: snug margins so no empty band sits above the
+   photo, a narrower card, and the ✕ hugs the top-right corner
+   right next to the content — */
+.leaflet-popup-content-wrapper{border-radius:12px}
+.leaflet-popup-content{margin:8px 12px 9px;line-height:1.35;font-size:13px;max-width:208px}
+.leaflet-popup-close-button{top:0 !important;right:0 !important;width:24px !important;height:24px !important;padding:3px 0 0 !important;font-size:15px !important;line-height:1 !important;z-index:10}
+/* — Google Maps popup: same small card, no scroll, and the
+   close-button strip collapses into the corner — */
+.gm-popup{font-size:13px;line-height:1.35;max-width:208px;max-height:none;overflow:visible}
+.gm-style .gm-style-iw-c{padding:9px 12px 10px !important;border-radius:12px !important}
+.gm-style .gm-style-iw-d{overflow:hidden !important;max-height:none !important}
+.gm-style .gm-style-iw-chr{position:absolute;top:0;right:0;height:0;min-height:0;z-index:2}
+.gm-style .gm-ui-hover-effect{top:0 !important;right:0 !important;width:24px !important;height:24px !important;opacity:.75}
+.gm-style .gm-ui-hover-effect>span{width:15px !important;height:15px !important;margin:4.5px !important}
 </style>
 </head>
 <body>
@@ -936,7 +968,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.7</div>
+      <div class="side-version">Version 3.8</div>
     </div>
   </aside>
 
@@ -3947,7 +3979,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Feedback: Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.7.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.8.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
