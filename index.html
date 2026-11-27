@@ -140,8 +140,8 @@ input,select{ min-height:48px }
 .panel h3{margin:0;font-size:16px}
 .muted{color:var(--muted);font-size:14px;line-height:1.55}
 #map,#driveMap{width:100%;height:360px;border-radius:12px;border:1px solid var(--line);z-index:1}
-#tripPreviewMap{width:100%;height:340px;border-radius:12px;border:1px solid var(--line);z-index:1;background:var(--cream)}
-@media(max-width:640px){#tripPreviewMap{height:300px}}
+#tripPreviewMap,#tripRouteMap{width:100%;height:340px;border-radius:12px;border:1px solid var(--line);z-index:1;background:var(--cream)}
+@media(max-width:640px){#tripPreviewMap,#tripRouteMap{height:300px}}
 @media(max-width:640px){#map{height:300px}}
 .search-row{display:flex;gap:8px;margin-top:12px;min-width:0}
 .search-row input{flex:1;min-width:0;padding:12px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream);font-size:16px}
@@ -306,7 +306,7 @@ input,select{ min-height:48px }
 .gm-popup .btn-outline{color:var(--green) !important}
 /* Google Maps draws its tiles as <img>s - the page-wide img{max-width:100%}
    rule must never squeeze them */
-#map img,#driveMap img,#tripPreviewMap img{max-width:none !important}
+#map img,#driveMap img,#tripPreviewMap img,#tripRouteMap img{max-width:none !important}
 .contacts-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
@@ -490,7 +490,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .hero-strip{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 16px rgba(90,70,20,.09)}
 .stat-num{color:var(--gold2)}
 #map{border-radius:16px;border:2px solid var(--gold)}
-#tripPreviewMap{border-radius:16px;border:2px solid var(--gold);background:var(--sand-soft)}
+#tripPreviewMap,#tripRouteMap{border-radius:16px;border:2px solid var(--gold);background:var(--sand-soft)}
 .search-row input{background:#fff;border-color:var(--line);box-shadow:0 2px 8px rgba(90,70,20,.07)}
 .chip{background:#fff;color:var(--green);border-color:#c9b98d}
 .sort-bar{background:#fff}
@@ -658,7 +658,7 @@ input,select{min-height:42px}
 .stat-label{font-size:13px}
 .workspace .panel h2{text-align:center}
 #map{height:290px}
-@media(max-width:640px){#map{height:248px}#tripPreviewMap{height:248px}}
+@media(max-width:640px){#map{height:248px}#tripPreviewMap,#tripRouteMap{height:248px}}
 .start-driving-big{margin-top:10px;padding:13px 16px;font-size:16.5px;border-radius:12px;box-shadow:0 6px 16px rgba(14,59,44,.25)}
 .map-wrap{margin-top:9px}
 #openNearBtn{margin-top:8px}
@@ -1430,7 +1430,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 4.5</div>
+      <div class="side-version">Version 4.6</div>
     </div>
   </aside>
 
@@ -1692,6 +1692,10 @@ input,select{min-height:42px}
             <button type="button" id="tripDestClearBtn" class="btn btn-outline" style="display:none">Clear address destination</button>
           </div>
           <p id="tripDestAddrLabel" class="muted" style="margin-top:8px"></p>
+        </div>
+        <div class="trip-step">
+          <button type="button" id="tripRouteMapBtn" class="btn btn-outline btn-large">🗺️ Show map</button>
+          <div id="tripRouteMapWrap" style="display:none;margin-top:12px"><div id="tripRouteMap"></div></div>
         </div>
         <div class="trip-step ts-3">
           <div style="font-weight:700;margin-bottom:8px">3 · How far out of your way are you ready to go?</div>
@@ -4007,6 +4011,94 @@ const _tpsb=$('tripPreviewShowBtn'); if(_tpsb) _tpsb.addEventListener('click', s
 const _tphb=$('tripPreviewHideBtn'); if(_tphb) _tphb.addEventListener('click', ()=>{ hideTripPreview(); });
 const _tpeb=$('tripPreviewEditBtn'); if(_tpeb) _tpeb.addEventListener('click', editFromPreview);
 const _tpmb=$('tripPreviewMainBtn'); if(_tpmb) _tpmb.addEventListener('click', ()=>{ if(lastTripPts) { try{ drawTripLine(lastTripPts); }catch(e){} } closeTripPage(); const mel=document.getElementById('map'); if(mel) mel.scrollIntoView({behavior:'smooth',block:'center'}); });
+/* TRIP ROUTE MAP - between steps 2 and 3 of the planner: the start, the
+   destination, the line between them, and EVERY contact as a pin, so the
+   person can see with his own eyes who is on the way before ticking anyone.
+   Its own map instance and globals - fully separate from the trip preview
+   map above, which keeps working exactly as before. */
+let tripRouteMap=null, tripRouteLine=null, tripRouteMarkers=[];
+let gRouteMap=null, gRouteMarkers=[], gRouteLineObj=null, gRouteInfo=null;
+function initTripRouteMap(){
+  if(mapEngine==='google'){
+    if(gRouteMap){ setTimeout(()=>{ try{ google.maps.event.trigger(gRouteMap,'resize'); }catch(e){} },80); return; }
+    if(typeof google==='undefined'||!google.maps||!google.maps.Map) return;
+    gRouteMap=new google.maps.Map($('tripRouteMap'),{center:{lat:40.68,lng:-73.95},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_TOP}});
+    gRouteInfo=new google.maps.InfoWindow({maxWidth:264});
+    return;
+  }
+  if(tripRouteMap){ setTimeout(()=>{ try{tripRouteMap.invalidateSize();}catch(e){} },80); return; }
+  if(typeof L==='undefined') return;
+  tripRouteMap=L.map('tripRouteMap').setView([40.68,-73.95],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(tripRouteMap);
+}
+function drawTripRouteMap(){
+  if(mapEngine==='google'){ gDrawTripRouteMap(); return; }
+  if(!tripRouteMap||typeof L==='undefined') return;
+  if(tripRouteLine){ try{tripRouteMap.removeLayer(tripRouteLine);}catch(e){} tripRouteLine=null; }
+  tripRouteMarkers.forEach(m=>{ try{tripRouteMap.removeLayer(m);}catch(e){} }); tripRouteMarkers=[];
+  const dest=tripDestPoint();
+  const pts=[];
+  if(tripStart&&dest){
+    tripRouteLine=L.polyline([[tripStart.lat,tripStart.lng],[dest.lat,dest.lng]],{color:'#c19a4b',weight:4,opacity:0.9}).addTo(tripRouteMap);
+  }
+  const pinNum=(label,name,lat,lng)=>{
+    const icon=L.divIcon({className:'',html:'<div class="pin-num">'+label+'</div>',iconSize:[32,32],iconAnchor:[16,16]});
+    const m=L.marker([lat,lng],{icon:icon}).addTo(tripRouteMap).bindPopup('<div style="text-align:center"><b>'+escapeHtml(name)+'</b></div>');
+    tripRouteMarkers.push(m);
+  };
+  if(tripStart){ pts.push([tripStart.lat,tripStart.lng]); pinNum('▶','Start - '+tripStart.label,tripStart.lat,tripStart.lng); }
+  contacts.forEach(c=>{
+    if(c.lat==null||c.lng==null) return;
+    pts.push([c.lat,c.lng]);
+    const m=L.marker([c.lat,c.lng],{icon:photoIcon(c)}).addTo(tripRouteMap).bindPopup('<div style="text-align:center"><b>'+escapeHtml(c.name||'No name')+'</b></div>');
+    tripRouteMarkers.push(m);
+  });
+  if(dest){ pts.push([dest.lat,dest.lng]); pinNum('🏁','Destination - '+dest.label,dest.lat,dest.lng); }
+  if(pts.length===1){ try{ tripRouteMap.setView(pts[0],13); }catch(e){} }
+  else if(pts.length>1){ try{ tripRouteMap.fitBounds(L.latLngBounds(pts).pad(0.15)); }catch(e){} }
+}
+/* GOOGLE twin of drawTripRouteMap - same gold line, same pins. */
+function gDrawTripRouteMap(){
+  if(!gRouteMap) return;
+  const GM=defineGMarker();
+  if(gRouteLineObj){ try{ gRouteLineObj.setMap(null); }catch(e){} gRouteLineObj=null; }
+  gRouteMarkers.forEach(m=>{ try{ m.setMap(null); }catch(e){} }); gRouteMarkers=[];
+  const dest=tripDestPoint();
+  const pts=[];
+  if(tripStart&&dest){
+    gRouteLineObj=new google.maps.Polyline({map:gRouteMap,path:[{lat:tripStart.lat,lng:tripStart.lng},{lat:dest.lat,lng:dest.lng}],strokeColor:'#c19a4b',strokeWeight:4,strokeOpacity:0.9});
+  }
+  const nameOnly=(pos,name)=>{
+    if(!gRouteInfo) return;
+    gRouteInfo.setContent('<div class="gm-popup"><div style="text-align:center"><b>'+escapeHtml(name)+'</b></div></div>');
+    gRouteInfo.setPosition(pos); gRouteInfo.open(gRouteMap);
+  };
+  const pinNum=(label,name,lat,lng)=>{
+    const pos={lat:lat,lng:lng};
+    const m=new GM(new google.maps.LatLng(lat,lng), '<div class="pin-num">'+label+'</div>', ()=>nameOnly(pos,name));
+    m.setMap(gRouteMap); gRouteMarkers.push(m);
+  };
+  if(tripStart){ pts.push({lat:tripStart.lat,lng:tripStart.lng}); pinNum('▶','Start - '+tripStart.label,tripStart.lat,tripStart.lng); }
+  contacts.forEach(c=>{
+    if(c.lat==null||c.lng==null) return;
+    const pos={lat:c.lat,lng:c.lng}; pts.push(pos);
+    const m=new GM(new google.maps.LatLng(c.lat,c.lng), photoMarkerHtml(c), ()=>nameOnly(pos,c.name||'No name'));
+    m.setMap(gRouteMap); gRouteMarkers.push(m);
+  });
+  if(dest){ pts.push({lat:dest.lat,lng:dest.lng}); pinNum('🏁','Destination - '+dest.label,dest.lat,dest.lng); }
+  if(pts.length===1){ try{ gRouteMap.setCenter(pts[0]); gRouteMap.setZoom(13); }catch(e){} }
+  else if(pts.length>1){ try{ gRouteMap.fitBounds(gPaddedBounds(pts,0.15)); }catch(e){} }
+}
+function toggleTripRouteMap(){
+  const wrap=$('tripRouteMapWrap'), btn=$('tripRouteMapBtn'); if(!wrap||!btn) return;
+  if(wrap.style.display!=='none'){ wrap.style.display='none'; btn.textContent='🗺️ Show map'; return; }
+  if(!tripStart&&!tripDestPoint()){ toast('Set your start and destination first'); return; }
+  wrap.style.display='block';
+  btn.textContent='Hide map';
+  initTripRouteMap();
+  setTimeout(()=>{ try{ if(tripRouteMap) tripRouteMap.invalidateSize(); }catch(e){} try{ if(gRouteMap) google.maps.event.trigger(gRouteMap,'resize'); }catch(e){} drawTripRouteMap(); },90);
+}
+const _trmb=$('tripRouteMapBtn'); if(_trmb) _trmb.addEventListener('click', toggleTripRouteMap);
 /* THE PLANNED TRIP - "Your trip - best order". renderTripResult() draws the
    list from buildTripPts(), so the automatic order, a hand-arranged order
    and the map preview all show the same trip. A stop row carries data-cid
@@ -4567,7 +4659,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there - there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
 '- Ask AI voice notes: in this Ask AI chat the person can tap the 🎙️ microphone button, record a voice note, and tap Send - the AI listens to the recording and answers in the chat, the same as a typed question. The voice note itself stays in the chat so it can be played back.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 4.5.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 4.6.',
 '- Hear an answer out loud: every answer in this Ask AI chat has a small round speaker button at the bottom-right of its bubble. Tap it and the phone reads the answer aloud; tap it again to stop.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
