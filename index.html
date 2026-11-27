@@ -128,9 +128,6 @@ input,select{ min-height:48px }
 .topbar-title-he{font-family:"Frank Ruhl Libre","Noto Serif Hebrew","David Libre","New Peninim MT","Corsiva Hebrew",David,"Times New Roman",serif;font-weight:700;font-size:19px;line-height:1.15;margin-top:1px;color:#e6c87a;width:100%;display:flex;justify-content:space-between}
 .topbar-title-he>span{flex:0 0 auto;transform:scaleX(1.15)}
 .topbar-sub{font-size:12px;opacity:.85;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
-.userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;flex:1 1 auto;justify-content:flex-end}
-.user-email{font-size:13px;background:rgba(255,255,255,.14);padding:8px 10px;border-radius:999px;max-width:min(220px,58vw);min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.logout-btn{background:#fff;color:var(--green);border:0;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 14px 28px}
 .hero-strip{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
 .hero-strip h1{font-family:"Playfair Display",Georgia,serif;font-size:28px;margin:0;line-height:1;color:var(--green)}
@@ -192,7 +189,6 @@ input,select{ min-height:48px }
   .topbar{padding:10px 12px}
   .hero-strip{padding:14px}
   .hero-strip h1{font-size:24px}
-  .logout-btn{flex-shrink:0}
 }
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer;min-height:42px}
@@ -267,8 +263,8 @@ input,select{ min-height:48px }
 .copy-addr-btn.copy-inline{width:30px;height:30px;min-height:30px;border-radius:8px;vertical-align:-9px;margin-left:2px}
 .copy-addr-btn.copy-inline svg{width:15px;height:15px}
 /* CONTACTS PAGE */
-#contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay,#bonusesOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
-#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open,#bonusesOverlay.open{display:block}
+#contactsOverlay,#nearOverlay,#tripOverlay,#inboxOverlay,#bonusesOverlay,#settingsOverlay{display:none;position:fixed;inset:0;z-index:190;background:var(--cream);overflow:auto}
+#contactsOverlay.open,#nearOverlay.open,#tripOverlay.open,#inboxOverlay.open,#bonusesOverlay.open,#settingsOverlay.open{display:block}
 /* CONTACT VIEW — one person's full page, opened by tapping their card, a search result or "Open contact" */
 #contactViewOverlay{display:none;position:fixed;inset:0;z-index:193;background:var(--cream);overflow:auto}
 #contactViewOverlay.open{display:block}
@@ -376,8 +372,7 @@ input,select{ min-height:48px }
 .dash-stat-new .dash-label{color:#4a3a10}
 
 .new-badge{display:inline-block;background:var(--gold);color:#1a1405;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;letter-spacing:.02em}
-/* FEEDBACK CHAT WIDGET */
-.chat-fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:180;background:var(--green);color:#fff;border:2px solid var(--gold);border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(14,59,44,.35);display:inline-flex;align-items:center;gap:8px;min-height:54px}
+/* FEEDBACK CHAT WIDGET — the chat window only; it opens from Menu → Feedback (no floating bubble) */
 .menu-stat-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:14px}
 .menu-btn{position:static;width:auto;height:48px;min-height:48px;border-radius:12px;background:var(--gold);color:#0e3b2c;border:2px solid var(--gold2);box-shadow:0 3px 10px rgba(168,130,47,.5);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 18px 0 14px;flex-shrink:0}
 .menu-btn svg{width:24px;height:24px;flex-shrink:0}
@@ -388,7 +383,6 @@ input,select{ min-height:48px }
 
 .stat-label{font-size:15px;font-weight:600;color:var(--muted)}
 .menu-btn:active{transform:scale(.97)}
-.chat-fab:active{transform:scale(.97)}
 .chat-window{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:260;width:min(385px,calc(100vw - 24px));height:min(580px,72dvh);background:var(--cream);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.30);display:none;flex-direction:column;overflow:hidden}
 .chat-window.open{display:flex}
 .chat-head{background:var(--green);color:#fff;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
@@ -443,7 +437,7 @@ input,select{ min-height:48px }
 .menu-body{display:none;padding:12px 2px 2px}
 .menu-item.open>.menu-body{display:block}
 .menu-body .panel{border:0;background:transparent;border-radius:0;padding:0;margin:0;box-shadow:none}
-.menu-body #alertsPanel>h2{display:none}
+#settingsSlot #alertsPanel>h2{display:none}
 .sub-list{display:flex;flex-direction:column;gap:8px}
 .sub-item{display:flex;flex-direction:column}
 .sub-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:100%;text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-weight:700;font-size:16px;color:var(--ink);cursor:pointer;min-height:52px}
@@ -478,8 +472,6 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .topbar-title{color:var(--green);font-size:24px;font-weight:700}
 .topbar-title-he{color:#8a6a1f;font-size:19px}
 .topbar-sub{color:var(--muted);opacity:1}
-.user-email{background:#fff;color:var(--green);border:1px solid var(--line)}
-.logout-btn{border:1.5px solid var(--green)}
 .menu-btn{border-radius:999px;padding:0 20px 0 16px;box-shadow:0 4px 14px rgba(168,130,47,.45)}
 /* CARDS & PANELS — white on sand, serif green headings */
 .panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 16px rgba(90,70,20,.09)}
@@ -534,11 +526,10 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .chat-thread{background:var(--sand-soft)}
 .chat-app{background:#fff}
 .chat-input-row{background:#fff}
-/* Room for the fixed tab bar, and the feedback bubble floats above it */
+/* Room for the fixed tab bar */
 .wrap{padding-bottom:112px}
-#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#tripOverlayBody{padding-bottom:104px !important}
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#settingsOverlay>div:nth-child(2),#tripOverlayBody{padding-bottom:104px !important}
 #drivingOverlay>div:last-child{padding-bottom:104px !important}
-.chat-fab{bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:210}
 .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 /* BOTTOM TAB BAR — Map / Contacts / Trip / More, deep green with a gold active tab */
 .tab-bar{position:fixed;left:0;right:0;bottom:0;z-index:205;background:var(--green);display:flex;gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 20px rgba(14,59,44,.30)}
@@ -571,7 +562,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 .dash-grid{grid-template-columns:1fr 1fr}
 /* Inner pages keep the same phone column (their body divs carry a wider
    inline max-width, so these two need !important to hold) */
-#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2){max-width:480px !important}
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#settingsOverlay>div:nth-child(2){max-width:480px !important}
 #tripOverlayBody{max-width:480px !important}
 .contacts-head,.drive-head{max-width:480px;margin:0 auto}
 /* Driving mode: banner, map and list all stay inside the column */
@@ -579,11 +570,9 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
 #driveMap{max-width:480px;margin-left:auto;margin-right:auto}
 #drivingOverlay>div:last-child{max-width:480px;margin-left:auto;margin-right:auto}
 /* The tab bar becomes a phone-width bar centred under the column, and the
-   feedback bubble / chat window hug the column's right edge, not the
-   tablet screen's edge */
+   chat windows hug the column's right edge, not the tablet screen's edge */
 .tab-bar{left:50%;right:auto;width:100%;max-width:480px;transform:translateX(-50%)}
 @media(min-width:520px){
-  .chat-fab{right:calc(50% - 224px)}
   .chat-window{right:calc(50% - 228px)}
 }
 /* ============================================================
@@ -639,18 +628,13 @@ input,select{min-height:42px}
 .feat b{font-size:13.5px}
 .feat span{font-size:12px}
 /* — App header: one slim centred row. Logo, name and Hebrew sit
-   together on the left at normal size; email + Log out stay on
-   the same line at the right instead of wrapping underneath
-   and doubling the header's height. — */
+   together on the left at normal size. (The signed-in email and
+   Log out moved into the Menu, under "My account".) — */
 .topbar{padding:7px 10px 8px;flex-wrap:nowrap;align-items:center;gap:8px}
 .topbar-logo{width:34px;height:34px}
 .topbar-title{font-size:18px}
 .topbar-title-he{font-size:13.5px;margin-top:0}
 .topbar-sub{font-size:9.5px;margin-top:1px}
-.userbar{flex-wrap:nowrap;gap:6px}
-.user-email{font-size:11px;padding:5px 8px;max-width:118px}
-.logout-btn{padding:7px 11px;font-size:13px;white-space:nowrap}
-@media(max-width:400px){.user-email{max-width:82px;font-size:10.5px;padding:4px 7px}}
 /* — Front page: heading strip and panels centred, map box
    centred in its card, Start driving a normal-size button — */
 .wrap>div:first-child{margin-bottom:8px !important}
@@ -668,8 +652,6 @@ input,select{min-height:42px}
 .start-driving-big{margin-top:10px;padding:13px 16px;font-size:16.5px;border-radius:12px;box-shadow:0 6px 16px rgba(14,59,44,.25)}
 .map-wrap{margin-top:9px}
 #openNearBtn{margin-top:8px}
-/* — Feedback bubble: a normal small pill, not a slab — */
-.chat-fab{padding:9px 14px;font-size:13.5px;min-height:42px;bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));padding:10px 14px;font-size:13px}
 /* — Bottom tab bar: slimmer — */
 .tab-btn{min-height:47px;font-size:11.5px;padding:5px 4px;gap:2px}
@@ -703,9 +685,9 @@ input,select{min-height:42px}
 #stopDriving{font-size:14px !important;padding:9px 14px !important}
 /* — Contacts page: compact action row, search and cards, so
    several contacts fit on one phone screen — */
-#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#tripOverlayBody{padding:10px !important}
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#settingsOverlay>div:nth-child(2),#tripOverlayBody{padding:10px !important}
 #contactsOverlay>div:nth-child(2)>div:first-child{gap:6px !important;margin-bottom:9px !important}
-#contactsAddBtn,#contactsPickPhoneBtn,#contactsImportBtn{flex:1 1 0 !important;min-width:0 !important;padding:9px 5px;font-size:12.5px;line-height:1.25}
+#contactsAddBtn{width:100%;padding:10px 12px;font-size:14.5px;line-height:1.25}
 .contact-list{gap:7px;margin-top:9px}
 .contact-card{padding:9px 10px;border-radius:12px}
 .contact-card .avatar{width:40px;height:40px}
@@ -744,6 +726,100 @@ input,select{min-height:42px}
 .cv-photo svg{width:54px;height:54px}
 .alert-banner{padding:12px;margin:10px}
 .alert-banner b{font-size:17px}
+/* ============================================================
+   ROUND 3.7b — header breathing room, true centring, and a
+   smaller Contacts page. Last layer on purpose: it wins.
+   ============================================================ */
+/* — Header: the logo + name sat jammed against the very top of
+   the screen. The bar now breathes — real space above the
+   content so it sits lower — while the content itself is a
+   touch smaller and tidier. — */
+.topbar{padding:20px 12px 11px;gap:10px}
+.topbar-logo{width:31px;height:31px}
+.topbar-title{font-size:16.5px}
+.topbar-title-he{font-size:12px}
+.topbar-sub{font-size:9px;margin-top:1px}
+/* — Front-page top: tighter, neater strip under the header — */
+.wrap{padding-top:8px}
+.wrap>div:first-child{margin-bottom:6px !important}
+.hero-strip{padding:9px 12px;border-radius:14px;gap:8px}
+.hero-strip h1{font-size:17.5px}
+.stat-num{font-size:17px}
+.stat-label{font-size:12.5px}
+/* — TRUE CENTRING: the map card and the "Who's near me now?"
+   card are the full width of the centred phone column, centred
+   in it with auto margins, and the grid can never be pushed
+   wider than the column by its contents (the old blow-out is
+   what made the white boxes look off-centre / cut off). — */
+.workspace{grid-template-columns:minmax(0,1fr)}
+.workspace>*{min-width:0}
+.workspace .panel{width:100%;max-width:100%;margin-left:auto;margin-right:auto;min-width:0}
+.hero-strip{width:100%;max-width:100%;margin-left:auto;margin-right:auto}
+.map-wrap{width:100%;max-width:100%}
+#map{width:100%;max-width:100%}
+/* — Contacts page, round two: everything a step smaller so
+   more of the page fits on one phone screen — */
+#contactsOverlay>div:nth-child(2){padding:8px !important}
+#contactsOverlay>div:nth-child(2)>div:first-child{margin-bottom:8px !important}
+#contactsOverlay label{font-size:13.5px}
+#contactsOverlay .search-row{margin-top:4px}
+#contactsOverlay .search-row input{min-height:38px;padding:8px 10px;font-size:14px}
+#contactsOverlay .sort-bar{padding:6px 8px;margin-top:7px;font-size:13px}
+#contactsOverlay .dist-btn{padding:6px 10px;font-size:13px;min-height:32px}
+.contact-list{gap:6px;margin-top:7px}
+.contact-card{padding:8px 9px;border-radius:11px}
+.contact-card .avatar{width:36px;height:36px}
+.contact-card .avatar svg{width:21px;height:21px}
+.contact-name{font-size:14.5px}
+.contact-addr{font-size:12px;line-height:1.35;margin-top:1px}
+.contact-card .actions{gap:5px;margin-top:6px}
+.contact-card .actions a,.contact-card .actions button{min-height:34px;padding:7px 4px;font-size:12.5px}
+.contact-card .copy-addr-btn-sm{width:26px;height:26px;min-height:26px}
+.toggle-row{margin-top:6px;padding-top:6px;font-size:12px;gap:7px}
+.switch{width:40px;height:24px}
+.switch-thumb{width:18px;height:18px}
+.switch input:checked ~ .switch-thumb{left:19px}
+/* — Side panel polish: a softer shadow, calmer rows with a
+   gentle press tint, and a small neat Close pill in place of
+   the big slab that sat at the top right — */
+.side-panel{box-shadow:14px 0 42px rgba(14,59,44,.30)}
+.menu-list{gap:8px;padding:13px 12px 0}
+.menu-row{border-radius:12px;transition:background .15s ease,border-color .15s ease}
+.menu-row:active{background:#fdf3d7;border-color:var(--gold)}
+#closeSideBtn{padding:5px 11px !important;min-height:30px;font-size:12.5px;border-radius:999px;font-weight:700;box-shadow:0 1px 4px rgba(90,70,20,.15)}
+/* — Settings page: the alerts panel sits flat in the page — */
+#settingsSlot #alertsPanel{margin:0}
+/* — Trip Planner: the four steps no longer share one big white
+   box. The outer panel goes flat and EACH STEP is its own card
+   with its own soft shade, clearly separated from the next, so
+   the planner reads one calm step at a time. The final card
+   holds the return/minutes options and the plan buttons. — */
+#tripPanel{background:transparent;border:0;box-shadow:none;padding:0;border-radius:0}
+#tripPanel>h2{margin:2px 2px 0}
+#tripPanel .settings-grid{gap:12px;margin-top:12px}
+.trip-step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(90,70,20,.06)}
+.trip-step.ts-2{background:var(--sand-field)}
+.trip-step.ts-3{background:var(--green-light)}
+.trip-step.ts-4{border:1.5px solid var(--gold)}
+.trip-step.ts-final{background:var(--paper);display:flex;flex-direction:column;gap:10px}
+.trip-step.ts-final #tripPreviewShowBtn{margin-top:0}
+/* — Bottom clearance: the fixed tab bar (Map / Contacts / Trip /
+   More) must NEVER cover page content. The compact layer's
+   padding shorthand had quietly wiped the old 104px bottom
+   padding on the page bodies, trapping buttons like "Plan my
+   trip" underneath the bar. Every page body now ends with a
+   generous clear space below its last button. — */
+#tripOverlayBody{padding-bottom:168px !important}
+#contactsOverlay>div:nth-child(2),#contactViewOverlay>div:nth-child(2),#addOverlay>div:nth-child(2),#editOverlay>div:nth-child(2),#inboxOverlay>div:nth-child(2),#bonusesOverlay>div:nth-child(2),#settingsOverlay>div:nth-child(2){padding-bottom:168px !important}
+#drivingOverlay>div:last-child{padding-bottom:168px !important}
+.wrap{padding-bottom:150px}
+/* — Trip results & "Your trip" map preview: a clean modern
+   font throughout (the serif display face used for panel
+   headings looked out of place here) — */
+#tripResult,#tripPreviewWrap{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#tripResult h3,#tripPreviewWrap h3{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:800;letter-spacing:-.01em;color:var(--green)}
+.trip-result-item strong{font-weight:700}
+.trip-num{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 </style>
 </head>
 <body>
@@ -807,10 +883,6 @@ input,select{min-height:42px}
       <div class="topbar-sub">For Rabbi Goldstein • Mivtzoim</div>
       </div>
     </div>
-    <div class="userbar">
-      <span id="signedInEmail" class="user-email"></span>
-      <button id="logoutBtn" class="logout-btn">Log out</button>
-    </div>
   </header>
 
   <div id="sideBackdrop" class="side-backdrop"></div>
@@ -821,22 +893,11 @@ input,select{min-height:42px}
     </div>
     <div class="side-scroll">
     <nav class="menu-list" aria-label="Menu">
-      <button type="button" id="drawerOpenContacts" class="menu-row"><span>👥 Open my contacts</span></button>
-      <div class="menu-item" data-menu="add">
-        <button type="button" class="menu-row" data-menu="add" aria-expanded="false"><span>＋ Add a contact</span><span class="chev" aria-hidden="true">▾</span></button>
-        <div class="menu-body">
-          <div id="drawerAddSlot"></div>
-        </div>
-      </div>
+      <button type="button" id="drawerOpenContacts" class="menu-row"><span>👥 Contacts</span></button>
       <button type="button" id="drawerTripBtn" class="menu-row"><span>🧭 Trip planner</span></button>
-      <div class="menu-item" data-menu="alerts">
-        <button type="button" class="menu-row" data-menu="alerts" aria-expanded="false"><span>🔔 Alerts, sounds &amp; notifications</span><span class="chev" aria-hidden="true">▾</span></button>
-        <div class="menu-body">
-          <div id="drawerAlertsSlot"></div>
-        </div>
-      </div>
+      <button type="button" id="drawerSettingsBtn" class="menu-row"><span>⚙️ Settings</span></button>
       <button type="button" id="drawerFeedbackBtn" class="menu-row"><span>💬 Feedback</span></button>
-      <button type="button" id="drawerHelpBtn" class="menu-row"><span><svg class="ai-spark" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="aiG1" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4285f4"/><stop offset=".5" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#aiG1)" d="M12 24A14.304 14.304 0 0 0 9.414 15.586 14.304 14.304 0 0 0 0 12a14.304 14.304 0 0 0 9.414-3.586A14.304 14.304 0 0 0 12 0a14.304 14.304 0 0 0 2.586 8.414A14.304 14.304 0 0 0 24 12a14.304 14.304 0 0 0-9.414 3.586A14.304 14.304 0 0 0 12 24Z"/></svg> Ask for help</span></button>
+      <button type="button" id="drawerHelpBtn" class="menu-row"><span><svg class="ai-spark" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="aiG1" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4285f4"/><stop offset=".5" stop-color="#9b72cb"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#aiG1)" d="M12 24A14.304 14.304 0 0 0 9.414 15.586 14.304 14.304 0 0 0 0 12a14.304 14.304 0 0 0 9.414-3.586A14.304 14.304 0 0 0 12 0a14.304 14.304 0 0 0 2.586 8.414A14.304 14.304 0 0 0 24 12a14.304 14.304 0 0 0-9.414 3.586A14.304 14.304 0 0 0 12 24Z"/></svg> Ask AI</span></button>
       <button type="button" id="drawerInboxBtn" class="menu-row" style="display:none"><span>📊 Feedback dashboard</span></button>
       <div class="menu-item" id="adminKeysItem" data-menu="keys" style="display:none">
         <button type="button" class="menu-row" data-menu="keys" aria-expanded="false"><span>🔑 App keys — admin</span><span class="chev" aria-hidden="true">▾</span></button>
@@ -859,13 +920,23 @@ input,select{min-height:42px}
         </div>
       </div>
       <button type="button" id="drawerBonusesBtn" class="menu-row"><span>🎁 Bonuses — coming soon</span></button>
+      <div class="menu-item" data-menu="account">
+        <button type="button" class="menu-row" data-menu="account" aria-expanded="false"><span>👤 My account</span><span class="chev" aria-hidden="true">▾</span></button>
+        <div class="menu-body">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px">
+            <p class="muted" style="margin:0">Signed in as</p>
+            <p style="margin:4px 0 0;font-weight:700;overflow-wrap:anywhere"><span id="signedInEmail"></span></p>
+            <button type="button" id="logoutBtn" class="btn btn-green" style="margin-top:12px">Log out</button>
+          </div>
+        </div>
+      </div>
     </nav>
     </div>
     <div class="side-footer">
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.6</div>
+      <div class="side-version">Version 3.7</div>
     </div>
   </aside>
 
@@ -1093,7 +1164,7 @@ input,select{min-height:42px}
     <div class="panel" style="margin-top:18px" id="tripPanel">
       <h2>🧭 Trip planner</h2>
       <div class="settings-grid">
-        <div>
+        <div class="trip-step ts-1">
           <div style="font-weight:700;margin-bottom:8px">1 · Where are you starting from?</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <button type="button" id="tripGpsBtn" class="btn btn-green">📍 Current location</button>
@@ -1113,7 +1184,7 @@ input,select{min-height:42px}
             <div id="tripStartResults" class="suggest"></div>
           </div>
         </div>
-        <div>
+        <div class="trip-step ts-2">
           <label for="tripDestSearch" style="font-weight:700;display:block;margin-bottom:8px">2 · Where are you going? (your main destination)</label>
           <div class="autocomplete">
             <input id="tripDestSearch" type="text" autocomplete="off" placeholder="Type a name — e.g. Cohen" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
@@ -1135,7 +1206,7 @@ input,select{min-height:42px}
           </div>
           <p id="tripDestAddrLabel" class="muted" style="margin-top:8px"></p>
         </div>
-        <div>
+        <div class="trip-step ts-3">
           <div style="font-weight:700;margin-bottom:8px">3 · How far out of your way are you ready to go?</div>
           <div class="dist-btns" id="tripShowBtns" role="group" aria-label="How far out of the way">
             <button type="button" class="dist-btn" data-trip-show="onway">On the way only</button>
@@ -1148,12 +1219,13 @@ input,select{min-height:42px}
             <button type="button" class="dist-btn" data-trip-show="all">Everyone</button>
           </div>
         </div>
-        <div>
+        <div class="trip-step ts-4">
           <div style="font-weight:700;margin-bottom:8px">4 · Who do you want to visit? Tick them</div>
           <label for="tripStopsSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search the people list</label>
           <input id="tripStopsSearch" type="text" autocomplete="off" placeholder="🔍 Type a name to find someone fast…" style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)">
           <div id="tripStops" class="checklist" style="max-height:300px"></div>
         </div>
+        <div class="trip-step ts-final">
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
           <label style="display:flex;gap:8px;align-items:center;font-weight:600;cursor:pointer"><input id="tripReturn" type="checkbox" checked style="width:22px;height:22px"> Come back to the start at the end</label>
           <label style="display:flex;gap:8px;align-items:center;font-weight:600">Minutes at each visit: <input id="tripVisitMins" type="number" min="0" max="120" step="5" value="15" style="width:80px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--cream);color:var(--ink)"></label>
@@ -1171,6 +1243,7 @@ input,select{min-height:42px}
             <button type="button" id="tripPreviewHideBtn" class="btn btn-gold" style="flex:1;min-width:140px">Hide map</button>
           </div>
         </div>
+        </div>
       </div>
     </div>
 
@@ -1182,7 +1255,6 @@ input,select{min-height:42px}
     </div>
   </div>
 
-  <button type="button" id="chatFab" class="chat-fab" aria-label="Open feedback chat">💬 Feedback</button>
   <div id="chatWindow" class="chat-window" role="dialog" aria-label="Feedback chat">
     <div class="chat-head">
       <div><div style="font-family:Georgia,serif;font-size:19px;line-height:1">💬 Feedback</div></div>
@@ -1230,9 +1302,7 @@ input,select{min-height:42px}
   </div>
   <div style="max-width:760px;margin:0 auto;padding:14px">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <button type="button" id="contactsAddBtn" class="btn btn-green" style="flex:1;min-width:150px">➕ Add a contact</button>
-      <button type="button" id="contactsPickPhoneBtn" class="btn btn-gold" style="flex:1;min-width:150px">👤 Add from phone contacts</button>
-      <button type="button" id="contactsImportBtn" class="btn btn-outline" style="flex:1;min-width:150px">📁 Choose file</button>
+      <button type="button" id="contactsAddBtn" class="btn btn-green" style="flex:1">➕ Add a contact</button>
     </div>
     <label for="contactsSearchInput" style="font-weight:700;display:block;margin-top:2px">🔍 Search contacts</label>
     <div class="search-row" style="margin-top:6px">
@@ -1311,6 +1381,25 @@ input,select{min-height:42px}
     <div id="inboxList"></div>
   </div>
 </div>
+
+<!-- SETTINGS PAGE — everything that used to live in the Menu's "Alerts, sounds &
+     notifications" accordion now has its own page: alert distance, map view
+     around me while driving, alert sound, notifications. The alerts panel is
+     moved into this page by the side-panel init code. -->
+<div id="settingsOverlay" role="dialog" aria-label="Settings">
+  <div class="contacts-head">
+    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">⚙️ Settings</div></div>
+    <button id="closeSettingsBtn" class="btn back-btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px"><span class="back-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></span><span class="back-label">Back</span></button>
+  </div>
+  <div style="max-width:760px;margin:0 auto;padding:14px">
+    <div id="settingsSlot"></div>
+  </div>
+</div>
+
+<!-- Hidden home for the Add-a-contact panel. It used to live in the Menu's
+     "Add a contact" accordion (removed — adding lives inside Contacts now);
+     the panel rests here, invisible, and moves into the Add sheet while adding. -->
+<div id="addPanelHome" style="display:none"></div>
 
 <!-- BONUSES PAGE -->
 <div id="bonusesOverlay" role="dialog" aria-label="Bonuses">
@@ -1751,13 +1840,11 @@ function renderContactView(){
   if(!c){ body.innerHTML='<p class="muted" style="text-align:center;padding:20px">This contact is no longer here.</p>'; return; }
   const addr=fullAddress(c);
   const nCount=contactNotes(c).length;
-  const badge=c.geocodeStatus==='exact'?'<span class="badge badge-exact">Exact pin</span>':c.geocodeStatus==='approximate'?'<span class="badge badge-approx">Approximate — town</span>':(c.lat!=null?'<span class="badge badge-exact">On map</span>':'<span class="badge badge-nopin">No pin yet</span>');
   const src=profilePhotoSrc(c)||(hasPhoto(c)?c.photo:'');
   body.innerHTML=`
     <div style="text-align:center">
       <div class="cv-photo">${src?`<img src="${src}" alt="Photo of ${escapeHtml(c.name||'contact')}">`:SILHOUETTE_SVG}</div>
       <div style="font-family:Georgia,serif;font-size:28px;font-weight:700;line-height:1.15;margin-top:12px">${escapeHtml(c.name||'No name')}</div>
-      <div style="margin-top:8px">${badge}</div>
       ${c.phone?`<div style="font-size:17px;margin-top:10px">☎️ ${escapeHtml(c.phone)}</div>`:''}
     </div>
     <div style="margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--paper)">
@@ -1937,14 +2024,13 @@ function renderList(){
   list.forEach((c,idx)=>{
     const card=document.createElement('div'); card.className='contact-card'; card.dataset.cid=c.id||'';
     const nCount=contactNotes(c).length;
-    const badge=c.geocodeStatus==='exact'?'<span class="badge badge-exact">Exact pin</span>':c.geocodeStatus==='approximate'?'<span class="badge badge-approx">Approximate — town</span>':(c.lat!=null?'<span class="badge badge-exact">On map</span>':'<span class="badge badge-nopin">No pin yet</span>');
     /* Simple card: photo, name, the address printed right under the name with a
        small copy button beside it, and only three buttons — Call, Directions,
        Notes. Tapping the person opens their full contact view, where Edit,
        picture and Delete live. */
     const cardAddr=fullAddress(c);
     card.innerHTML=`
-      <div class="contact-head"><div class="contact-open" style="display:flex;gap:12px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`<span style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1;min-width:0">${escapeHtml(cardAddr)}</span><button type="button" class="copy-addr-btn copy-addr-btn-sm card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button></span>`:'No address yet'}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div>${badge}</div>
+      <div class="contact-head"><div class="contact-open" style="display:flex;gap:12px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`<span style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1;min-width:0">${escapeHtml(cardAddr)}</span><button type="button" class="copy-addr-btn copy-addr-btn-sm card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button></span>`:'No address yet'}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div></div>
       <div class="actions">
         ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
         <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
@@ -2071,7 +2157,7 @@ function toggleSubSection(name){
   setSubSection(name,willOpen);
 }
 (function initSidePanel(){
-  const aSlot=$('drawerAlertsSlot'), cSlot=$('drawerAddSlot');
+  const aSlot=$('settingsSlot'), cSlot=$('addPanelHome');
   const a=$('alertsPanel'), b=$('addContactsPanel');
   if(a&&aSlot) aSlot.appendChild(a);
   if(b&&cSlot) cSlot.appendChild(b);
@@ -2085,6 +2171,7 @@ function toggleSubSection(name){
   const oc=$('drawerOpenContacts'); if(oc) oc.addEventListener('click', ()=>{ closeSidePanel(); openContactsPage(); });
   const tb=$('drawerTripBtn'); if(tb) tb.addEventListener('click', ()=>{ closeSidePanel(); openTripPage(); });
   const fb=$('drawerFeedbackBtn'); if(fb) fb.addEventListener('click', ()=>{ closeSidePanel(); setChatOpen(true); });
+  const stb2=$('drawerSettingsBtn'); if(stb2) stb2.addEventListener('click', ()=>{ closeSidePanel(); openSettingsPage(); });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSidePanel(); });
 })();
 /* TRIP PLANNER & NEAR ME — each lives on its own page, opened by one calm button on the main page */
@@ -2100,6 +2187,7 @@ function closeSiblingPages(except){
   if(except!=='contacts') closeContactsPage();
   if(except!=='inbox') closeInboxPage();
   if(except!=='bonuses') closeBonusesPage();
+  if(except!=='settings') closeSettingsPage();
 }
 function openTripPage(){ const o=$('tripOverlay'); if(!o) return; closeSiblingPages('trip'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; renderTripPlanner(); }
 function closeTripPage(){ const o=$('tripOverlay'); if(!o) return; o.classList.remove('open'); const co=$('contactsOverlay'), no=$('nearOverlay'); if(!$('drivingOverlay').classList.contains('open')&&!(co&&co.classList.contains('open'))&&!(no&&no.classList.contains('open'))) document.body.style.overflow=''; }
@@ -2160,8 +2248,8 @@ const _asb=$('closeAddSheetBtn'); if(_asb) _asb.addEventListener('click', ()=>{ 
    phone contact picker or the file chooser directly in the sheet. */
 (function(){
   const addB=$('contactsAddBtn'); if(addB) addB.addEventListener('click', ()=>{ openAddSheet(); });
-  const pickB=$('contactsPickPhoneBtn'); if(pickB) pickB.addEventListener('click', ()=>{ openAddSheet(); const pb=$('pickPhoneBtn'); if(pb) pb.click(); });
-  const impB=$('contactsImportBtn'); if(impB) impB.addEventListener('click', ()=>{ openAddSheet(); const vi=$('vcfInput'); if(vi) vi.click(); });
+  /* The old separate "Add from phone contacts" / "Choose file" buttons that sat
+     next to this one were removed — both already live inside "Add a contact". */
 })();
 /* EDIT SHEET — editing from My Contacts happens in a sheet over the Contacts page itself.
    The by-hand form node moves into the sheet while editing and moves back when done, so the
@@ -2452,6 +2540,11 @@ function renderAccounts(list){
 /* BONUSES — coming-soon page only, no features yet */
 function openBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; closeSiblingPages('bonuses'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; }
 function closeBonusesPage(){ const o=$('bonusesOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow=''; }
+/* SETTINGS PAGE — the Menu's "Settings" entry opens this page; the alerts
+   panel (distance, map view, sound, notifications) lives inside it. */
+function openSettingsPage(){ const o=$('settingsOverlay'); if(!o) return; closeSiblingPages('settings'); o.classList.add('open'); document.body.style.overflow='hidden'; o.scrollTop=0; }
+function closeSettingsPage(){ const o=$('settingsOverlay'); if(!o) return; o.classList.remove('open'); if(!$('drivingOverlay').classList.contains('open') && !$('contactsOverlay').classList.contains('open')) document.body.style.overflow=''; }
+(function(){ const csb=$('closeSettingsBtn'); if(csb) csb.addEventListener('click', closeSettingsPage); })();
 (function initBonuses(){
   const bb=$('drawerBonusesBtn'); if(bb) bb.addEventListener('click', ()=>{ closeSidePanel(); openBonusesPage(); });
   const cb=$('closeBonusesBtn'); if(cb) cb.addEventListener('click', closeBonusesPage);
@@ -3492,7 +3585,7 @@ function attachTripRowGestures(row){
   row.addEventListener('pointercancel', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } stopBlock(); active=false; mode=null; row.style.transform=''; moveEl.style.transform=''; if(wrap) wrap.style.zIndex=''; row.classList.remove('dragging'); row.classList.remove('swipe-remove'); });
 }
 
-/* FEEDBACK CHAT — a chat bubble, bottom-right. Type, or leave a WhatsApp-style voice note.
+/* FEEDBACK CHAT — opened from the Menu → "Feedback" entry. Type, or leave a WhatsApp-style voice note.
    Everything sent goes to the shared /feedback collection, which only Mendel's login can read,
    with the sender's email attached. The conversation is kept on this device like a chat thread. */
 let fbUnsub=null, mediaRecorder=null, recordChunks=[], recordTimerInt=null, recordSecs=0, recordStream=null, recordIntent='discard', chatSending=false;
@@ -3532,23 +3625,14 @@ function renderChatThread(){
 }
 /* The login handler calls renderSentFeedback() — in the chat it renders the thread */
 function renderSentFeedback(){ renderChatThread(); }
-/* The Feedback bubble must never sit on top of an open chat window — it used
-   to float over the Ask-for-help window's Send button. While either chat is
-   open, the bubble steps aside; both windows have their own ✕ to close. */
-function syncChatFab(){
-  const fab=$('chatFab'); if(!fab) return;
-  const cw=$('chatWindow'), hw=$('helpWindow');
-  const anyOpen=(cw&&cw.classList.contains('open'))||(hw&&hw.classList.contains('open'));
-  fab.style.display=anyOpen?'none':'';
-}
+/* The feedback chat opens from the Menu → "Feedback" entry only — there is
+   no floating bubble anymore. The window has its own ✕ to close. */
 function setChatOpen(open){
   const w=$('chatWindow'); if(!w) return;
   if(open && typeof setHelpOpen==='function') setHelpOpen(false);
   w.classList.toggle('open',open);
   if(open){ renderChatThread(); const inp=$('chatInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
-  syncChatFab();
 }
-const _fab=$('chatFab'); if(_fab) _fab.addEventListener('click',()=>{ const w=$('chatWindow'); setChatOpen(!(w&&w.classList.contains('open'))); });
 const _ccb=$('chatCloseBtn'); if(_ccb) _ccb.addEventListener('click',()=>setChatOpen(false));
 function blobToDataUrl(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); }); }
 async function sendFeedbackPayload(text, voiceBlob){
@@ -3852,17 +3936,18 @@ const HELP_SYSTEM_PROMPT=[
 'HOW THE APP WORKS:',
 '- Signing in: the welcome page takes an email and password (Log in, Create account, Forgot password). Everything is saved under that login.',
 '- The main page is the Map. Contacts appear as pins: a person with a photo shows as their picture in a round gold frame; without a photo, a gold figure. Tapping a pin opens a small card with Call, WhatsApp, Directions, Copy address and Open contact. Above the map area are a search box (name, phone, street, city) and area buttons (Brooklyn, Manhattan, Queens and more) that filter and zoom.',
-'- Adding a contact — three ways, all under Menu → "Add a contact", and also on the My Contacts page: (1) "Add from phone contacts" picks people from the phone (not available in every browser); (2) "Choose file" imports a contacts file (.vcf); (3) "Add by hand" — the form starts CLOSED and opens only when that button is tapped. In the form, typing a street address brings up live address suggestions; tapping one fills the street, city, state and ZIP and sets the exact pin. Then tap "Save contact".',
-'- My Contacts: the Contacts tab at the bottom, or Menu → "Open my contacts". Search at the top; sort by Name A–Z or by Distance from me now. Each card shows the photo, name, address with a small copy button, and Call / Directions / Notes buttons, plus an "On my map" switch. Tapping a person opens their full contact page, where Edit, the photos and Delete live.',
+'- Adding a contact — three ways, all from the "Add a contact" button at the top of the My Contacts page: (1) "Add from phone contacts" picks people from the phone (not available in every browser); (2) "Choose file" imports a contacts file (.vcf); (3) "Add by hand" — the form starts CLOSED and opens only when that button is tapped. In the form, typing a street address brings up live address suggestions; tapping one fills the street, city, state and ZIP and sets the exact pin. Then tap "Save contact".',
+'- My Contacts: the Contacts tab at the bottom, or Menu → "Contacts". Search at the top; sort by Name A–Z or by Distance from me now. Each card shows the photo, name, address with a small copy button, and Call / Directions / Notes buttons, plus an "On my map" switch. Tapping a person opens their full contact page, where Edit, the photos and Delete live.',
 '- Who\'s near me now?: the big button under the map on the main page. It uses the phone\'s location and lists the closest contacts first; it can be sorted by distance or by name.',
 '- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. If several people are near, their alerts come one at a time — Dismiss shows the next person, and "Dismiss all" clears the whole line at once. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
-'- Settings live in the Menu (the gold Menu button at the top) → "Alerts, sounds & notifications": Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
+'- Settings live in the Menu (the gold Menu button at the top) → "Settings" — it opens its own page with everything about alerts: Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
 '- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now (the start box then shows the street address of where you are now; it keeps the words "Current location" only if no address can be found), or type a start address (suggestions appear; or "Set start"), or search your contacts by name under "or start from one of your contacts" and tap the person. Step 2: the main destination — type a name in the search box and tap the contact (the chosen destination is named under the box, with a Clear button), or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, "My own number" with your own number of miles typed in right next to it, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit — there is a search box above the list, type a name to find someone fast; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. In the planned list ("Your trip — best order") you can change the plan by hand: swipe a person sideways to take them off the trip, or press and hold a person and drag them up or down — your own order wins and the route and times update to match. There is one map button, "Show trip on map", which draws the trip on a map right there in the planner (Hide map closes it and the page stays where it is); "Edit trip" changes the plan and "Exit trip — reset map" clears it.',
 '- Notes: every contact has a Notes button (on their card and on their page). Write a note and save it. Tapping an older note opens it, with Edit and Delete inside.',
 '- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
-'- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
+'- Feedback: Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
+'- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.6.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.7.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
@@ -3885,7 +3970,6 @@ function setHelpOpen(open){
   const w=$('helpWindow'); if(!w) return;
   w.classList.toggle('open',open);
   if(open){ if(typeof setChatOpen==='function') setChatOpen(false); renderHelpThread(); const inp=$('helpInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
-  if(typeof syncChatFab==='function') syncChatFab();
 }
 /* GEMINI CALLS — one place that talks to Google's Gemini API with the saved
    AI key. It tries more than one model before giving up, and when Google
