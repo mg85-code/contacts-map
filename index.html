@@ -392,6 +392,16 @@ input,select{ min-height:48px }
 .chat-me{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:5px}
 .chat-app{align-self:flex-start;background:var(--paper);border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:5px}
 .chat-time{display:block;font-size:11px;opacity:.65;margin-top:4px}
+/* SPEAK BUTTON — a small, tidy round speaker tucked at the bottom-right of
+   each AI answer bubble in the Ask AI chat; tap to hear the answer read
+   aloud (device text-to-speech), tap again to stop. */
+.chat-speak-row{display:flex;justify-content:flex-end;margin-top:5px}
+.chat-speak-btn{width:30px;height:30px;min-height:30px;border-radius:50%;border:1.5px solid var(--gold);background:var(--gold-light);color:#5c430a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.chat-speak-btn svg{width:16px;height:16px;pointer-events:none}
+.chat-speak-btn:active{transform:scale(.93)}
+.chat-speak-btn.speaking{background:var(--green);border-color:var(--green);color:#fff;animation:chatSpeakPulse 1.1s ease-in-out infinite}
+@keyframes chatSpeakPulse{0%,100%{box-shadow:0 0 0 0 rgba(14,59,44,.35)}50%{box-shadow:0 0 0 6px rgba(14,59,44,0)}}
+@media (prefers-reduced-motion: reduce){.chat-speak-btn.speaking{animation:none}}
 .chat-record-bar{display:none;align-items:center;gap:10px;padding:9px 14px;background:#fdf0f0;border-top:1px solid #eec9c9;color:#7c1d1d;font-weight:600;font-size:14px;flex-shrink:0}
 .chat-record-bar.show{display:flex}
 .chat-rec-dot{width:12px;height:12px;border-radius:50%;background:#c02727;flex-shrink:0;animation:chatPulse 1s infinite}
@@ -1029,7 +1039,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 4.0</div>
+      <div class="side-version">Version 4.1</div>
     </div>
   </aside>
 
@@ -4035,16 +4045,53 @@ const HELP_SYSTEM_PROMPT=[
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
 '- Ask AI voice notes: in this Ask AI chat the person can tap the 🎙️ microphone button, record a voice note, and tap Send — the AI listens to the recording and answers in the chat, the same as a typed question. The voice note itself stays in the chat so it can be played back.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 4.0.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 4.1.',
+'- Hear an answer out loud: every answer in this Ask AI chat has a small round speaker button at the bottom-right of its bubble. Tap it and the phone reads the answer aloud; tap it again to stop.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
 let helpMsgs=[], helpSending=false;
+/* READ ANSWERS ALOUD — a small speaker button on each AI answer bubble reads
+   it with the device's built-in text-to-speech (speechSynthesis). Tapping
+   the same button again stops the reading; starting another answer stops
+   the first. Only one button is ever "speaking" at a time. */
+const SPEAK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.4 5.6a9 9 0 0 1 0 12.8"/></svg>';
+const SPEAK_STOP_SVG='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+let ttsBtn=null;
+function ttsSupported(){ return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance!=='undefined'; }
+function stopSpeaking(){
+  if(ttsSupported()){ try{ speechSynthesis.cancel(); }catch(e){} }
+  if(ttsBtn){ ttsBtn.classList.remove('speaking'); ttsBtn.innerHTML=SPEAK_SVG; ttsBtn.setAttribute('aria-label','Listen to this answer'); ttsBtn=null; }
+}
+function speakAnswer(text,btn){
+  if(!ttsSupported()){ toast('Sorry — this phone cannot read answers out loud'); return; }
+  if(ttsBtn===btn){ stopSpeaking(); return; }
+  stopSpeaking();
+  const clean=String(text||'').replace(/\s+/g,' ').trim();
+  if(!clean) return;
+  const u=new SpeechSynthesisUtterance(clean);
+  u.onend=()=>{ if(ttsBtn===btn) stopSpeaking(); };
+  u.onerror=()=>{ if(ttsBtn===btn) stopSpeaking(); };
+  ttsBtn=btn;
+  btn.classList.add('speaking'); btn.innerHTML=SPEAK_STOP_SVG; btn.setAttribute('aria-label','Stop reading');
+  try{ speechSynthesis.speak(u); }catch(e){ stopSpeaking(); toast('Sorry — this phone cannot read answers out loud'); }
+}
+function addSpeakButton(bubble,text){
+  if(!ttsSupported()||!text) return;
+  const row=document.createElement('div'); row.className='chat-speak-row';
+  const btn=document.createElement('button'); btn.type='button'; btn.className='chat-speak-btn';
+  btn.innerHTML=SPEAK_SVG; btn.setAttribute('aria-label','Listen to this answer');
+  btn.addEventListener('click',()=>speakAnswer(text,btn));
+  row.appendChild(btn); bubble.appendChild(row);
+}
 function renderHelpThread(){
+  stopSpeaking();
   const el=$('helpThread'); if(!el) return;
   el.innerHTML='';
   const greet=document.createElement('div'); greet.className='chat-msg chat-app';
-  greet.textContent=appKeys.gemini ? 'Hello! 👋 Ask me anything about using this app — for example: "How do I add a contact?" or "How does the trip planner work?" You can type, or tap 🎙️ and leave a voice note — I will listen and answer here.' : HELP_NO_KEY_TEXT;
+  const greetText=appKeys.gemini ? 'Hello! 👋 Ask me anything about using this app — for example: "How do I add a contact?" or "How does the trip planner work?" You can type, or tap 🎙️ and leave a voice note — I will listen and answer here.' : HELP_NO_KEY_TEXT;
+  greet.textContent=greetText;
+  addSpeakButton(greet,greetText);
   el.appendChild(greet);
   helpMsgs.forEach(m=>{
     const div=document.createElement('div'); div.className='chat-msg '+(m.from==='me'?'chat-me':'chat-app');
@@ -4053,6 +4100,7 @@ function renderHelpThread(){
     else if(m.audio) html+='🎙️ Voice note';
     div.innerHTML=html;
     if(m.audio){ const au=document.createElement('audio'); au.controls=true; au.preload='metadata'; au.src=m.audio; div.appendChild(au); }
+    if(m.from==='app'&&m.text) addSpeakButton(div,m.text);
     el.appendChild(div);
   });
   el.scrollTop=el.scrollHeight;
@@ -4060,6 +4108,7 @@ function renderHelpThread(){
 function appendHelpMsg(from,text,audio){ helpMsgs.push({from:from,text:text||'',audio:audio||null}); if(helpMsgs.length>40) helpMsgs=helpMsgs.slice(-40); renderHelpThread(); }
 function setHelpOpen(open){
   const w=$('helpWindow'); if(!w) return;
+  if(!open) stopSpeaking();
   if(!open && typeof helpRecordIsActive==='function' && helpRecordIsActive()){ try{ stopHelpVoiceRecord('discard'); }catch(e){} }
   w.classList.toggle('open',open);
   if(open){ if(typeof setChatOpen==='function') setChatOpen(false); renderHelpThread(); const inp=$('helpInput'); if(inp) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} },150); }
