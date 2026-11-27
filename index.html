@@ -290,6 +290,19 @@ input,select{ min-height:48px }
 .leaflet-popup-content .btn-green{color:#fff !important}
 .leaflet-popup-content .btn-gold{color:#1a1405 !important}
 .leaflet-popup-content .btn-outline{color:var(--green) !important}
+/* GOOGLE MAPS POPUPS — the same popup card as the Leaflet one: same buttons in
+   the same 2-column grid, same readable colours (white on green, dark on gold,
+   green on the white outline button) */
+.gm-popup{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.45;color:var(--ink);max-width:236px}
+.gm-popup .popup-photo{width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;display:block;margin:0 auto 8px;background:var(--green)}
+.gm-popup .popup-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.gm-popup .popup-btns .btn{min-height:42px;padding:8px 6px;font-size:13px}
+.gm-popup .btn-green{color:#fff !important}
+.gm-popup .btn-gold{color:#1a1405 !important}
+.gm-popup .btn-outline{color:var(--green) !important}
+/* Google Maps draws its tiles as <img>s — the page-wide img{max-width:100%}
+   rule must never squeeze them */
+#map img,#driveMap img,#tripPreviewMap img{max-width:none !important}
 .contacts-head{position:sticky;top:0;background:var(--green);color:#fff;padding:14px 16px;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 /* DRIVING */
 #drivingOverlay{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow:auto}
@@ -642,7 +655,7 @@ input[type="text"],input[type="email"],input[type="password"],input[type="search
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.3</div>
+      <div class="side-version">Version 3.4</div>
     </div>
   </aside>
 
@@ -1275,7 +1288,7 @@ const firebaseOk=initFirebase();
 if(firebaseOk && auth){
   auth.onAuthStateChanged(user=>{
     currentUser=user;
-    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(initMap,80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); loadAppKeys(); }
+    if(user){ $('welcomeScreen').style.display='none'; $('appScreen').style.display='block'; $('signedInEmail').textContent=user.email||''; subscribeContacts(); renderSentFeedback(); setTimeout(()=>{ loadAppKeys().then(()=>{ ensureGoogleMaps(); initMap(); }); },80); updateNotifUI(); updateDistUI(); updateViewUI(); updateInboxVisibility(); noteAccountSeen(user); }
     else { $('welcomeScreen').style.display='flex'; $('appScreen').style.display='none'; if(unsub){unsub(); unsub=null;} if(typeof fbUnsub!=='undefined'&&fbUnsub){fbUnsub(); fbUnsub=null;} contacts=[]; appKeys={gemini:'',maps:''}; stopDriving(); closeContactView(); closeAddSheet(); closeContactsPage(); closeTripPage(); closeNearPage(); closeInboxPage(); closeBonusesPage(); updateInboxVisibility(); }
   });
 } else { $('firebaseError').classList.add('show'); }
@@ -1346,12 +1359,132 @@ async function deleteContact(id){ await contactsCol().doc(id).delete(); }
 
 /* MAP */
 function initMap(){
+  if(gMap){ setTimeout(()=>{ try{ google.maps.event.trigger(gMap,'resize'); }catch(e){} },100); renderMarkers(); return; }
   if(map){ setTimeout(()=>map.invalidateSize(),100); renderMarkers(); return; }
+  if(gmapsState==='ready'){ initGoogleMap(); return; }
+  if(gmapsState==='loading'){
+    /* Wait for the Google load to settle, then init whichever engine won;
+       if it takes too long, fall back to Leaflet so the map never waits. */
+    gmapsPromise.then(()=>{ if(!map&&!gMap) initMap(); });
+    setTimeout(()=>{ if(!map&&!gMap&&gmapsState!=='ready'){ engineLocked=true; initLeafletMap(); } },4000);
+    return;
+  }
+  initLeafletMap();
+}
+function initLeafletMap(){
+  if(map||gMap) return;
   if(typeof L==='undefined') return;
   map=L.map('map').setView([40.68,-73.95],11);
   if(map.zoomControl) map.zoomControl.setPosition('topright');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
   renderMarkers();
+}
+/* ============================================================
+   GOOGLE MAPS ENGINE — when a Maps key is saved in /config/keys
+   and the Google Maps JavaScript API loads with it, every map
+   (main, driving, trip preview) is drawn by Google instead of
+   Leaflet, with the same pins, round photo pins, popup cards,
+   route line, radius circles and follow-me behaviour. ANY
+   failure — no key saved, script blocked, key rejected — leaves
+   mapEngine on 'leaflet' and the app works exactly as before.
+   The engine is chosen once, at login, before the first map is
+   drawn; it never switches mid-session.
+   ============================================================ */
+let mapEngine='leaflet', gmapsState='idle', gmapsPromise=null, engineLocked=false;
+let gMap=null, gMarkers=[], gUserMarker=null, gMainCircle=null, gOpenCid=null, gInfo=null;
+let gDriveMap=null, gDriveMarkers=[], gDriveUserMarker=null, gDriveCircle=null, gDriveOpenCid=null, gDriveInfo=null;
+let gTripMap=null, gTripMarkers=[], gTripLineObj=null, gTripInfo=null, gTripRouteLine=null;
+function ensureGoogleMaps(){
+  if(gmapsState==='ready') return Promise.resolve(true);
+  if(gmapsPromise) return gmapsPromise;
+  if(!appKeys.maps){ gmapsState='failed'; return Promise.resolve(false); }
+  gmapsState='loading';
+  gmapsPromise=new Promise(resolve=>{
+    let done=false;
+    const finish=ok=>{ if(done) return; done=true; const useOk=ok&&!engineLocked; if(useOk){ gmapsState='ready'; mapEngine='google'; } else { gmapsState='failed'; } resolve(useOk); };
+    window.gm_authFailure=()=>finish(false);
+    window.__rgGmapsReady=()=>finish(!!(window.google&&google.maps&&google.maps.Map));
+    try{
+      const s=document.createElement('script');
+      s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(appKeys.maps)+'&v=weekly&callback=__rgGmapsReady';
+      s.async=true; s.onerror=()=>finish(false);
+      document.head.appendChild(s);
+    }catch(e){ finish(false); }
+    setTimeout(()=>finish(!!(window.google&&window.google.maps&&window.google.maps.Map)),7000);
+  });
+  return gmapsPromise;
+}
+/* A Google marker that carries the app's own HTML (the .pin-num circle or the
+   round .photo-marker), centred on its point exactly like the Leaflet divIcon
+   anchors, and clickable — tapping it runs the same handler as a Leaflet pin. */
+function defineGMarker(){
+  if(window.__GHtmlMarker) return window.__GHtmlMarker;
+  function GHtmlMarker(pos, html, onClick){
+    this.pos=pos; this.html=html; this.onClick=onClick; this.div=null;
+  }
+  GHtmlMarker.prototype=new google.maps.OverlayView();
+  GHtmlMarker.prototype.onAdd=function(){
+    const div=document.createElement('div');
+    div.style.cssText='position:absolute;cursor:pointer;transform:translate(-50%,-50%);-webkit-tap-highlight-color:transparent';
+    div.innerHTML=this.html;
+    if(this.onClick) div.addEventListener('click', e=>{ e.stopPropagation(); this.onClick(); });
+    this.div=div;
+    this.getPanes().overlayMouseTarget.appendChild(div);
+  };
+  GHtmlMarker.prototype.draw=function(){
+    if(!this.div) return;
+    const p=this.getProjection().fromLatLngToDivPixel(this.pos);
+    if(p){ this.div.style.left=p.x+'px'; this.div.style.top=p.y+'px'; }
+  };
+  GHtmlMarker.prototype.onRemove=function(){ if(this.div&&this.div.parentNode) this.div.parentNode.removeChild(this.div); this.div=null; };
+  GHtmlMarker.prototype.setPos=function(pos){ this.pos=pos; this.draw(); };
+  window.__GHtmlMarker=GHtmlMarker;
+  return GHtmlMarker;
+}
+function photoMarkerHtml(c){ return `<div class="photo-marker">${hasPhoto(c)?`<img src="${c.photo}" alt="">`:SILHOUETTE_SVG}</div>`; }
+function userDotHtml(){ return '<div style="width:20px;height:20px;border-radius:50%;background:#c19a4b;border:3.5px solid #0e3b2c;box-shadow:0 1px 6px rgba(0,0,0,.4)"></div>'; }
+/* LatLngBounds grown by a fraction of its span — the Google twin of Leaflet's .pad() */
+function gPaddedBounds(pts, frac){
+  const b=new google.maps.LatLngBounds();
+  pts.forEach(p=>b.extend(p));
+  if(pts.length<2) return b;
+  const ne=b.getNorthEast(), sw=b.getSouthWest();
+  const dLat=(ne.lat()-sw.lat())*frac, dLng=(ne.lng()-sw.lng())*frac;
+  b.extend(new google.maps.LatLng(ne.lat()+dLat, ne.lng()+dLng));
+  b.extend(new google.maps.LatLng(sw.lat()-dLat, sw.lng()-dLng));
+  return b;
+}
+function gOpenPopup(info, gmap, c, pos){
+  info.setContent('<div class="gm-popup">'+popupHtml(c)+'</div>');
+  info.setPosition(pos);
+  info.open(gmap);
+}
+function initGoogleMap(){
+  if(gMap||typeof google==='undefined'||!google.maps||!google.maps.Map) return;
+  gMap=new google.maps.Map($('map'),{center:{lat:40.68,lng:-73.95},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_TOP}});
+  gInfo=new google.maps.InfoWindow({maxWidth:264});
+  gInfo.addListener('closeclick',()=>{ gOpenCid=null; });
+  renderMarkers();
+}
+function gRenderMarkers(){
+  if(!gMap) return;
+  const GM=defineGMarker();
+  gMarkers.forEach(m=>{ try{ m.setMap(null); }catch(e){} }); gMarkers=[];
+  const list=filteredContacts().filter(c=>c.onMap!==false && c.lat!=null && c.lng!=null);
+  list.forEach(c=>{
+    const pos={lat:c.lat,lng:c.lng};
+    const m=new GM(new google.maps.LatLng(pos.lat,pos.lng), photoMarkerHtml(c), ()=>{ gOpenCid=c.id; gOpenPopup(gInfo,gMap,c,pos); });
+    m._cid=c.id; m.setMap(gMap); gMarkers.push(m);
+    if(gOpenCid&&c.id===gOpenCid) gOpenPopup(gInfo,gMap,c,pos);
+  });
+  $('mapCount').textContent=list.length+' on map';
+  if(list.length && !myLoc && !initialFitDone){
+    initialFitDone=true;
+    try{
+      if(list.length===1){ gMap.setCenter({lat:list[0].lat,lng:list[0].lng}); gMap.setZoom(14); }
+      else gMap.fitBounds(gPaddedBounds(list.map(c=>({lat:c.lat,lng:c.lng})),0.2));
+    }catch(e){}
+  }
 }
 function pinIcon(n){ return L.divIcon({className:'', html:`<div class="pin-num">${n}</div>`, iconSize:[32,32], iconAnchor:[16,16]}); }
 const SILHOUETTE_SVG='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" fill="#f3e6c8"/><path d="M4.5 20.2c.8-3.6 3.8-5.4 7.5-5.4s6.7 1.8 7.5 5.4" fill="#f3e6c8"/></svg>';
@@ -1374,6 +1507,8 @@ function openContactFromMap(id){
   const c=contacts.find(x=>x.id===id); if(!c) return;
   try{ if(map) map.closePopup(); }catch(e){}
   try{ if(driveMap) driveMap.closePopup(); }catch(e){}
+  try{ if(gInfo) gInfo.close(); }catch(e){}
+  try{ if(gDriveInfo) gDriveInfo.close(); }catch(e){}
   if($('drivingOverlay').classList.contains('open')) stopDriving();
   const inp=$('contactsSearchInput'); if(inp) inp.value=''; contactsSearchTerm='';
   openContactsPage();
@@ -1466,6 +1601,7 @@ function getArea(c){
   return 'New Jersey';
 }
 function renderMarkers(){
+  if(mapEngine==='google'){ gRenderMarkers(); return; }
   if(!map) return;
   /* Remember whose address popup is open so rebuilding the pins never closes it */
   let openCid=null;
@@ -1491,6 +1627,20 @@ const AREA_VIEWS={
   'New Jersey':{center:[40.75,-74.15],zoom:10}
 };
 function zoomToArea(area){
+  if(mapEngine==='google'&&gMap){
+    const ptsOf=list=>list.map(c=>({lat:c.lat,lng:c.lng}));
+    if(area==='All'){
+      const all=contacts.filter(c=>c.lat!=null&&c.lng!=null);
+      if(all.length>1){ try{ gMap.fitBounds(gPaddedBounds(ptsOf(all),0.15)); }catch(e){} return; }
+      if(all.length===1){ gMap.panTo(ptsOf(all)[0]); gMap.setZoom(13); return; }
+      gMap.panTo({lat:40.71,lng:-74.0}); gMap.setZoom(10); return;
+    }
+    const inArea=contacts.filter(c=>getArea(c)===area&&c.lat!=null&&c.lng!=null);
+    if(inArea.length===1){ gMap.panTo(ptsOf(inArea)[0]); gMap.setZoom(14); return; }
+    if(inArea.length>1){ try{ gMap.fitBounds(gPaddedBounds(ptsOf(inArea),0.25)); }catch(e){} return; }
+    const v=AREA_VIEWS[area]; if(v){ gMap.panTo({lat:v.center[0],lng:v.center[1]}); gMap.setZoom(v.zoom); }
+    return;
+  }
   if(!map||typeof L==='undefined') return;
   if(area==='All'){
     const all=contacts.filter(c=>c.lat!=null&&c.lng!=null);
@@ -1614,6 +1764,9 @@ const NOMINATIM_VIEWBOX='-75.6,42.1,-71.7,38.4';
 async function nominatimSearch(q,limit=5){ const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=us&viewbox=${NOMINATIM_VIEWBOX}&bounded=0&limit=${limit}&q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('geocode failed'); return await r.json(); }
 async function geocodeForSave(obj){
   const full=fullAddress(obj); if(!full) return {lat:null,lng:null,geocodeStatus:'not_found'};
+  /* Google first when a Maps key is saved; the Nominatim lookups below stay
+     as the fallback, exactly as before. */
+  const g=await googleResolveAddress(full); if(g) return {lat:g.lat,lng:g.lng,geocodeStatus:'exact'};
   try{ const res=await nominatimSearch(full,1); if(res&&res[0]) return {lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),geocodeStatus:'exact'}; }catch(e){}
   try{ const town=[obj.city,obj.state,obj.zip].filter(Boolean).join(', '); if(town){ const res2=await nominatimSearch(town,1); if(res2&&res2[0]) return {lat:parseFloat(res2[0].lat),lng:parseFloat(res2[0].lon),geocodeStatus:'approximate'}; } }catch(e){}
   return {lat:null,lng:null,geocodeStatus:'not_found'};
@@ -2163,7 +2316,7 @@ $('vcfInput').addEventListener('change', async e=>{
 /* NEAR ME */
 function getLocationOnce(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) rej(new Error('No GPS')); else navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),rej,{enableHighAccuracy:true,timeout:12000}); }); }
 async function showNear(){
-  try{ const loc=await getLocationOnce(); myLoc=loc; if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ toast('Could not get your location. Allow location for this site and try again.'); }
+  try{ const loc=await getLocationOnce(); myLoc=loc; if(mapEngine==='google'&&gMap){ const GM=defineGMarker(); if(gUserMarker) gUserMarker.setPos(new google.maps.LatLng(loc.lat,loc.lng)); else { gUserMarker=new GM(new google.maps.LatLng(loc.lat,loc.lng), userDotHtml(), ()=>{ if(gInfo){ gInfo.setContent('<div class="gm-popup">You are here</div>'); gInfo.setPosition({lat:myLoc.lat,lng:myLoc.lng}); gInfo.open(gMap); } }); gUserMarker.setMap(gMap); } applyMainViewRadius(); } else if(map){ if(userMarker) map.removeLayer(userMarker); userMarker=L.circleMarker([loc.lat,loc.lng],{radius:9,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1}).addTo(map).bindPopup('You are here'); applyMainViewRadius(); } renderNearList(); renderMarkers(); }catch(e){ toast('Could not get your location. Allow location for this site and try again.'); }
 }
 function sortedByDistance(){ if(!myLoc) return []; return contacts.filter(c=>c.onMap!==false&&c.lat!=null).map(c=>({...c,_dist:haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng)})).sort((a,b)=>a._dist-b._dist); }
 function renderNearList(){
@@ -2181,6 +2334,13 @@ function renderNearList(){
 
 /* VIEW RADIUS — how much map shows around you */
 function applyMainViewRadius(){
+  if(mapEngine==='google'){
+    if(!gMap||!myLoc) return;
+    if(gMainCircle) gMainCircle.setMap(null);
+    gMainCircle=new google.maps.Circle({map:gMap,center:{lat:myLoc.lat,lng:myLoc.lng},radius:viewMiles*1609.34,strokeColor:'#c19a4b',strokeWeight:2,fillColor:'#c19a4b',fillOpacity:0.08});
+    try{ gMap.fitBounds(gMainCircle.getBounds(),14); }catch(e){ gMap.setCenter({lat:myLoc.lat,lng:myLoc.lng}); gMap.setZoom(viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
+    return;
+  }
   if(!map||!myLoc||typeof L==='undefined') return;
   if(mainRadiusCircle) map.removeLayer(mainRadiusCircle);
   mainRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(map);
@@ -2198,7 +2358,7 @@ function updateViewUI(){
 function zoomMapsToRadius(miles){
   if(!myLoc) return false;
   /* Main map: draw / update the radius circle and fit exactly to it */
-  if(map && typeof L!=='undefined'){ applyMainViewRadius(); }
+  if(map||gMap){ applyMainViewRadius(); }
   /* Driving map: same radius */
   if($('drivingOverlay') && $('drivingOverlay').classList.contains('open')){ updateDriveMap(); const dm=document.getElementById('driveMap'); if(dm) dm.scrollIntoView({behavior:'smooth',block:'start'}); }
   else if(map){ const mel=document.getElementById('map'); /* keep main map in view on phones when changing from settings */ }
@@ -2422,12 +2582,21 @@ $('alertShowAddr').addEventListener('click',()=>{
 $('alertCopyAddr').addEventListener('click',()=>{ if(alertAddr) copyTextToClipboard(alertAddr, $('alertCopyAddr')); });
 
 function initDriveMap(){
+  if(mapEngine==='google'){
+    if(gDriveMap){ setTimeout(()=>{ try{ google.maps.event.trigger(gDriveMap,'resize'); }catch(e){} },100); return; }
+    if(typeof google==='undefined'||!google.maps||!google.maps.Map) return;
+    gDriveMap=new google.maps.Map($('driveMap'),{center:{lat:40.68,lng:-73.95},zoom:15,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_TOP}});
+    gDriveInfo=new google.maps.InfoWindow({maxWidth:264});
+    gDriveInfo.addListener('closeclick',()=>{ gDriveOpenCid=null; });
+    return;
+  }
   if(driveMap){ setTimeout(()=>driveMap.invalidateSize(),100); return; }
   if(typeof L==='undefined') return;
   driveMap=L.map('driveMap').setView([40.68,-73.95],15);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(driveMap);
 }
 function updateDriveMap(){
+  if(mapEngine==='google'){ gUpdateDriveMap(); return; }
   if(!driveMap||!myLoc) return;
   if(driveUserMarker) driveUserMarker.setLatLng([myLoc.lat,myLoc.lng]);
   else driveUserMarker=L.circleMarker([myLoc.lat,myLoc.lng],{radius:10,color:'#0e3b2c',fillColor:'#c19a4b',fillOpacity:1,weight:3}).addTo(driveMap).bindPopup('You');
@@ -2446,6 +2615,34 @@ function updateDriveMap(){
   if(driveRadiusCircle) driveMap.removeLayer(driveRadiusCircle);
   driveRadiusCircle=L.circle([myLoc.lat,myLoc.lng],{radius:viewMiles*1609.34,color:'#c19a4b',weight:2,fillColor:'#c19a4b',fillOpacity:0.08}).addTo(driveMap);
   try{ driveMap.fitBounds(driveRadiusCircle.getBounds(),{padding:[12,12]}); }catch(e){ driveMap.setView([myLoc.lat,myLoc.lng], viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
+}
+/* GOOGLE twin of updateDriveMap — same follow-me behaviour: your dot moves
+   with every GPS update, pins rebuild only when the contacts on the map
+   actually change (so an open popup card is never closed by a GPS tick), and
+   the view stays fitted to the chosen radius around you. */
+function gUpdateDriveMap(){
+  if(!gDriveMap||!myLoc) return;
+  const GM=defineGMarker();
+  if(gDriveUserMarker) gDriveUserMarker.setPos(new google.maps.LatLng(myLoc.lat,myLoc.lng));
+  else {
+    gDriveUserMarker=new GM(new google.maps.LatLng(myLoc.lat,myLoc.lng), userDotHtml(), ()=>{ if(gDriveInfo){ gDriveInfo.setContent('<div class="gm-popup">You</div>'); gDriveInfo.setPosition({lat:myLoc.lat,lng:myLoc.lng}); gDriveInfo.open(gDriveMap); } });
+    gDriveUserMarker.setMap(gDriveMap);
+  }
+  const driveListNow=contacts.filter(c=>c.onMap!==false&&c.lat!=null);
+  const sig=driveListNow.map(c=>c.id+'@'+c.lat+','+c.lng+'@'+(hasPhoto(c)?'p':'-')).join(';');
+  if(sig!==driveMarkersSig){
+    gDriveMarkers.forEach(m=>{ try{ m.setMap(null); }catch(e){} }); gDriveMarkers=[];
+    driveListNow.forEach(c=>{
+      const pos={lat:c.lat,lng:c.lng};
+      const m=new GM(new google.maps.LatLng(pos.lat,pos.lng), photoMarkerHtml(c), ()=>{ gDriveOpenCid=c.id; gOpenPopup(gDriveInfo,gDriveMap,c,pos); });
+      m._cid=c.id; m.setMap(gDriveMap); gDriveMarkers.push(m);
+      if(gDriveOpenCid&&c.id===gDriveOpenCid) gOpenPopup(gDriveInfo,gDriveMap,c,pos);
+    });
+    driveMarkersSig=sig;
+  }
+  if(gDriveCircle) gDriveCircle.setMap(null);
+  gDriveCircle=new google.maps.Circle({map:gDriveMap,center:{lat:myLoc.lat,lng:myLoc.lng},radius:viewMiles*1609.34,strokeColor:'#c19a4b',strokeWeight:2,fillColor:'#c19a4b',fillOpacity:0.08});
+  try{ gDriveMap.fitBounds(gDriveCircle.getBounds(),12); }catch(e){ gDriveMap.setCenter({lat:myLoc.lat,lng:myLoc.lng}); gDriveMap.setZoom(viewMiles<=1?15:viewMiles<=2?14:viewMiles<=5?12:11); }
 }
 function startDriving(){
   $('drivingOverlay').classList.add('open'); document.body.style.overflow='hidden';
@@ -2699,6 +2896,7 @@ const _tdsb=$('tripDestSetBtn'); if(_tdsb) _tdsb.addEventListener('click', async
   if(!q){ toast('Type a destination address first'); return; }
   if(tripDestCustom){ setTripDestCustom(tripDestCustom.lat,tripDestCustom.lng,tripDestCustom.label); return; }
   const lbl=$('tripDestAddrLabel'); if(lbl) lbl.textContent='Finding that address…';
+  const g=await googleResolveAddress(q); if(g){ setTripDestCustom(g.lat,g.lng,g.label); return; }
   try{ const res=await nominatimSearch(q,1);
     if(res&&res[0]) setTripDestCustom(parseFloat(res[0].lat),parseFloat(res[0].lon),res[0].display_name);
     else if(lbl) lbl.textContent='Could not find that address — check it and try again, or tap one of the suggestions while typing.';
@@ -2717,6 +2915,7 @@ const _tss=$('tripSetStartBtn'); if(_tss) _tss.addEventListener('click', async()
      picked in the search) — Set start must not look that text up as an address */
   if(tripStart && q===tripStart.label){ toast('Your start is already set — type a different address to change it'); return; }
   $('tripStartLabel').textContent='Finding that address…';
+  const g=await googleResolveAddress(q); if(g){ tripStart={lat:g.lat,lng:g.lng,label:q}; tripPlanOrder=null; $('tripStartLabel').textContent='✓ Starting from: '+g.label; autoTickOnWay(); renderTripPlanner(); return; }
   try{ const res=await nominatimSearch(q,1);
     if(res&&res[0]){ tripStart={lat:parseFloat(res[0].lat),lng:parseFloat(res[0].lon),label:q}; tripPlanOrder=null; $('tripStartLabel').textContent='✓ Starting from: '+res[0].display_name; autoTickOnWay(); renderTripPlanner(); }
     else $('tripStartLabel').textContent='Could not find that address — check it and try again.';
@@ -2725,6 +2924,15 @@ const _tss=$('tripSetStartBtn'); if(_tss) _tss.addEventListener('click', async()
 const _tsa=$('tripStartAddr'); if(_tsa) _tsa.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$('tripSetStartBtn'); if(b) b.click(); } });
 function fmtTime(mins){ mins=Math.round(mins); if(mins<60) return mins+' min'; const h=Math.floor(mins/60), m=mins%60; return h+' hr'+(m?' '+m+' min':''); }
 function drawTripLine(pts){
+  if(mapEngine==='google'){
+    if(!gMap) return;
+    if(gTripRouteLine){ try{ gTripRouteLine.setMap(null); }catch(e){} gTripRouteLine=null; }
+    gTripRouteLine=new google.maps.Polyline({map:gMap,path:pts.map(p=>({lat:p.lat,lng:p.lng})),strokeColor:'#c19a4b',strokeWeight:4,strokeOpacity:0.9});
+    updateTripExitBtn();
+    try{ gMap.fitBounds(gPaddedBounds(pts.map(p=>({lat:p.lat,lng:p.lng})),0.15)); }catch(e){}
+    const mel=document.getElementById('map'); const _to=$('tripOverlay'); if(mel && !(_to&&_to.classList.contains('open'))) mel.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
   if(!map||typeof L==='undefined') return;
   if(tripLine) map.removeLayer(tripLine);
   tripLine=L.polyline(pts.map(p=>[p.lat,p.lng]),{color:'#c19a4b',weight:4,opacity:0.9}).addTo(map);
@@ -2737,8 +2945,9 @@ function drawTripLine(pts){
    and appears whenever a trip is showing; the same reset is offered inside the
    trip planner itself. Clearing removes the route line and flies the map back
    to its normal view of the contacts. */
-function updateTripExitBtn(){ const wrap=$('tripMapActions'); if(wrap) wrap.style.display=tripLine?'flex':'none'; const b=$('exitTripBtn'); if(b&&!wrap) b.style.display=tripLine?'inline-flex':'none'; const eb=$('editTripBtn'); if(eb&&!wrap) eb.style.display=tripLine?'inline-flex':'none'; }
+function updateTripExitBtn(){ const hasLine=!!(tripLine||gTripRouteLine); const wrap=$('tripMapActions'); if(wrap) wrap.style.display=hasLine?'flex':'none'; const b=$('exitTripBtn'); if(b&&!wrap) b.style.display=hasLine?'inline-flex':'none'; const eb=$('editTripBtn'); if(eb&&!wrap) eb.style.display=hasLine?'inline-flex':'none'; }
 function clearTripFromMap(){
+  if(gTripRouteLine){ try{ gTripRouteLine.setMap(null); }catch(e){} gTripRouteLine=null; }
   if(tripLine&&map){ try{ map.removeLayer(tripLine); }catch(e){} }
   tripLine=null; lastTripPts=null;
   if(typeof hideTripPreview==='function') hideTripPreview();
@@ -2781,12 +2990,20 @@ function buildTripPts(){
   lastTripPts=pts; return pts;
 }
 function initTripPreviewMap(){
+  if(mapEngine==='google'){
+    if(gTripMap){ setTimeout(()=>{ try{ google.maps.event.trigger(gTripMap,'resize'); }catch(e){} },80); return; }
+    if(typeof google==='undefined'||!google.maps||!google.maps.Map) return;
+    gTripMap=new google.maps.Map($('tripPreviewMap'),{center:{lat:40.68,lng:-73.95},zoom:11,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,zoomControl:true,zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_TOP}});
+    gTripInfo=new google.maps.InfoWindow({maxWidth:264});
+    return;
+  }
   if(tripPreviewMap){ setTimeout(()=>{ try{tripPreviewMap.invalidateSize();}catch(e){} },80); return; }
   if(typeof L==='undefined') return;
   tripPreviewMap=L.map('tripPreviewMap').setView([40.68,-73.95],11);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(tripPreviewMap);
 }
 function drawTripPreview(pts){
+  if(mapEngine==='google'){ gDrawTripPreview(pts); return; }
   if(!tripPreviewMap||typeof L==='undefined') return;
   if(tripPreviewLine){ try{tripPreviewMap.removeLayer(tripPreviewLine);}catch(e){} tripPreviewLine=null; }
   tripPreviewMarkers.forEach(m=>{ try{tripPreviewMap.removeLayer(m);}catch(e){} }); tripPreviewMarkers=[];
@@ -2799,6 +3016,26 @@ function drawTripPreview(pts){
   });
   try{ tripPreviewMap.fitBounds(tripPreviewLine.getBounds().pad(0.18)); }catch(e){}
 }
+/* GOOGLE twin of drawTripPreview — same gold route line and the same numbered
+   pins (▶ for the start, then 1, 2, 3…), each opening the same little card. */
+function gDrawTripPreview(pts){
+  if(!gTripMap) return;
+  const GM=defineGMarker();
+  if(gTripLineObj){ try{ gTripLineObj.setMap(null); }catch(e){} gTripLineObj=null; }
+  gTripMarkers.forEach(m=>{ try{ m.setMap(null); }catch(e){} }); gTripMarkers=[];
+  gTripLineObj=new google.maps.Polyline({map:gTripMap,path:pts.map(p=>({lat:p.lat,lng:p.lng})),strokeColor:'#c19a4b',strokeWeight:4,strokeOpacity:0.9});
+  pts.forEach((p,i)=>{
+    const label=i===0?'▶':String(i);
+    const pos={lat:p.lat,lng:p.lng};
+    const m=new GM(new google.maps.LatLng(pos.lat,pos.lng), '<div class="pin-num">'+label+'</div>', ()=>{
+      if(!gTripInfo) return;
+      gTripInfo.setContent('<div class="gm-popup"><div style="text-align:center"><b>'+escapeHtml(p.name)+'</b>'+(p.contact?'<br>'+escapeHtml(fullAddress(p.contact)):'')+'</div></div>');
+      gTripInfo.setPosition(pos); gTripInfo.open(gTripMap);
+    });
+    m.setMap(gTripMap); gTripMarkers.push(m);
+  });
+  try{ gTripMap.fitBounds(gPaddedBounds(pts.map(p=>({lat:p.lat,lng:p.lng})),0.18)); }catch(e){}
+}
 function showTripPreview(){
   const wrap=$('tripPreviewWrap'); if(!wrap) return;
   if(!tripStart){ toast('Set your start first'); return; }
@@ -2808,7 +3045,7 @@ function showTripPreview(){
   try{ drawTripLine(pts); }catch(e){}
   wrap.style.display='block';
   initTripPreviewMap();
-  setTimeout(()=>{ try{ if(tripPreviewMap) tripPreviewMap.invalidateSize(); }catch(e){} drawTripPreview(pts); },90);
+  setTimeout(()=>{ try{ if(tripPreviewMap) tripPreviewMap.invalidateSize(); }catch(e){} try{ if(gTripMap) google.maps.event.trigger(gTripMap,'resize'); }catch(e){} drawTripPreview(pts); },90);
   setTimeout(()=>{ wrap.scrollIntoView({behavior:'smooth',block:'start'}); },120);
 }
 function hideTripPreview(){ const wrap=$('tripPreviewWrap'); if(wrap) wrap.style.display='none'; }
@@ -3156,6 +3393,9 @@ async function saveAppKey(field, slot, inputId){
     if(inp) inp.value='';
     refreshKeyStatusUI();
     toast('Saved ✔');
+    /* A freshly saved Maps key can switch the map engine on right away when
+       no map has been drawn yet this session. */
+    if(slot==='maps'){ ensureGoogleMaps().then(ok=>{ if(ok&&!map&&!gMap) initMap(); }); }
     /* The AI key is tested the moment it is saved — one tiny question to
        Google — so the admin sees right here whether the help assistant will
        actually answer, and if not, exactly what Google said. */
@@ -3221,6 +3461,19 @@ async function googlePlaceDetails(placeId){
     return {street:street, city:city, state:state, zip:zip, lat:d.location.latitude, lng:d.location.longitude, formatted:d.formattedAddress||''};
   }catch(e){ return null; }
 }
+/* Resolve one typed address through Google first (top suggestion → its
+   details). Used by the "Set start" / "Use this address" buttons and by
+   save-time geocoding, so a typed address is found by Google whenever the
+   Maps key is saved; null means the caller falls back to its Nominatim
+   lookup, exactly as before. */
+async function googleResolveAddress(q){
+  if(!q) return null;
+  const list=await googlePlaceSuggestions(q);
+  if(!list||!list.length) return null;
+  const d=await googlePlaceDetails(list[0].placeId);
+  if(!d) return null;
+  return {lat:d.lat,lng:d.lng,label:d.formatted||list[0].text};
+}
 /* Trip planner START address — live suggestions, same Google-first pattern as
    the destination field (the start field only had the Set start button before) */
 let tripStartAcTimer=null;
@@ -3279,7 +3532,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Photos: in the add/edit form, "Pin picture" is the picture shown on the map pin. "Profile photo" can be the Same as pin picture, a Different picture, or None.',
 '- Feedback: the "💬 Feedback" bubble at the bottom right, or Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.3.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.4.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
