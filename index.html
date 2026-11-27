@@ -923,6 +923,26 @@ input,select{min-height:42px}
 #alertCall{background:#fff;color:#111}
 #dismissAlert{background:transparent;color:#fff;border-color:#fff}
 #dismissAllAlerts{background:#fff;color:#7c1d1d}
+/* ============================================================
+   ROUND 4.2 — contact card breathing room + inline copy icon.
+   (1) The name sat jammed against the top of its white box:
+   the card gets real top padding and the head row centres the
+   name/address block against the photo, so the name has clear
+   space above it and the card reads even top and bottom.
+   (2) The copy button used to sit in its own flex row beside
+   the address — a 24px-tall box next to one short line of
+   text, which stretched the address block and left a white
+   gap under the address. The copy icon now sits INLINE in the
+   address line itself (the .copy-inline treatment, same as
+   the map popup and the alert banner), flowing with the text
+   on the same line, directly under the name line — no extra
+   row, no gap. Last layer on purpose: it wins.
+   ============================================================ */
+.contact-card{padding:11px 9px 8px}
+.contact-card .contact-open{align-items:center !important}
+.contact-addr{margin-top:2px}
+.contact-card .copy-inline{width:23px;height:23px;min-height:23px;border-radius:6px;vertical-align:-6px;margin-left:3px}
+.contact-card .copy-inline svg{width:12.5px;height:12.5px}
 </style>
 </head>
 <body>
@@ -1039,7 +1059,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 4.1</div>
+      <div class="side-version">Version 4.2</div>
     </div>
   </aside>
 
@@ -2135,7 +2155,7 @@ function renderList(){
        picture and Delete live. */
     const cardAddr=fullAddress(c);
     card.innerHTML=`
-      <div class="contact-head"><div class="contact-open" style="display:flex;gap:9px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`<span style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1;min-width:0">${escapeHtml(cardAddr)}</span><button type="button" class="copy-addr-btn copy-addr-btn-sm card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button></span>`:'No address yet'}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div></div>
+      <div class="contact-head"><div class="contact-open" style="display:flex;gap:9px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`${escapeHtml(cardAddr)} <button type="button" class="copy-addr-btn copy-inline card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button>`:'No address yet'}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div></div>
       <div class="actions">
         ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
         <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
@@ -4045,7 +4065,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
 '- Ask AI voice notes: in this Ask AI chat the person can tap the 🎙️ microphone button, record a voice note, and tap Send — the AI listens to the recording and answers in the chat, the same as a typed question. The voice note itself stays in the chat so it can be played back.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 4.1.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 4.2.',
 '- Hear an answer out loud: every answer in this Ask AI chat has a small round speaker button at the bottom-right of its bubble. Tap it and the phone reads the answer aloud; tap it again to stop.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
