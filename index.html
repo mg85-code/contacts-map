@@ -852,6 +852,67 @@ input,select{min-height:42px}
 .gm-style .gm-style-iw-chr{position:absolute;top:0;right:0;height:0;min-height:0;z-index:2}
 .gm-style .gm-ui-hover-effect{top:0 !important;right:0 !important;width:24px !important;height:24px !important;opacity:.75}
 .gm-style .gm-ui-hover-effect>span{width:15px !important;height:15px !important;margin:4.5px !important}
+/* ============================================================
+   ROUND 3.9 — tight contact cards, calmer page tops, and a
+   compact nearby-alert banner. Last layer on purpose: it wins.
+   ============================================================ */
+/* — Contact cards: much, much smaller and tight. Photo, name
+   and address sit close together, the buttons hug them, and
+   there is no empty white gap anywhere in the box. The phone
+   number no longer prints on the card — the Call button is
+   there for calling. — */
+.contact-list{gap:5px;margin-top:6px}
+.contact-card{padding:6px 8px;border-radius:10px}
+.contact-card .avatar{width:30px;height:30px;border-width:2px}
+.contact-card .avatar svg{width:18px;height:18px}
+.contact-name{font-size:14px;line-height:1.15}
+.contact-addr{font-size:11.5px;line-height:1.3;margin-top:0}
+.contact-card .actions{gap:4px;margin-top:5px}
+.contact-card .actions a,.contact-card .actions button{min-height:30px;padding:5px 3px;font-size:12px}
+.contact-card .copy-addr-btn-sm{width:24px;height:24px;min-height:24px;border-radius:6px}
+.contact-card .copy-addr-btn-sm svg{width:13px;height:13px}
+.contact-card .toggle-row{margin-top:5px;padding-top:5px;font-size:11.5px;gap:6px}
+.contact-card .switch{width:38px;height:22px}
+.contact-card .switch-thumb{width:16px;height:16px;top:3px;left:3px}
+.contact-card .switch input:checked ~ .switch-thumb{left:19px}
+/* — Trip Planner top: the page starts a little lower, with
+   breathing room above the bar, and the title trades its heavy
+   bold Georgia for the elegant Playfair serif at a calm
+   weight — the same display face the app uses elsewhere. — */
+#tripOverlay .contacts-head{padding-top:26px}
+.trip-page-title{font-family:"Playfair Display",Georgia,serif !important;font-weight:600 !important;font-size:19px !important;letter-spacing:.01em;color:var(--green)}
+/* — Driving Mode top: the same breathing room above its bar,
+   so it no longer sits jammed against the top of the screen — */
+#drivingOverlay .drive-head{padding-top:26px}
+/* — Nearby alert banner: compact, using the phone's width.
+   Avatar, heading, name, distance and address share the top
+   rows instead of stacking in one tall column, and the
+   actions sit in a single row underneath. The "Show address"
+   button is gone — the address is printed right there, with
+   the small copy icon beside it. Name, distance and address
+   are three clearly different pieces: the name big and strong
+   in the serif, the distance in gold, the address on its own
+   line in a soft pale tone. — */
+.alert-banner{padding:11px 12px;margin:10px}
+.alert-top{display:flex;gap:10px;align-items:flex-start}
+#alertAvatar .avatar{width:44px;height:44px}
+#alertAvatar .avatar svg{width:26px;height:26px}
+.alert-main{flex:1;min-width:0}
+.alert-head-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.alert-head-row b{font-size:15.5px}
+#alertCount{background:var(--gold);color:#1a1405;font-weight:800;font-size:11.5px;padding:3px 9px;border-radius:999px;white-space:nowrap}
+#alertText{margin-top:3px;line-height:1.25}
+#alertName{font-family:"Playfair Display",Georgia,serif;font-weight:800;font-size:19px;color:#fff}
+#alertDist{font-weight:700;font-size:14px;color:#f0cd7e}
+#alertAddrLine{display:flex;align-items:flex-start;gap:2px;margin-top:2px}
+#alertAddrInline{font-size:13px;line-height:1.35;color:#f6dede}
+#alertAddrLine .copy-inline{width:26px;height:26px;min-height:26px;border-radius:7px;background:var(--gold-light);border-color:var(--gold);color:#5c430a;flex-shrink:0}
+#alertAddrLine .copy-inline svg{width:14px;height:14px}
+.alert-btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.alert-btns .btn{flex:1 1 auto;min-height:38px;padding:8px 10px;font-size:14px;white-space:nowrap}
+#alertCall{background:#fff;color:#111}
+#dismissAlert{background:transparent;color:#fff;border-color:#fff}
+#dismissAllAlerts{background:#fff;color:#7c1d1d}
 </style>
 </head>
 <body>
@@ -968,7 +1029,7 @@ input,select{min-height:42px}
       <div class="side-download">
         <button type="button" id="downloadBtnSide" class="btn btn-download btn-large" style="width:100%;font-size:17px">⬇️ Download the app</button>
       </div>
-      <div class="side-version">Version 3.8</div>
+      <div class="side-version">Version 3.9</div>
     </div>
   </aside>
 
@@ -1447,7 +1508,7 @@ input,select{min-height:42px}
 <!-- TRIP PLANNER PAGE -->
 <div id="tripOverlay" role="dialog" aria-label="Trip planner">
   <div class="contacts-head">
-    <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🧭 Trip Planner</div></div>
+    <div><div class="trip-page-title" style="font-family:Georgia,serif;font-size:22px;line-height:1">🧭 Trip Planner</div></div>
     <button id="closeTripBtn" class="btn back-btn" style="background:#fff;color:var(--green);font-size:17px;padding:13px 20px"><span class="back-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg></span><span class="back-label">Back to map</span></button>
   </div>
   <div id="tripOverlayBody" style="max-width:820px;margin:0 auto;padding:14px"></div>
@@ -1459,7 +1520,7 @@ input,select{min-height:42px}
     <div><div style="font-family:Georgia,serif;font-size:22px;line-height:1">🚗 Driving Mode</div></div>
     <button id="stopDriving" class="btn" style="background:#fff;color:#7c1d1d;font-size:18px;padding:14px 22px">■ Stop</button>
   </div>
-  <div id="alertBanner" class="alert-banner"><div style="display:flex;gap:14px;align-items:center"><div id="alertAvatar"></div><div><span id="alertCount" style="display:block;width:fit-content;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:6px"></span><b>Someone nearby to visit!</b><div id="alertText" style="margin-top:6px;font-size:17px;line-height:1.4"></div></div></div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><a id="alertCall" class="btn" style="background:#fff;color:#111;flex:1" href="#">Call</a><a id="alertDir" class="btn btn-gold" style="flex:1" href="#" target="_blank" rel="noopener">Directions</a><button id="alertShowAddr" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff" aria-expanded="false">📍 Show address</button><button id="dismissAlert" class="btn btn-outline" style="background:transparent;color:#fff;border-color:#fff">Dismiss</button><button id="dismissAllAlerts" class="btn" style="background:#fff;color:#7c1d1d;display:none">Dismiss all</button></div><div id="alertAddrPanel" class="drive-addr-panel" style="color:var(--ink)"><span class="drive-addr-text" id="alertAddrText"></span><button type="button" class="copy-addr-btn" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+  <div id="alertBanner" class="alert-banner"><div class="alert-top"><div id="alertAvatar"></div><div class="alert-main"><div class="alert-head-row"><span id="alertCount"></span><b>Someone nearby to visit!</b></div><div id="alertText"><span id="alertName"></span> <span id="alertDist"></span></div><div id="alertAddrLine"><span id="alertAddrInline"></span><button type="button" class="copy-addr-btn copy-inline" id="alertCopyAddr" aria-label="Copy address" title="Copy address"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div></div><div class="alert-btns"><a id="alertCall" class="btn" href="#">Call</a><a id="alertDir" class="btn btn-gold" href="#" target="_blank" rel="noopener">Directions</a><button id="dismissAlert" class="btn btn-outline">Dismiss</button><button id="dismissAllAlerts" class="btn" style="display:none">Dismiss all</button></div></div>
   <div id="driveMap"></div>
   <div style="padding:14px">
     <div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px">
@@ -2062,7 +2123,7 @@ function renderList(){
        picture and Delete live. */
     const cardAddr=fullAddress(c);
     card.innerHTML=`
-      <div class="contact-head"><div class="contact-open" style="display:flex;gap:12px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`<span style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1;min-width:0">${escapeHtml(cardAddr)}</span><button type="button" class="copy-addr-btn copy-addr-btn-sm card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button></span>`:'No address yet'}${c.phone?'<br>☎️ '+escapeHtml(c.phone):''}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div></div>
+      <div class="contact-head"><div class="contact-open" style="display:flex;gap:9px;align-items:flex-start" title="Open contact" role="button" aria-label="Open ${escapeHtml(c.name||'contact')}">${avatarHtml(c)}<div style="min-width:0"><div class="contact-name">${escapeHtml(c.name||'No name')}</div><div class="contact-addr">${cardAddr?`<span style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1;min-width:0">${escapeHtml(cardAddr)}</span><button type="button" class="copy-addr-btn copy-addr-btn-sm card-copy-btn" aria-label="Copy address of ${escapeHtml(c.name||'contact')}" title="Copy address">${COPY_ICON_SVG}</button></span>`:'No address yet'}${c._sortDist!=null?'<br><strong style="color:var(--green)">📍 '+c._sortDist.toFixed(1)+' miles from you now</strong>':(contactsSortMode==='distance'?'<br>No pin yet — distance unknown':'')}</div></div></div></div>
       <div class="actions">
         ${c.phone?`<a class="btn btn-green" href="tel:${escapeHtml(c.phone)}">☎️ Call</a>`:'<button class="btn btn-outline" disabled>No phone</button>'}
         <a class="btn btn-gold" target="_blank" rel="noopener" href="${directionsUrl(c)}">🧭 Directions</a>
@@ -2897,35 +2958,27 @@ function displayAlertBanner(c){
   alertBatchShown++;
   const dist=myLoc?haversineMiles(myLoc.lat,myLoc.lng,c.lat,c.lng):0;
   $('alertAvatar').innerHTML=avatarHtml(c);
-  $('alertText').textContent=`${c.name} is ${dist.toFixed(1)} miles away — ${fullAddress(c)}`;
+  /* Name, distance and address are three separate pieces, each styled its
+     own way in the banner — they no longer run together in one line. */
+  $('alertName').textContent=c.name||'';
+  $('alertDist').textContent='is '+dist.toFixed(1)+' miles away';
   $('alertCall').href='tel:'+(c.phone||''); $('alertDir').href=directionsUrl(c);
   alertAddr=fullAddress(c);
-  $('alertAddrText').textContent=alertAddr||'No address saved for this person yet.';
+  $('alertAddrInline').textContent=alertAddr||'No address saved for this person yet.';
   $('alertCopyAddr').style.display=alertAddr?'inline-flex':'none';
-  /* A new person's banner always starts with their address closed. */
-  resetAlertAddrPanel();
   alertContactId=c.id;
   updateAlertCountUI();
   $('alertBanner').classList.add('show');
   playAlertSound();
   if(navigator.vibrate) navigator.vibrate([200,100,200]);
 }
-$('dismissAlert').addEventListener('click',()=>{ resetAlertAddrPanel(); alertShowingId=null; showNextAlert(); });
+$('dismissAlert').addEventListener('click',()=>{ alertShowingId=null; showNextAlert(); });
 /* DISMISS ALL — clear the whole line of waiting alerts at once: the banner
    closes and the count starts fresh, exactly like stopping driving does. */
-const _daa=$('dismissAllAlerts'); if(_daa) _daa.addEventListener('click',()=>{ resetAlertAddrPanel(); alertQueue=[]; alertShowingId=null; alertBatchShown=0; $('alertBanner').classList.remove('show'); toast('All nearby alerts dismissed'); });
-/* ALERT BANNER — Show address: reveals the person's address inside the banner, with the
-   same two-squares copy button as the driving list. */
+const _daa=$('dismissAllAlerts'); if(_daa) _daa.addEventListener('click',()=>{ alertQueue=[]; alertShowingId=null; alertBatchShown=0; $('alertBanner').classList.remove('show'); toast('All nearby alerts dismissed'); });
+/* ALERT BANNER — the address is printed right in the banner, under the name
+   and distance, with the small copy icon beside it (no Show-address button). */
 let alertAddr=''; let alertContactId=null;
-function resetAlertAddrPanel(){
-  const p=$('alertAddrPanel'); if(p) p.classList.remove('open');
-  const b=$('alertShowAddr'); if(b){ b.textContent='📍 Show address'; b.setAttribute('aria-expanded','false'); }
-}
-$('alertShowAddr').addEventListener('click',()=>{
-  const p=$('alertAddrPanel'); if(!p) return;
-  const open=p.classList.toggle('open');
-  const b=$('alertShowAddr'); b.textContent=open?'📍 Hide address':'📍 Show address'; b.setAttribute('aria-expanded', open?'true':'false');
-});
 $('alertCopyAddr').addEventListener('click',()=>{ if(alertAddr) copyTextToClipboard(alertAddr, $('alertCopyAddr')); });
 
 function initDriveMap(){
@@ -3971,7 +4024,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Adding a contact — three ways, all from the "Add a contact" button at the top of the My Contacts page: (1) "Add from phone contacts" picks people from the phone (not available in every browser); (2) "Choose file" imports a contacts file (.vcf); (3) "Add by hand" — the form starts CLOSED and opens only when that button is tapped. In the form, typing a street address brings up live address suggestions; tapping one fills the street, city, state and ZIP and sets the exact pin. Then tap "Save contact".',
 '- My Contacts: the Contacts tab at the bottom, or Menu → "Contacts". Search at the top; sort by Name A–Z or by Distance from me now. Each card shows the photo, name, address with a small copy button, and Call / Directions / Notes buttons, plus an "On my map" switch. Tapping a person opens their full contact page, where Edit, the photos and Delete live.',
 '- Who\'s near me now?: the big button under the map on the main page. It uses the phone\'s location and lists the closest contacts first; it can be sorted by distance or by name.',
-'- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions, Show address and Dismiss buttons. If several people are near, their alerts come one at a time — Dismiss shows the next person, and "Dismiss all" clears the whole line at once. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
+'- Driving mode: tap the big green "Start driving" button under the map. The map follows you, and when you come within the alert distance of a contact who is on your map, an alert pops up with a sound and the person\'s name and distance, with Call, Directions and Dismiss buttons, and a copy button beside the address. If several people are near, their alerts come one at a time — Dismiss shows the next person, and "Dismiss all" clears the whole line at once. Be honest about the limit: alerts work ONLY while the app is open on the screen — the app cannot alert when it is closed. Tap "Stop" to leave driving mode.',
 '- Settings live in the Menu (the gold Menu button at the top) → "Settings" — it opens its own page with everything about alerts: Alert distance (1, 2, 5 or 10 miles, or a custom number); Map view around me while driving (how much map shows around you); Alert sound — on/off, pick from the list of sounds or choose your own sound or music file from the phone, "Hear it" previews it, and "Test my alert sound now" plays the full alert; Notifications — turn them on or off.',
 '- Trip Planner: the Trip tab at the bottom, or Menu → "Trip planner". Step 1: the start — "Current location" for where you are now (the start box then shows the street address of where you are now; it keeps the words "Current location" only if no address can be found), or type a start address (suggestions appear; or "Set start"), or search your contacts by name under "or start from one of your contacts" and tap the person. Step 2: the main destination — type a name in the search box and tap the contact (the chosen destination is named under the box, with a Clear button), or type any destination address (suggestions appear; tap "Use this address"). Step 3: "How far out of your way are you ready to go?" — On the way only, 1, 2, 5 or 10 miles, "My own number" with your own number of miles typed in right next to it, or Everyone; the people list then shows only the people inside that distance, each marked "On your way" or how far off the road they are. Step 4: tick who to visit — there is a search box above the list, type a name to find someone fast; you can also set "Come back to the start at the end" and the minutes at each visit. "Plan my trip — best order" works out the best visiting order with the total road time and distance, and its Google Maps button opens the whole route in Google Maps. In the planned list ("Your trip — best order") you can change the plan by hand: swipe a person sideways to take them off the trip, or press and hold a person and drag them up or down — your own order wins and the route and times update to match. There is one map button, "Show trip on map", which draws the trip on a map right there in the planner (Hide map closes it and the page stays where it is); "Edit trip" changes the plan and "Exit trip — reset map" clears it.',
 '- Notes: every contact has a Notes button (on their card and on their page). Write a note and save it. Tapping an older note opens it, with Edit and Delete inside.',
@@ -3979,7 +4032,7 @@ const HELP_SYSTEM_PROMPT=[
 '- Feedback: Menu → "Feedback" — type a message or record a voice note; it goes to Mendel, who runs the app.',
 '- Your account: Menu → "My account" (near the bottom of the Menu) shows the email you are signed in with, and the Log out button lives there — there is no email or Log out on the main page.',
 '- Download / install: the "Download the app" button (at the bottom of the Menu, on the welcome page, and at the bottom of the main page) explains how to put the app on the phone.',
-'- The app version is written at the very bottom of the Menu panel. This is Version 3.8.',
+'- The app version is written at the very bottom of the Menu panel. This is Version 3.9.',
 '- The bottom tab bar: Map, Contacts, Trip, More (the Menu).'
 ].join('\n');
 const HELP_NO_KEY_TEXT='The help assistant is not switched on yet — the AI key still needs to be added by the admin. Mendel can add it in the Menu, under "🔑 App keys — admin". Once it is saved there, ask me anything here.';
